@@ -27,12 +27,12 @@ export class MenuPage implements OnInit {
       name: 'Contact',
       path: '/menu/contact'
     }
-  ]
+  ];
 
   constructor(private router: Router) {
     this.router.events.subscribe((event: RouterEvent) => {
-      this.activePath = event.url
-    })
+      this.activePath = event.url;
+    });
   }
 
   ngOnInit() {

@@ -3,8 +3,21 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./components/dashboard/dashboard.module').then(m => m.DashboardModule)
+  },
+  {
+    path: 'authentication',
+    loadChildren: () =>
+      import('./components/authentication/authentication.module').then(
+        m => m.AuthenticationModule
+      )
+  },
+  {
     path: '',
-    loadChildren: './menu/menu.module#MenuPageModule'
+    redirectTo: 'authentication',
+    pathMatch: 'full'
   }
 ];
 
