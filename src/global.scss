@@ -24,3 +24,25 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+  /* Hide element on Desktop */
+  @media only screen and (min-width: 981px) {
+    .hide-on-desktop {
+        display: none !important;
+    }
+  }
+  
+  /* Hide element on Tablet/Phone */
+  @media only screen and (max-width: 980px) {
+    .hide-on-mobile-tablet {
+        display: none !important;
+    }
+  }
+
+  ion-popover {
+	--width: 520px;
+}
+
+ion-label {
+   white-space: normal !important;
+}

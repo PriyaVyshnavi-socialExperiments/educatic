@@ -8,16 +8,12 @@ import { MenuPage } from './menu.page';
 
 const routes: Routes = [
   {
-    path: 'menu',
+    path: '',
     component: MenuPage,
     children: [
       {
-        path: 'home',
+        path: '',
         loadChildren: '../home/home.module#HomePageModule'
-      },
-      {
-        path: 'login',
-        loadChildren: '../login/login.module#LoginPageModule'
       },
       {
         path: 'register',
@@ -28,10 +24,6 @@ const routes: Routes = [
         loadChildren: '../contact/contact.module#ContactPageModule'
       }
     ]
-  },
-  {
-    path: '',
-    redirectTo: '/menu/home'
   }
 ]
 
