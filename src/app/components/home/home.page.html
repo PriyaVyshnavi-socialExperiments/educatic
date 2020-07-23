@@ -1,12 +1,42 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-title>Home</ion-title>
+    <ion-toolbar  class="hide-on-desktop">
+        <ion-title>Schools</ion-title>
         <ion-buttons slot="start">
             <ion-menu-button autoHide="false"></ion-menu-button>
         </ion-buttons>
     </ion-toolbar>
+   
+      <ion-toolbar class="hide-on-mobile-tablet">
+        <ion-buttons slot="secondary">
+          <ion-button slot="start" expand="block">Users</ion-button>
+
+          <ion-button slot="start" expand="block">Schools</ion-button>
+
+          <ion-button slot="start" expand="block">Teachers</ion-button>
+
+          <ion-button (click)="presentPopover($event)">
+            <ion-icon slot="icon-only" name="person-circle"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+<ion-list>
+    <ion-item>
+      <ion-label><b>First Name:</b> {{currentUser.firstName | titlecase}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label><b>Last Name:</b> {{currentUser.lastName  | titlecase}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Email: {{currentUser.email}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Role: {{currentUser.role}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Token:<p>{{currentUser.token}}</p> </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
