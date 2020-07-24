@@ -13,6 +13,8 @@ import { AppCenterAnalytics } from '@ionic-native/app-center-analytics/ngx';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { JwtInterceptor, ErrorInterceptor } from './_helpers';
 import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
+import { MenuPageModule } from './components/menu/menu.module';
+import { AuthenticationModule } from './components/authentication/authentication.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,6 +26,8 @@ import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/materi
     HttpClientModule,
     BrowserAnimationsModule,
     NgHttpLoaderModule.forRoot(),
+    AuthenticationModule,
+    MenuPageModule
   ],
   providers: [
     AppCenterAnalytics,
