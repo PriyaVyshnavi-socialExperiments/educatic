@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { MenuPage } from './menu.page';
+import { Role } from '../../_models';
+
 
 const routes: Routes = [
   {
@@ -16,12 +18,29 @@ const routes: Routes = [
         loadChildren: '../home/home.module#HomePageModule'
       },
       {
-        path: 'register',
-        loadChildren: '../register/register.module#RegisterPageModule'
+        path: 'schools',
+        loadChildren: '../../pages/schools/schools.module#SchoolsPageModule',
+        data: { roles: [Role.SuperAdmin] }
       },
       {
-        path: 'contact',
-        loadChildren: '../contact/contact.module#ContactPageModule'
+        path: 'users',
+        loadChildren: '../../pages/users/users.module#UsersPageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
+        path: 'teachers',
+        loadChildren: '../../pages/teachers/teachers.module#TeachersPageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
+        path: 'students',
+        loadChildren: '../../pages/students/students.module#StudentsPageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
+        path: 'attendance',
+        loadChildren: '../../pages/attendance/attendance.module#AttendancePageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       }
     ]
   }
