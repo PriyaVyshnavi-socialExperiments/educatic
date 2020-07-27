@@ -1,7 +1,10 @@
+
 export interface MenuItems {
-  roles: string[];
-  routerLink: string;
+  name: string;
+  path: string;
+  icon: string;
   iconClass: string;
-  title: string;
-  active: string;
+  active: boolean;
+  roles: string[];
 }
+

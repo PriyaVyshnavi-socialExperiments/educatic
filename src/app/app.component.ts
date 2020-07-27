@@ -19,24 +19,6 @@ export class AppComponent {
     private statusBar: StatusBar
   ) {
     this.initializeApp();
-    this.navigate =
-    [
-      {
-        title : 'Home',
-        url   : '/home',
-        icon  : 'home'
-      },
-      {
-        title : 'Chat',
-        url   : '/chat',
-        icon  : 'chatboxes'
-      },
-      {
-        title : 'Contacts',
-        url   : '/contacts',
-        icon  : 'contacts'
-      },
-    ];
   }
 
   initializeApp() {
