@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-
 import { HttpClient } from '@angular/common/http';
-import { MenuItems, Role } from '../_models';
-import { AuthenticationService } from '../_services';
+import { MenuItems } from '../_models/menu-items';
+import { Role } from '../_models/role';
+import { AuthenticationService } from '../_services/authentication.service';
 
 @Injectable({
   providedIn: 'root'
