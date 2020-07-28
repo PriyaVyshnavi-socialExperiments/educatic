@@ -18,6 +18,11 @@ const routes: Routes = [
         loadChildren: '../home/home.module#HomePageModule'
       },
       {
+        path: 'dashboard',
+        loadChildren: '../../pages/dashboard/dashboard.module#DashboardPageModule',
+        data: { roles: [Role.SuperAdmin] }
+      },
+      {
         path: 'schools',
         loadChildren: '../../pages/schools/schools.module#SchoolsPageModule',
         data: { roles: [Role.SuperAdmin] }
