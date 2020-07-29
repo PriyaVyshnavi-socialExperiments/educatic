@@ -1,16 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { service, factories, models, IEmbedConfiguration } from "powerbi-client";
+import { UserAgentApplication, AuthError, AuthResponse } from "msal";
+import { Promise } from "bluebird"; // For MSAL support in IE
 
+
+let accessToken = "";
+let embedUrl = "";
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
 })
 export class DashboardPage implements OnInit {
-  private static readonly EmbedToken = "H4sIAAAAAAAEACWWxQ7sWBJE_-VtPZKZRuqF2WXGMuzMzOzW_PuUuveZUt7IvHHi7z9W8vRTkv_5759qL_Y1-QpjILl3t1u4dJsLHegYWKNscMnvU1bTdQSKge0IcykPQdUGkPGP7eBCLQszvef5EXoq-1J705KBx3nAwny52y883VG56CzDdGOQgjpIlctEt8-iHfGxdKEBkBoPogSsKxHebVcHyUNz7v7Mu4Yqsh3CQ6MspVnNk7FBdxFBoMEbjh-_-AfuazzPZ-VrvPyVwJnHXOy7qHqEyTr2tmq37O0DT_bL0ztBOeATpQbQ3uSDbN58phIGpJYiitOz-ChgBxvaRKHMkfVrjpIUv-47omZbdKL7xsLKKE3VxhR9lFOd4Tvpg28GmQlslCMAu_MS2Ce51a3S8xWSf0n7QTI4nZ69JzJsJO-nAJdPyPlbrpU7JJdzH9rJBDulIB8AQC6d-slNDHjlFae2T8vuGKdfeDiijSIPUl2OqoGp3iZmRuc9sTsC543K0WCYtUBqZGGfpofuFLrCGDoDfayvjs0PwWNYOps_MsE5JU-LGqU-1QIUaNWPoWy50BP4ftS0x3rUiJ6h_YCM0GScSlLLoJuX21aBuWaB3mt9J4NwWv4txcGHdpC_8Ju6Atjtw07b9XSA2kqH8fza5TCM5KDXT5MOY2fE72sn76yecSH8cihIX0_yDcKWXJSNt6FiduUmYvbL4WPc1t0AiS9H_9SqH68us5oVACRUGCQLPR4CQUCZ5gR3xwUayCqlZKibVKXzTtnBvj1H0PpeRcURWbovqSYy9HTdcPVB2gB8KWgFnhVSUdR9m78hj23NhMJL3sJX6msS3i9vuzMl5qO37xyATl3cSUzUNK_I8J4OhSBuunlNCujDFzKEEF1yw0kg_aHoqqMBqd-oL2N2L5LEZ7uD_lPQRFSStbSyglNPl_6WLFMG2fNpPRYzAfO0duZ9ybnHYk1kF5i71C09If-LP1pIM_p68kU1O6QIIwejSwmEDnUi4JUtRCK1UQoNzrlXzB310Tv_ZZh6EhmlSCy43Ad4BZbvbwCZJ5NlJZ58cjhMX9eGt0KI5mJhInxqVGSLZdLFPz_Ae4_fvvdAtaHKyPl8SuYj5Luazy0JWqID04WzW8_0LjlzLyTJlqnFsziuKsT3zMrj3sTwk_JSY2AmgipRzraavhzQcz6FBPaVK34jlgcdEfGljNY55SzKwqJyZK-ZBxJBTjAw19ovVHOe6Oi3Jznr5KvqBqLQFLl9VJH3BrAkHhZSqYRoDuVu3G_HP3ofPeBPfgjf9N7mqP1Ksd0YnZCok-X99mdQE7ZGdOIc5DTWLrxesl4koeeyP2n-glXd5Z1a-VotXgcilcHLjDszj3J_P60dwy1T9W7Q2YdVLf2R8haIdaIS4inL-Qf7UYzs2j0vqphNeMlu_LzzFC2et-OOq2phRwS_NyXDoD_M-5y1Rj3McGqWf4iDzsOUMxUdP-e8lnSOJAuPjHp9i-aHZwpFaADFk4ZUcsltzz5xR06Or_Xsbbys_FmxJS6oQTS51_3yDVGwcsYkY3USpy2b0QnMcpIAEwcikFF378-dDB2wX3ibzfZ8JWgDOKLomOSziPl5InQTgReRUaNJfNq1mwD9vR5IMEn5dnNimQdxJ3jngOEBWgkRsvygFvq6rlskquhFdqNTLlESEI_zLvpQWjh4hpgvQ6ROKPd9xVPuuqq1feeryx0NSZJLzHgQJj5Nx2PpLqN2PTQVMYb6E--owm-3jk80pYDvrQYPN2dajRrvZutfStAnd4sK7jQUCWxu4kCaRelPNTtz2sCerbegMierk3nDW8-Zds92f5-OlJbzz4Y1VOJP6xvWnMZ0BYX2D_OtYADM3C_7EfXsxkfJNQkl1QvNBTwBqTB06OEsnPKKyCZKDxdKHLidwdEP9k4V_1ql0URaOa6YoTjzoYWIlbZhizdJpfBaP4-EEme2dA9qC7KVJxufZAdF4jXeFASwqzoV8Z1F-YX9jh8gbQp0QJnerjS-KITalyMdABdnjYiMKd-rCip_GSu9R5K0yYuUzv5Vj371XwLIq3KzKn6c3f7abwMCLwdfrfXOxyNbBzVAn2GiCMaYqQHlDRQdeO0QRUdXDMrmBfEE2dyHjNPQAkCH3GfEgL23y4BOcDMACFWvpMh5vKNMdJspx1eKCZRDA-KSm9E0Cx0XKK5iv4nrXtiSZ6XEDotbhNuGd4JfTVMx5KWl5gzoBtqN3p9iWE9x1sc4-1031VssZDtY0hPgJ-r77v4Y119__fnPH2595n1Si-cXUwY8jPUSC4oXOpBp18XfhnuRTOLPxXsK5fT0sxHRYM0P5a28yLujkIYj34Gv17KBqbaKZiJj9X5AVF5GiyTNxWbOuYNsWhnHh8JWJs_kMOlDR_sNMclrDJVw790-f-mfCe8WGYmB333djVnSST_HHVFCGLQVzHcrDRwmUS2IgtbdLmHeLqRsXdMVq5VgnmQBLTQQD-gdCBO8RHjkfkCmr7t8lBC67i2UN0fGnA5U4yv-UXqygxM2eC6wRCT89YsfrNxynaR1Db-TC6LXU_5ZJo1qmb2xx3Ztgb6pIx3SujVrjoDqfNDeEw1exg8YajyajqtoLozI9tPyqNaNqMfVUFUz_8r8zHWxfr4_lUfpSDvtjrCMDoJQNo-RDt7qnyq3qcZkP9biVzaHB0ocTBvZb0DbQJFMStvDv_9He9_ZNYxRCpuM017UCahmm4gZ5ECP_eGOPD9Qmhl1awhWCcomrWMtZTfzpzZEEMC3OJl2od1Thu6VvsPr3cHoCNwpwAbpXxwq83zy6hK9V9njAL1oqF-AA01cVEes6A6xcef-XFXklTrbnDpZm_M9D8l8KzvSu_Kmxr5TD08_V1riA0c0AAWt3Klcm-q5qCY0gbKHLxyHwcEqJO_fJ64s-oLBO1uZusHWXGm36lnUcOFLV_JlHvLb64sz7gDL_DDTwXklrpI_QBbuuvdWQpDTKQRp-E91q7rtgqBmHcqa95u9u3HTslHPlyFMS2iAKvZP5v_9H0blzFOaCwAA.eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9ERi1NU0lULVNDVVMtcmVkaXJlY3QuYW5hbHlzaXMud2luZG93cy5uZXQiLCJlbWJlZEZlYXR1cmVzIjp7Im1vZGVybkVtYmVkIjpmYWxzZX19";
-  private static readonly EmbedUrl = "https://app.powerbi.com/reportEmbed?reportId=1ce76fdb-d49a-44fc-800f-a7d091f14b31&groupId=9ea4fee7-6a43-45fc-ba6e-9e2785e807fc&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9kZi1tc2l0LXNjdXMtcmVkaXJlY3QuYW5hbHlzaXMud2luZG93cy5uZXQvIn0%3D";
-  private static readonly ReportId = "1ce76fdb-d49a-44fc-800f-a7d091f14b31";
-  
+  private static readonly EmbedToken = "H4sIAAAAAAAEACWWt87EXHJE3-VPKYAcegrYgN4Pvc3o3dD7u9C761spr6DRXXWq__2Pnb2_OSv_-e9_kNq_LvInJrB3M-mBzdhdgEQ-5GIy9pBqPXYsbvrZv8CSUUiyTOPWlj72Ju-XmL6jfwpWGbU17jW-9XHD3yDqcfpNaaymee0nC9k0XksEOqaqqQyHjdqbhq4Wz9Z3rpPkzhmCddL4FUNlCD-2pBzI0FXS-p0N7GvRL6z1NnpSds90ZingCJN89Aa3KBEuhTGEge3Mo131h8dP8hRTn2ZcoZxn3Th6OKcZHYUIA9P5rXXUJi7KdyOfX9uLTHmMhZaba1gmru65A36qws3_ODoQjB9sUVXnqLYo0_nCjEmFdggvLNXDIqScAZEd-hAmWP0G3tiKNFNtlAOd6SWdhTnQI7OJe0lGXtnh50ahlRWF-emuiSEYAqpsvai-99HMcxjtNlNQq_qOPYQhC3PrDWxOyKeR6jQBi69PwV7LV3wZD59zAOqAu9PK1f00_zCz96MUu8AMFvYVQY97ni05-1PjrGC9XDcazmgxUW6pw-09jL9-GFRcrubhA44_CRdWqxIPgm5nN_meVWjKQdK5EvmLX6Pak4ygWS8rOGN1rdRmEL2Vj9hfGpWZu6i8uekj5iJzyJP_kTCiU3e-wviv0ROe4lhsq6da1yzJg0tpyjGSc8h8rDbyiNJzcdUdPKgB4FfYbSEWw2IPn-lj0-ZsOTtqtUZwhtcwjswUrzOlfblZ4nWDrryiBpSX4GWMab4ETujPxKru6IE1RNSDSpjLkF0Q5hriMT1itq5rU4yNLeQO4NHOuicOCMGYMkjjj6Af-iQnmz3X96VIRIky5Us2DgVNwXsGEO3s_oFIpHClZlpd1jZMYAthIegnmhmmN-Gw2Hi16QFpg-akoSUKkZKw13y35GNhT0NjgZVrpBSYe0ZeXYTbLtw0BUUwr9JqqVWAqtkpD0o_PfJIqDfDWSrN1PoGH8Hyyv1Uap8vGwbZV5e9AmSld_Rua0mhfXUIWZJx_BcRc7cU9ADnTUwDUWx82bCa7mXq7aGRLWWVAXSCp9ccDQ902Q2TerJSYZNK4tx16W4iUBLQ1JMH0jadj19IxZjcDNLejrRah2z8fdN8ROzmW3gfGnsbP0yFUO77QUbYPl6Roy_76zex5_gGalDsHy-ayarFf9XqBTrR2E15AbwZPt_y6_wMrltpQV-dJ_50YYXSUAbsI1MNjoUA0Dm3_wsFS9imXqGr6q_yBOXDcef6PBT8Sp5wxTRDOUtCEhc6D7twciq9c1E1d_Ek3wPKlYnWQ-WMJf-m5j4b6nj4JX2NNI6N-eWCkDcp9hM1pGlfXeAM0O2vFJtlCHweWIJDXNdTQtaek7Rm1lGxIknSnBdpLP6j3B9WiiSc9KKkHz5Ek2Zv5bPXyQOO-y72ekTq8qMI2rjLgOx4SjJaDx2KnY2HjjKc6lPOf4dyGeeIWFkaCBhjiEdUrbAlHAzM3HvQRpRw8Xjj3NB9zD7HIShJiqciVnXDy6imurVF84-L9Bb_KHquR8tgoPGqxpPXfng7w-rk8JXJflh-lxuUE4ZrqkZ-Z2LxhbYa6c6a4CXHii9Fqe9KhKg4AiRqZXU-CNav4nGeodzxzFyOfm3WLxwJdoTSOZyc8eR0y3mID1qcyxY17XMXEZ3L4mR4LAuIngj2j_i8f-W96dfZ_XWLhcKFZC1Hw3qgeY4LokpCuhroXoUIwWetLzwLQhdlS8QGMgOhpbL24o_eBgU2bTHbB11BwJzwZIxWZAxdgwFcuAg4_8gqPl3je4L2rwQYe4VeAX1TrCQDxI_ICG5Pz5Uns8NeBtI2urCuw9kKZfrCrzeJ8wtsQ-ynvb0u2dyt9AeVbBBxAaeLgA6nli8tULGNw1WhqyaKuqSfZQZAabkLXUQquS1GXYLTw75O-Fxs9yWhvj2G2LTc6dg1fC-ysaVs74CQxvHt3hQ_lRpcH31eFV2MKFnpVJ36vTbJC056ta2cPSbCob6l1FA8HyJa8T4hcHzCK7NlGVShQjI8j1v6w94ck-Vxv6OwMONNtKeab_uKMwtU4eIiB-n-PkcVXoD0n34OUl8sif5I4R43AqJjAXwBOifYdeJ0eYm2yYCZJRA2a9vPF60ttBSsHdWPIiHJvVHpJaS-gvOz9Fzzwrjy0S-24nD6hwf763Ph0bG9NllszyV9YK3xqR9X2fzrX__81z_89i7HrFfv35vhChFVKz6Xec-ymNaDPLni87fiBg7XAmZlbl4esTJVbLgzISLttrgFi_f5QcuAfFUsfyUYBFFz53nR66R34TQ4usJCMH79mRYKYg7J4zbG2uVGy96h0qApNgEaqo2F0bbrC8T8QXWG4lCopWHV8X-d6iBO74C-UWVGIsK96cQp2wM8l1v9nMGfFVeIcJk_5lBzjzb1p3DzF7B154qifaE6OkKtY9jFri01xX9u7snt8WchtdnZ6TMvppTB7o04wYizIAw8w9pGv7PaM9AIS01mUhsIjcMwRgp7idXrxbqNfaq2Gueckc09N8G1Ohhw1vhwfiPByoWZYUR0909z4FCB6vv_1_wubbWp4d-WJyNb3WU9J5bkW8U7vZNAW-f_VF7XTNlxbtV_ZO4KHUX1hZrxqwKkQmuXaejbHUrK7U_muY1P3P74UU5N4q-JnB6Ntb_iKaVjhuQ69vasnB1nCpa2Y6QiSq-4RAwy328W_kI-lYH60hVK5kxkajgwZKsY_ZHBQpP9CLnQxcuxso4OXCdW1-jvfSjujksTV4NFqhreKOFXo20k5SsiYW9JlBXSipuTaC4m6xTFqN1aZ2uN3ehvxhpmUzDPoy5zJk3C9AFUfeBjGyP8u2abQbwhepfjMQ9VEe1B_r0HCXcXH4gmWkY67cRZsWbzr818za3-AgDZTGjdYvoEsdvErG7164wfzXqPId3DrN5aYCec-goTRjmy731B91GYL9f-x_P_878vm0Y2WgsAAA==.eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVVTLVdFU1QyLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0IiwiZW1iZWRGZWF0dXJlcyI6eyJtb2Rlcm5FbWJlZCI6ZmFsc2V9fQ==";
+  private static readonly EmbedUrl = "https://app.powerbi.com/reportEmbed?reportId=9abd3178-1724-41be-8184-af3b33f3be1c&groupId=46daf879-abaa-40fd-bcab-d0d4537c2700&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLXVzLXdlc3QyLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0LyJ9";
+  private static readonly ReportId = "9abd3178-1724-41be-8184-af3b33f3be1c";
+  private static readonly Scopes = ["https://analysis.windows.net/powerbi/api/Report.Read.All"];
+  private static readonly ClientId = "36013c75-089b-4b68-a71d-47b99d2666b6";
+  private static readonly WorkspaceId = "46daf879-abaa-40fd-bcab-d0d4537c2700";
+  private static readonly DatasetId = "5d5065bd-7a06-4e8f-b419-831ae37a457d";
+
   constructor() { }
 
   ngOnInit() {
@@ -21,6 +30,7 @@ export class DashboardPage implements OnInit {
 
     // We give All permissions to demonstrate switching between View and Edit mode and saving report.
     var permissions = models.Permissions.All;
+    // this.authenticate();
 
     // Embed configuration used to describe the what and how to embed.
     // This object is used when calling powerbi.embed.
@@ -29,7 +39,7 @@ export class DashboardPage implements OnInit {
     var config = {
       type: 'report',
       uniqueId: "test",
-      datasetId: "21e01eb0-98a7-4479-aae7-5d3abab3df80",
+      datasetId: DashboardPage.DatasetId,
       tokenType: models.TokenType.Embed,
       accessToken: DashboardPage.EmbedToken,
       embedUrl: DashboardPage.EmbedUrl,
@@ -67,5 +77,101 @@ export class DashboardPage implements OnInit {
 
     report.off("saved");
   }
+
+
+  // Authenticating to get the access token
+  authenticate(): void {
+    const thisObj = this;
+
+    const msalConfig = {
+      auth: {
+        clientId: DashboardPage.ClientId
+      }
+    };
+
+    const loginRequest = {
+      scopes: DashboardPage.Scopes
+    };
+
+    const msalInstance: UserAgentApplication = new UserAgentApplication(msalConfig);
+
+    function successCallback(response: AuthResponse): void {
+
+      if (response.tokenType === "id_token") {
+        thisObj.authenticate();
+
+      } else if (response.tokenType === "access_token") {
+        accessToken = response.accessToken;
+        thisObj.getEmbedUrl();
+
+      }
+    }
+
+    function failCallBack(error: AuthError): void {
+    }
+
+    msalInstance.handleRedirectCallback(successCallback, failCallBack);
+
+    // check if there is a cached user
+    if (msalInstance.getAccount()) {
+
+      // get access token silently from cached id-token
+      msalInstance.acquireTokenSilent(loginRequest)
+        .then((response: AuthResponse) => {
+
+          // get access token from response: response.accessToken
+          accessToken = response.accessToken;
+          this.getEmbedUrl();
+        })
+        .catch((err: AuthError) => {
+
+          // refresh access token silently from cached id-token
+          // makes the call to handleredirectcallback
+          if (err.name === "InteractionRequiredAuthError") {
+            msalInstance.acquireTokenRedirect(loginRequest);
+          }
+        });
+    } else {
+
+      // user is not logged in or cached, you will need to log them in to acquire a token
+      msalInstance.loginRedirect(loginRequest);
+    }
+  }
+
+  // Power BI REST API call to get the embed URL of the report
+  getEmbedUrl(): void {
+    const thisObj: this = this;
+
+    fetch("https://api.powerbi.com/v1.0/myorg/groups/" + DashboardPage.WorkspaceId + "/reports/" + DashboardPage.ReportId, {
+      headers: {
+        "Authorization": "Bearer " + accessToken
+      },
+      method: "GET"
+    })
+      .then(function (response) {
+        const errorMessage: string[] = [];
+        errorMessage.push("Error occurred while fetching the embed URL of the report")
+        errorMessage.push("Request Id: " + response.headers.get("requestId"));
+
+        response.json()
+          .then(function (body) {
+            // Successful response
+            if (response.ok) {
+              embedUrl = body["embedUrl"];
+            }
+            // If error message is available
+            else {
+              errorMessage.push("Error " + response.status + ": " + body.error.code);
+            }
+
+          })
+          .catch(function () {
+            errorMessage.push("Error " + response.status + ":  An error has occurred");
+          });
+      })
+      .catch(function (error) {
+      })
+  }
+
 
 }
