@@ -17,8 +17,8 @@ export class AuthenticationService {
      * allow async identification of when the current user
      * is ready.
      */
-    // public ready: ReplaySubject<IUser> = new ReplaySubject( 1 );
-    private currentUserSubject: BehaviorSubject<IUser>;
+    public ready: ReplaySubject<IUser> = new ReplaySubject(1);
+    private currentUserSubject: BehaviorSubject<IUser> = new BehaviorSubject<IUser>(undefined);
     public currentUser: Observable<IUser>;
     private result: any;
 
@@ -32,6 +32,7 @@ export class AuthenticationService {
             this.getCurrentUser().then((user) => {
                 this.currentUserSubject = new BehaviorSubject<IUser>(user);
                 this.currentUser = this.currentUserSubject.asObservable();
+                this.ready.next(user);
             });
         }
     }
@@ -48,6 +49,7 @@ export class AuthenticationService {
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
                     this.setCurrentUser(user);
                     this.currentUserSubject.next(user);
+                    this.ready.next(user);
                     this.appInsightsService.setUserId(user.id)
                 }
 
@@ -59,13 +61,16 @@ export class AuthenticationService {
         // remove user from local storage to log user out
         this.sqlStorageService.removeItem('currentUser');
         this.currentUserSubject.next(null);
+        this.ready.next(undefined);
         this.appInsightsService.clearUserId();
     }
 
-    private async getCurrentUser() {
+    private getCurrentUser() {
         if (this.result) {
-            const user = await this.sqlStorageService.getItem('currentUser');
-            return JSON.parse(user);
+            const user = this.sqlStorageService.getItem('currentUser').then(u => {
+                return JSON.parse(u);
+            });
+            return user;
         } else {
             throw new Error('GetCurrentUser: CapacitorDataStorageSqlite Service is not initialized.');
         }
