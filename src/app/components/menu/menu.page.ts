@@ -40,7 +40,7 @@ export class MenuPage implements OnInit {
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
       if (this.currentUser) {
-        this.menuList = this.navMenuHelper.MenuList.filter((menu) => menu !== undefined);
+        this.menuList = this.navMenuHelper.menuItems.filter((menu) => menu !== undefined);
       }
     });
   }

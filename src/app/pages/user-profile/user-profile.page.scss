@@ -1,0 +1,41 @@
+.container-login100 {
+    min-height: 0 !important;
+}
+
+.md-avatar {
+    border-radius: 100px;
+    display: block;
+    font-size: 58px;
+    font-weight: 100;
+    height: 100px;
+    line-height: 100px;
+    margin: auto;
+    position: relative;
+    text-align: center;
+    top: 40px;
+    width: 100px;
+
+    img {
+        border-radius: 100px;
+    }
+}
+
+.md-avatar-upload {
+    background: rgba(0, 0, 0, .5);
+    border: 0;
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    height: 30px;
+    left: 50%;
+    line-height: 30px;
+    margin: -25px 0 0 60px;
+    overflow: hidden;
+    padding: 0 10px;
+    position: absolute;
+}
+
+.wrap-login100 {
+    display: contents !important;
+    flex-direction: row !important;
+}

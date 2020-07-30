@@ -1,5 +1,5 @@
 
-export interface MenuItems {
+export interface IMenuItems {
   name: string;
   path: string;
   icon: string;
