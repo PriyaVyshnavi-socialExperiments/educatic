@@ -15,7 +15,13 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: '../home/home.module#HomePageModule'
+        loadChildren: '../home/home.module#HomePageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+      },
+      {
+        path: 'profile',
+        loadChildren: '../../pages/user-profile/user-profile.module#UserProfilePageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
       },
       {
         path: 'schools',

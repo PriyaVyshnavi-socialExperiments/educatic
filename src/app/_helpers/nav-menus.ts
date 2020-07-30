@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MenuItems } from '../_models/menu-items';
+import { IMenuItems } from '../_models/menu-items';
 import { Role } from '../_models/role';
 import { AuthenticationService } from '../_services/authentication.service';
 
@@ -8,7 +8,7 @@ import { AuthenticationService } from '../_services/authentication.service';
   providedIn: 'root'
 })
 export class NavMenuHelper {
-  private menuItems: MenuItems[] = [];
+  public menuItems: IMenuItems[] = [];
   private userRole: string;
 
   private menuList = [
@@ -51,16 +51,17 @@ export class NavMenuHelper {
 
   constructor(private http: HttpClient, public auth: AuthenticationService) {
     this.auth.currentUser.subscribe(user => {
-      if (user.role) {
+      if (user?.role) {
         this.userRole = user.role;
+        this.menuItems = this.MenuList();
       }
     });
   }
 
-  public get MenuList(): MenuItems[] {
+  public MenuList(): IMenuItems[] {
     return this.menuList.map((menu) => {
       if (menu.roles.includes(Role[this.userRole])) {
-          const menuItem = {} as MenuItems;
+          const menuItem = {} as IMenuItems;
           menuItem.active = menu.active;
           menuItem.icon = menu.icon;
           menuItem.iconClass = menu.icon;

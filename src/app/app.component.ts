@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { isMobileDevice } from './_helpers';
 import { ApplicationInsightsService } from './_helpers/application-insights';
+import { SqliteStorageService } from './_services/sqlite.storage.service';
 
 @Component({
   selector: 'app-root',
@@ -11,19 +12,25 @@ import { ApplicationInsightsService } from './_helpers/application-insights';
   styleUrls: ['app.component.scss']
 })
 
-export class AppComponent implements OnInit {
-  navigate : any;
+export class AppComponent implements OnInit, AfterViewInit {
+  navigate: any;
   isMobileDevice: any;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private appInsightService: ApplicationInsightsService
+    private appInsightService: ApplicationInsightsService,
+    private sqlStorageService: SqliteStorageService
   ) {
     this.initializeApp();
   }
   ngOnInit(): void {
     this.appInsightService.logEvent('Application Loaded.');
+  }
+
+  async ngAfterViewInit() {
+    // Initialize the CapacitorDataStorageSQLite plugin
+    await this.sqlStorageService.init();
   }
 
   initializeApp() {
