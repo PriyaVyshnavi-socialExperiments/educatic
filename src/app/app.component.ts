@@ -4,8 +4,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { isMobileDevice } from './_helpers';
 import { ApplicationInsightsService } from './_helpers/application-insights';
-import { SqliteStorageService } from './_services/sqlite.storage.service';
-import { NetworkService } from './_services/network.service';
+import { SqliteStorageService } from './_services/sqlite-storage/sqlite.storage.service';
+import { NetworkService } from './_services/network/network.service';
 
 @Component({
   selector: 'app-root',

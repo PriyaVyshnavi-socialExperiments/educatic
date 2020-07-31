@@ -1,6 +1,6 @@
 {
   "name": "educati-app",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
@@ -31,14 +31,6 @@
     "@capacitor/android": "^2.3.0",
     "@capacitor/core": "2.3.0",
     "@capacitor/ios": "^2.3.0",
-    "@ckeditor/ckeditor5-angular": "^1.2.3",
-    "@ckeditor/ckeditor5-build-classic": "^19.0.2",
-    "@fullcalendar/angular": "^4.4.5-beta",
-    "@fullcalendar/core": "^4.4.2",
-    "@fullcalendar/daygrid": "^4.4.2",
-    "@fullcalendar/interaction": "^4.4.2",
-    "@fullcalendar/list": "^4.4.2",
-    "@fullcalendar/timegrid": "^4.4.2",
     "@ionic-native/app-center-analytics": "^5.27.0",
     "@ionic-native/core": "^5.27.0",
     "@ionic-native/splash-screen": "^5.27.0",

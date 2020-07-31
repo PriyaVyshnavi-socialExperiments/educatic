@@ -33,7 +33,7 @@
             ],
             "styles": [
               "./node_modules/bootstrap/dist/css/bootstrap.css",
-              "./node_modules/simple-line-icons/css/simple-line-icons.css",
+              // "./node_modules/simple-line-icons/css/simple-line-icons.css",
               "./node_modules/node-waves/dist/waves.css",
               "./node_modules/animate.css/animate.css",
               "./node_modules/morris.js/morris.css",

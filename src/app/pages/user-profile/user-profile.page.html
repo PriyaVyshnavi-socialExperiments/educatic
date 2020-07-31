@@ -8,73 +8,70 @@
 </ion-header>
 
 <ion-content>
+  <div class="md-form-backing"></div>
+  <!-- <img class="md-avatar" *ngIf="user.current?.image" [src]="user.current.image"> -->
+  <div class="md-avatar">{{GetInitials() | uppercase}}</div>
+
+  <!-- <label class="md-avatar-upload" role="button" tabindex="0" >
+      <input #fileInput type="file" class="hide" (change)="selectAvatar($event)" />
+      Upload Photo
+  </label> -->
+
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100">
-      
-        <form class="login100-form validate-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-          <!-- <ion-list>
-            <ion-item lines="none" detail="false" button>
-              <label class="md-avatar-upload" role="button" tabindex="0">
-                <input #fileInput type="file" class="hide"/>
-                Upload Photo
-            </label>
-            </ion-item>
-            <ion-item lines="none" detail="false" button>
-              <ion-avatar slot="start">
-                <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
-              </ion-avatar>
-            </ion-item>
-          </ion-list> -->
+        <form class="login100-form validate-form" [formGroup]="profileForm" (ngSubmit)="UpdateProfile()">
           <mat-form-field class="example-full-width" appearance="outline">
             <mat-label>First Name</mat-label>
-            <input matInput formControlName="firstname" required>
+            <input matInput formControlName="firstname" required autocomplete="off">
             <mat-icon matSuffix>
               <ion-icon name="person-circle-outline"></ion-icon>
             </mat-icon>
-            <mat-error *ngIf="loginForm.get('firstname').hasError('required')">
-              First name is required
+            <mat-error *ngIf="profileForm.get('firstname').hasError('required')">
+              A first name is required to proceed.
             </mat-error>
           </mat-form-field>
           <mat-form-field class="example-full-width" appearance="outline">
             <mat-label>Last Name</mat-label>
-            <input matInput formControlName="lastname" required>
+            <input matInput formControlName="lastname" required autocomplete="off">
             <mat-icon matSuffix>
               <ion-icon name="person-circle-outline"></ion-icon>
             </mat-icon>
-            <mat-error *ngIf="loginForm.get('lastname').hasError('required')">
-              Last name is required
+            <mat-error *ngIf="profileForm.get('lastname').hasError('required')">
+              A last name is required to proceed.
             </mat-error>
           </mat-form-field>
           <mat-form-field class="example-full-width" appearance="outline">
             <mat-label>Email</mat-label>
-            <input matInput formControlName="email" required>
+            <input matInput formControlName="email" required autocomplete="off">
             <mat-icon matSuffix>
               <ion-icon name="mail-outline"></ion-icon>
             </mat-icon>
-            <mat-error *ngIf="loginForm.get('email').hasError('required') || loginForm.get('email').touched">
-              Please enter a valid email address
+            <mat-error *ngIf="profileForm.get('email').hasError('required') || profileForm.get('email').touched">
+              A valid email address is required in order to proceed.
             </mat-error>
           </mat-form-field>
-          <mat-form-field class="example-full-width" appearance="outline">
+          <mat-form-field style="margin: .55em 0;" class="example-full-width" appearance="outline">
             <mat-label>Password</mat-label>
-            <input matInput formControlName="password" [type]="hide ? 'password' : 'text'" required>
-            <mat-icon matSuffix>   
+            <input matInput formControlName="password" placeholder="••••••••••••••••"
+              [type]="hide ? 'password' : 'text'" autocomplete="new-password">
+            <mat-icon matSuffix>
               <ion-icon name="key-outline"></ion-icon>
             </mat-icon>
-            <mat-error *ngIf="loginForm.get('password').hasError('required')">
-              Password is required
+            <mat-error
+              *ngIf="profileForm.get('password').invalid && (profileForm.get('password').dirty || profileForm.get('password').touched)">
+              A valid password must be at least seven characters and contain one number or special character.
             </mat-error>
           </mat-form-field>
           <mat-form-field class="example-full-width" appearance="outline">
             <mat-label>Confirm Password</mat-label>
-            <input matInput formControlName="cpassword" [type]="chide ? 'password' : 'text'" required>
-            <mat-icon matSuffix>   
+            <input matInput formControlName="cpassword" placeholder="••••••••••••••••"
+              [type]="chide ? 'password' : 'text'" autocomplete="off">
+            <mat-icon matSuffix>
               <ion-icon name="key-outline"></ion-icon>
             </mat-icon>
-            <mat-error *ngIf="loginForm.get('cpassword').hasError('required')">
-              Confirm Password is required
+            <mat-error *ngIf="profileForm.get('cpassword').validator">
+              Password and Confirm Password must be match.
             </mat-error>
           </mat-form-field>
           <div class="container-login100-form-btn">

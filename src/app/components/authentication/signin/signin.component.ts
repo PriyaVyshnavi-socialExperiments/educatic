@@ -5,7 +5,7 @@ import { AuthenticationService } from '../../../_services';
 import { LoginRequest } from '../../../_models';
 import { first } from 'rxjs/operators';
 import { ToastController } from '@ionic/angular';
-import { ErrorStateMatcherHelper } from '../../../_helpers';
+import { ErrorStateMatcherHelper } from '../../../_helpers/error-state-matcher';
 
 @Component({
   selector: 'app-signin',
@@ -56,10 +56,8 @@ export class SigninComponent implements OnInit {
         email: this.f.username.value,
         password: this.f.password.value
       };
-      this.authenticationService.login(this.loginRequest)
-        .pipe(first())
-        .subscribe(
-          data => {
+      this.authenticationService.Login(this.loginRequest)
+        .subscribe( (data) => {
             this.router.navigate([this.returnUrl]);
           },
           error => {

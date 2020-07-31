@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthenticationService, UserProfileService } from '../../_services';
+import { IUser, IUserProfile } from '../../_models';
+import { ConfirmedValidator } from '../../_helpers/confirmed.validator';
+import { getInitials } from '../../_helpers'
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-user-profile',
@@ -9,41 +14,115 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class UserProfilePage implements OnInit {
 
-  loginForm: FormGroup;
+  profileForm: FormGroup;
   submitted = false;
   returnUrl: string;
   hide = true;
   chide = true;
+  currentUser: IUser;
+
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private authenticationService: AuthenticationService,
+    private modalCtrl: ModalController,
+    private userProfilePage: UserProfileService
   ) { }
   ngOnInit() {
-    this.loginForm = this.formBuilder.group({
-      firstname: ['', Validators.required],
-      lastname: ['', Validators.required],
-      email: [
-        '',
-        [Validators.required, Validators.email, Validators.minLength(5)]
-      ],
-      password: ['', Validators.required],
-      cpassword: ['', Validators.required]
+    this.authenticationService.currentUser.subscribe((user) => {
+      this.currentUser = user;
     });
+
+    this.profileForm = this.formBuilder.group({
+      firstname: new FormControl(this.currentUser.firstName, [
+        Validators.required,
+        Validators.pattern(/.*\S.*/),
+        Validators.maxLength(50),
+      ]),
+      lastname: new FormControl(this.currentUser.lastName, [
+        Validators.required,
+        Validators.pattern(/.*\S.*/),
+        Validators.maxLength(50),
+      ]),
+      email: new FormControl(
+        this.currentUser.email,
+        [
+          Validators.required,
+          Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
+          Validators.maxLength(200),
+        ]),
+      password: new FormControl('',
+        [
+          Validators.pattern(/(?=.*[\d|\W])(?=.*[a-zA-Z]).{7,}/),
+          Validators.maxLength(25),
+        ]),
+      cpassword: new FormControl('', [
+        Validators.pattern(/(?=.*[\d|\W])(?=.*[a-zA-Z]).{7,}/),
+        Validators.maxLength(25),
+      ])
+    },
+      {
+        validator: ConfirmedValidator('password', 'cpassword')
+      });
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
   get f() {
-    return this.loginForm.controls;
+    return this.profileForm.controls;
   }
-  onSubmit() {
+  public UpdateProfile() {
     this.submitted = true;
     // stop here if form is invalid
-    if (this.loginForm.invalid) {
+    if (this.profileForm.invalid) {
       return;
     } else {
+      const userProfile = {
+        firstName: this.f.firstname.value,
+        lastName: this.f.lastname.value,
+        email: this.f.email.value,
+        password: this.f.password.value,
+        confirmPassword: this.f.cpassword.value
+      } as IUserProfile;
+      this.userProfilePage.UpdateUserProfile(userProfile).subscribe(() => {
+
+      });
       this.router.navigate(['/']);
     }
+  }
+
+  public GetInitials() {
+    return getInitials(`${this.currentUser.firstName}  ${this.currentUser.lastName}`)
+  }
+
+  public selectAvatar(event) {
+    const file = event.target.files[0];
+
+    if (!file.type || !file.type.match('image.*')) {
+      return;
+    }
+
+    /**
+     * We add the special class which can be used by the crop modal to adjust modal size.
+     */
+    // const modal = this.modalCtrl.create( 'CropModal', { image: event }, { cssClass: 'image-crop-modal' } );
+    // modal.present();
+
+    // modal.onDidDismiss( ( data ) => {
+    //     this.fileInput.nativeElement.value = '';
+
+    //     if ( !data ) {
+    //         return;
+    //     }
+    //     const formData = new FormData();
+    //     formData.append( 'avatarImage', data );
+    //     formData.append( 'uid', this.user.current.id );
+
+    //     this.api.uploadAvatar( formData ).pipe( take( 1 ) ).subscribe( () => {
+    //         this.user.update( true );
+    //     } );
+    //} );
+
   }
 
 }

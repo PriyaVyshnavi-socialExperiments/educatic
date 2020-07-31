@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject, merge, of, fromEvent, Observable } from 'rxjs';
 import { mapTo, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { Events } from './events.service';
+import { Events } from '../events/events.service';
 
 @Injectable({
     providedIn: 'root'

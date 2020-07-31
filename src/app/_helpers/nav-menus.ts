@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { IMenuItems } from '../_models/menu-items';
 import { Role } from '../_models/role';
-import { AuthenticationService } from '../_services/authentication.service';
+import { AuthenticationService } from '../_services/authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class NavMenuHelper {
   public menuItems: IMenuItems[] = [];
   private userRole: string;
@@ -49,7 +49,7 @@ export class NavMenuHelper {
     },
   ];
 
-  constructor(private http: HttpClient, public auth: AuthenticationService) {
+  constructor(private auth: AuthenticationService) {
     this.auth.currentUser.subscribe(user => {
       if (user?.role) {
         this.userRole = user.role;
