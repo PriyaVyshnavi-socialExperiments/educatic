@@ -78,14 +78,19 @@ export class UserProfilePage implements OnInit {
       return;
     } else {
       const userProfile = {
+        id: this.currentUser.id,
         firstName: this.f.firstname.value,
         lastName: this.f.lastname.value,
         email: this.f.email.value,
         password: this.f.password.value,
         confirmPassword: this.f.cpassword.value
       } as IUserProfile;
-      this.userProfilePage.UpdateUserProfile(userProfile).subscribe(() => {
 
+      this.currentUser.firstName = userProfile.firstName;
+      this.currentUser.lastName = userProfile.lastName;
+      this.currentUser.email = userProfile.email;
+      this.userProfilePage.UpdateUserProfile(userProfile, this.currentUser).subscribe((res) => {
+        console.log('REsult: ', res);
       });
       this.router.navigate(['/']);
     }

@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { HttpService } from '../../_helpers/http.client';
 import { map, finalize, catchError } from 'rxjs/operators';
-import { IUserProfile } from '../../_models';
+import { IUserProfile, IUser } from '../../_models';
 import { OfflineService } from '../offline/offline.service';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class UserProfileService extends OfflineService {
     super(injector, 'User');
   }
 
-  public UpdateUserProfile(userProfile: IUserProfile) {
+  public UpdateUserProfile(userProfile: IUserProfile, offlineUserData: IUser) {
     return this.http.Post<Response>(`/user/profile`, userProfile)
       .pipe(
         map(response => {
@@ -25,7 +25,7 @@ export class UserProfileService extends OfflineService {
           }
           return response;
         }),
-        finalize(() => this.SetOfflineData('current-user', userProfile))
+        finalize(() => this.SetOfflineData('current-user', offlineUserData))
       );
   }
 }
