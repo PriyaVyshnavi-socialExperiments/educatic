@@ -24,8 +24,8 @@ export class AuthenticationService extends OfflineService {
         private appInsightsService: ApplicationInsightsService,
         public injector: Injector,
     ) {
-        super(injector, 'User');
-        this.GetOfflineData('current-user').then((user) => {
+        super(injector);
+        this.GetOfflineData('User', 'current-user').then((user) => {
             this.currentUserSubject = new BehaviorSubject<IUser>(user);
             this.currentUser = this.currentUserSubject.asObservable();
             this.ready.next(user);
@@ -43,7 +43,7 @@ export class AuthenticationService extends OfflineService {
                 // login successful if there's a jwt token in the response
                 if (response && response.token) {
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
-                    this.SetOfflineData('current-user', response);
+                    this.SetOfflineData('User', 'current-user', response);
                     this.currentUserSubject.next(response);
                     this.ready.next(response);
                     this.appInsightsService.setUserId(response.id)
@@ -53,7 +53,7 @@ export class AuthenticationService extends OfflineService {
     }
 
     public Logout() {
-        this.RemoveOfflineData('current-user');
+        this.RemoveOfflineData('User', 'current-user');
         this.currentUserSubject.next(null);
         this.ready.next(undefined);
         this.appInsightsService.clearUserId();

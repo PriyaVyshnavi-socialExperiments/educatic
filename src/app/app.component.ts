@@ -6,6 +6,7 @@ import { isMobileDevice } from './_helpers';
 import { ApplicationInsightsService } from './_helpers/application-insights';
 import { SqliteStorageService } from './_services/sqlite-storage/sqlite.storage.service';
 import { NetworkService } from './_services/network/network.service';
+import { SyncOfflineService } from './_services/sync-offline/sync-offline.service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     private statusBar: StatusBar,
     private appInsightService: ApplicationInsightsService,
     private sqlStorageService: SqliteStorageService,
-    private networkService: NetworkService
+    private networkService: NetworkService,
+    private syncOffline: SyncOfflineService
   ) {
     this.initializeApp();
   }
@@ -31,8 +33,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
       /** Monitor the network status and send offline data to API when connection is restored */
       this.networkService.online.subscribe( ( status ) => {
-        if ( !status ) {
-           console.log('Offline Network');
+        if (status) {
+           this.syncOffline.SyncOffline();
         }
     } );
   }
