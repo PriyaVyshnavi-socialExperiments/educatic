@@ -1,9 +1,8 @@
 ﻿import { Role } from '.';
 
 export interface IUser {
-    id: number;
-    username: string;
-    password: string;
+    id: string;
+    email: string;
     firstName: string;
     lastName: string;
     role: Role;

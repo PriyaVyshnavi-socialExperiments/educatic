@@ -3,7 +3,7 @@ import { Plugins } from '@capacitor/core';
 import * as CDSSPlugin from 'capacitor-data-storage-sqlite';
 const { CapacitorDataStorageSqlite, Device } = Plugins;
 
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterEvent } from '@angular/router';
 import { AuthenticationService } from '../../_services';
-import { NavMenuHelper } from '../../_helpers';
+import { NavMenuHelper } from '../../_helpers/nav-menus';
 
 @Component({
   selector: 'app-menu',
@@ -36,7 +36,7 @@ export class MenuPage implements OnInit {
     );
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
       if (this.currentUser) {
@@ -45,14 +45,14 @@ export class MenuPage implements OnInit {
     });
   }
 
-  logout() {
-    this.authenticationService.logout();
+  public Logout() {
+    this.authenticationService.Logout();
     this.menuList = [];
     this.router.navigate(['/login']);
   }
 
-  ToggleDarkMode() {
+  public ToggleDarkMode() {
     document.body.classList.toggle('dark', this.dark);
   }
-
+  
 }

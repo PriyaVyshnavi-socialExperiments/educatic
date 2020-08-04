@@ -4,7 +4,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { isMobileDevice } from './_helpers';
 import { ApplicationInsightsService } from './_helpers/application-insights';
-import { SqliteStorageService } from './_services/sqlite.storage.service';
+import { SqliteStorageService } from './_services/sqlite-storage/sqlite.storage.service';
+import { NetworkService } from './_services/network/network.service';
 
 @Component({
   selector: 'app-root',
@@ -20,12 +21,20 @@ export class AppComponent implements OnInit, AfterViewInit {
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private appInsightService: ApplicationInsightsService,
-    private sqlStorageService: SqliteStorageService
+    private sqlStorageService: SqliteStorageService,
+    private networkService: NetworkService
   ) {
     this.initializeApp();
   }
   ngOnInit(): void {
     this.appInsightService.logEvent('Application Loaded.');
+
+      /** Monitor the network status and send offline data to API when connection is restored */
+      this.networkService.online.subscribe( ( status ) => {
+        if ( !status ) {
+           console.log('Offline Network');
+        }
+    } );
   }
 
   async ngAfterViewInit() {
