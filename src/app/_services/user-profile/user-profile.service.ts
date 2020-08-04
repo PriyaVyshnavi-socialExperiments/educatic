@@ -14,18 +14,24 @@ export class UserProfileService extends OfflineService {
     private http: HttpService,
     public injector: Injector
   ) {
-    super(injector, 'User');
+    super(injector);
   }
 
   public UpdateUserProfile(userProfile: IUserProfile, offlineUserData: IUser) {
-    return this.http.Post<Response>(`/user/profile`, userProfile)
+    return this.SyncUserProfile(userProfile)
       .pipe(
         map(response => {
           if (response) {
           }
           return response;
         }),
-        finalize(() => this.SetOfflineData('current-user', offlineUserData))
+        finalize(() => {
+          this.SetOfflineData('User', 'current-user', offlineUserData)
+        })
       );
+  }
+
+  public SyncUserProfile(userProfile: IUserProfile) {
+    return this.http.Post<Response>(`/user/profile`, userProfile);
   }
 }

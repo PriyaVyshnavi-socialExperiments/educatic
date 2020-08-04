@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject, merge, of, fromEvent, Observable } from 'rxjs';
+import { ReplaySubject, merge, of, fromEvent, Observable, BehaviorSubject } from 'rxjs';
 import { mapTo, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Events } from '../events/events.service';
 
@@ -13,6 +13,7 @@ export class NetworkService {
      * the network is up/down.
      */
     public online: ReplaySubject<boolean> = new ReplaySubject( 1 );
+    private status: BehaviorSubject<boolean> = new BehaviorSubject(true);
 
     private initialized = false;
 
@@ -35,10 +36,14 @@ export class NetworkService {
         ).subscribe( ( result ) => {
             if ( this.initialized || ( !this.initialized && !result ) ) {
                 this.online.next( result );
+                this.status.next(result);
             }
-
             this.initialized = true;
         } );
 
     }
+
+    public getCurrentNetworkStatus() {
+        return this.status.getValue();
+      }
 }
