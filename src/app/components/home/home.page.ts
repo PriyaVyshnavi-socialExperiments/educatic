@@ -17,12 +17,10 @@ export class HomePage implements OnInit {
   ) { }
 
   public ngOnInit() {
-    this.authenticationService.Refresh();
     this.isLoggedIn = this.authenticationService.currentUser ? true : false;
     this.isMobileDevice = isMobileDevice;
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
     });
   }
-
 }

@@ -37,7 +37,6 @@ export class MenuPage implements OnInit {
   }
 
   public ngOnInit() {
-    this.authenticationService.Refresh();
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
       if (this.currentUser) {

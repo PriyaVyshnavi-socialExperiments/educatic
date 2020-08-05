@@ -1,11 +1,13 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { HttpClient,  HttpRequest, HttpEvent, HttpEventType } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpEvent, HttpEventType } from '@angular/common/http';
 import { IRequestOptions } from '../../_models/request-options';
 import { Events } from '../events/events.service';
 import { ICancelableObservable } from '../../_models/cancelable-observable';
 import { OfflineSyncManagerService } from '../offline-sync-manager/offline-sync-manager.service';
+import { ToastController } from '@ionic/angular';
+import { OfflineSyncURL } from '../../_models';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +24,7 @@ export class HttpService {
   public constructor(
     public http: HttpClient,
     private offlineSyncManager: OfflineSyncManagerService,
+    public toastController: ToastController,
     private events: Events) {
   }
 
@@ -101,9 +104,12 @@ export class HttpService {
             observer.complete();
           },
           (err) => {
-            console.log('OfflineError: ', err);
+            console.log('OfflineError: ', OfflineSyncURL[endPoint]);
 
-            this.offlineSyncManager.StoreRequest(endPoint, method, params);
+            if ((Object as any).values(OfflineSyncURL).includes(endPoint)) {
+              this.presentToast();
+              this.offlineSyncManager.StoreRequest(endPoint, method, params);
+            }
 
             /**
              * If an error occurs fire an event on the observer. If the error
@@ -130,5 +136,19 @@ export class HttpService {
 
     observable.cancel = () => request.unsubscribe();
     return observable;
+  }
+
+  private async presentToast() {
+    const toast = await this.toastController.create({
+      message: 'You are currently offline however you may continue working on this device.',
+      position: 'top',
+      duration: 5000,
+      buttons: [{
+        text: 'Close',
+        role: 'cancel',
+      }
+      ]
+    });
+    toast.present();
   }
 }
