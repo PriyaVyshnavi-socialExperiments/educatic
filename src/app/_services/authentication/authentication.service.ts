@@ -57,11 +57,9 @@ export class AuthenticationService extends OfflineService {
 
     public Refresh() {
         this.GetOfflineData('User', 'current-user').then((user) => {
-            if(user) {
             this.currentUserSubject = new BehaviorSubject<IUser>(user);
             this.currentUser = this.currentUserSubject.asObservable();
             this.ready.next(user);
-            }
         });
     }
 }
