@@ -20,16 +20,9 @@ export class OfflineService {
     const openStore = this.sqlStorageService.openStore(table);
     if (openStore) {
       if (this.sqlStorageService.isKey(key)) {
-        await this.sqlStorageService.removeItem(key);
+          this.sqlStorageService.removeItem(key);
       }
-      await this.sqlStorageService.setItem(key, JSON.stringify(value)).then(() => {
-        /** Check the network status and send offline data to API when connection is restored */
-        if (!this.networkService.getCurrentNetworkStatus()) {
-          this.offlineKeyValue = {key: table, value: key};
-          this.OfflineStore(this.offlineKeyValue);
-        }
-      })
-
+      await this.sqlStorageService.setItem(key, JSON.stringify(value));
     } else {
       throw new Error(`SetOfflineData(${key}): CapacitorDataStorageSqlite Service is not initialized.`);
     }
@@ -38,10 +31,9 @@ export class OfflineService {
   public async GetOfflineData(table: string, key: string) {
     const openStore = this.sqlStorageService.openStore(table);
     if (openStore) {
-      const item = await this.sqlStorageService.getItem(key).then(value => {
+      return await this.sqlStorageService.getItem(key).then(value => {
         return JSON.parse(value);
       });
-      return item;
     } else {
       throw new Error(`GetOfflineData(${key}): CapacitorDataStorageSqlite Service is not initialized.`);
     }
@@ -56,20 +48,4 @@ export class OfflineService {
     }
   }
 
-  private OfflineStore(offlineKeyValue:  KeyValue<string, string>) {
-    const openStore = this.sqlStorageService.openStore('OfflineSyncDataKeys');
-    if (openStore) {
-      let data: KeyValue<string, string>[] = [];
-      this.sqlStorageService.getItem('offline-data-key').then(item => {
-        if (item) {
-          const offlineKEyValueData = JSON.parse(item) as KeyValue<string, string>[];
-          data = [... offlineKEyValueData];
-        }
-      });
-      data.push(offlineKeyValue);
-      data = [... new Set(data)];
-
-      this.sqlStorageService.setItem('offline-data-key', JSON.stringify(data));
-    }
-  }
 }
