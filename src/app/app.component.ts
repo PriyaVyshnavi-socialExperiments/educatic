@@ -6,7 +6,7 @@ import { isMobileDevice } from './_helpers';
 import { ApplicationInsightsService } from './_helpers/application-insights';
 import { SqliteStorageService } from './_services/sqlite-storage/sqlite.storage.service';
 import { NetworkService } from './_services/network/network.service';
-import { SyncOfflineService } from './_services/sync-offline/sync-offline.service';
+import { OfflineSyncManagerService } from './_services/offline-sync-manager/offline-sync-manager.service';
 
 @Component({
   selector: 'app-root',
@@ -24,19 +24,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     private appInsightService: ApplicationInsightsService,
     private sqlStorageService: SqliteStorageService,
     private networkService: NetworkService,
-    private syncOffline: SyncOfflineService
+    private offlineSyncManager: OfflineSyncManagerService,
   ) {
     this.initializeApp();
   }
   ngOnInit(): void {
     this.appInsightService.logEvent('Application Loaded.');
-
-      /** Monitor the network status and send offline data to API when connection is restored */
-      this.networkService.online.subscribe( ( status ) => {
-        if (status) {
-           this.syncOffline.SyncOffline();
-        }
-    } );
   }
 
   async ngAfterViewInit() {
@@ -49,7 +42,13 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       this.isMobileDevice = isMobileDevice;
-      console.log('isMobileDevice: ', isMobileDevice);
+
+       /** Monitor the network status and send offline data to API when connection is restored */
+       this.networkService.online.subscribe( ( status ) => {
+        if (status) {
+           this.offlineSyncManager.CheckForEvents().subscribe();
+        }
+    } );
     });
   }
 }

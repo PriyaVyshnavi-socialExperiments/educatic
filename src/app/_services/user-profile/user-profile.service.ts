@@ -1,8 +1,9 @@
 import { Injectable, Injector } from '@angular/core';
-import { HttpService } from '../../_helpers/http.client';
+import { HttpService } from '../http-client/http.client';
 import { map, finalize, catchError } from 'rxjs/operators';
 import { IUserProfile, IUser } from '../../_models';
 import { OfflineService } from '../offline/offline.service';
+import { from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class UserProfileService extends OfflineService {
   }
 
   public UpdateUserProfile(userProfile: IUserProfile, offlineUserData: IUser) {
-    return this.SyncUserProfile(userProfile)
+    return this.http.Post<Response>(`/user/profile`, userProfile)
       .pipe(
         map(response => {
           if (response) {
@@ -26,12 +27,8 @@ export class UserProfileService extends OfflineService {
           return response;
         }),
         finalize(() => {
-          this.SetOfflineData('User', 'current-user', offlineUserData)
+          this.SetOfflineData('User', 'current-user', offlineUserData);
         })
       );
-  }
-
-  public SyncUserProfile(userProfile: IUserProfile) {
-    return this.http.Post<Response>(`/user/profile`, userProfile);
   }
 }

@@ -37,6 +37,7 @@ export class MenuPage implements OnInit {
   }
 
   public ngOnInit() {
+    this.authenticationService.Refresh();
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
       if (this.currentUser) {
@@ -54,5 +55,4 @@ export class MenuPage implements OnInit {
   public ToggleDarkMode() {
     document.body.classList.toggle('dark', this.dark);
   }
-  
 }
