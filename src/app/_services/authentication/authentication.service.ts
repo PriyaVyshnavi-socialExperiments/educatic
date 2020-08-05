@@ -3,9 +3,9 @@ import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { IUser, LoginRequest } from '../../_models';
-import { HttpService } from '../http-client/http.client';
 import { ApplicationInsightsService } from '../../_helpers/application-insights';
 import { OfflineService } from '../offline/offline.service';
+import { HttpService } from '../http-client/http.client';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends OfflineService {
@@ -25,7 +25,11 @@ export class AuthenticationService extends OfflineService {
         public injector: Injector,
     ) {
         super(injector);
-        this.Refresh();
+        this.GetOfflineData('User', 'current-user').then((user) => {
+            this.currentUserSubject = new BehaviorSubject<IUser>(user);
+            this.currentUser = this.currentUserSubject.asObservable();
+            this.ready.next(user);
+        });
     }
 
     public get currentUserValue(): IUser {
@@ -53,13 +57,5 @@ export class AuthenticationService extends OfflineService {
         this.currentUserSubject.next(null);
         this.ready.next(undefined);
         this.appInsightsService.clearUserId();
-    }
-
-    public Refresh() {
-        this.GetOfflineData('User', 'current-user').then((user) => {
-            this.currentUserSubject = new BehaviorSubject<IUser>(user);
-            this.currentUser = this.currentUserSubject.asObservable();
-            this.ready.next(user);
-        });
     }
 }

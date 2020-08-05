@@ -72,6 +72,7 @@ export class SigninComponent implements OnInit {
       message: 'The email address or password are incorrect, or no account exists for this email. Sign up for an account below.',
       position: 'top',
       duration: 10000,
+      color: 'danger',
       buttons: [{
         text: 'Close',
         role: 'cancel',

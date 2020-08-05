@@ -5,7 +5,7 @@ import { AuthenticationService, UserProfileService } from '../../_services';
 import { IUser, IUserProfile } from '../../_models';
 import { ConfirmedValidator } from '../../_helpers/confirmed.validator';
 import { getInitials } from '../../_helpers'
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-user-profile',
@@ -27,7 +27,9 @@ export class UserProfilePage implements OnInit {
     private router: Router,
     private authenticationService: AuthenticationService,
     private modalCtrl: ModalController,
-    private userProfilePage: UserProfileService
+    private userProfilePage: UserProfileService,
+    public toastController: ToastController
+
   ) { }
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
@@ -90,9 +92,8 @@ export class UserProfilePage implements OnInit {
       this.currentUser.lastName = userProfile.lastName;
       this.currentUser.email = userProfile.email;
       this.userProfilePage.UpdateUserProfile(userProfile, this.currentUser).subscribe((res) => {
-        console.log('REsult: ', res);
+        this.presentToast();
       });
-      this.router.navigate(['/']);
     }
   }
 
@@ -128,6 +129,21 @@ export class UserProfilePage implements OnInit {
     //     } );
     //} );
 
+  }
+
+  private async presentToast() {
+    const toast = await this.toastController.create({
+      message: 'Profile changed successfully..',
+      position: 'bottom',
+      duration: 10000,
+      color: 'success',
+      buttons: [{
+        text: 'Close',
+        role: 'cancel',
+      }
+      ]
+    });
+    toast.present();
   }
 
 }
