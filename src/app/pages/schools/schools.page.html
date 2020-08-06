@@ -1,12 +1,44 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>schools</ion-title>
+    <ion-item lines="none" detail="false">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
+    <ion-title>Schools</ion-title>
+    <ion-button slot="end" color="secondary" shape="round" fill="outline"  routerLink="/school-add">
+      New school
+    </ion-button>
+  </ion-item>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  
 
+  <ion-grid class="grid">
+    <ion-row class="ion-justify-content-center">
+      <ion-card *ngFor="let school of schools" class="item-card">
+        <ion-item>
+          <ion-avatar slot="start">
+            <img src="../../../assets/images/school-image.jpg">
+          </ion-avatar>
+          <ion-label>
+            <h3>{{school.name}}</h3>
+            <p>Dec 10, 2019</p>
+          </ion-label>
+          <ion-icon name="ellipsis-vertical-outline" (click)="actionPopover($event)"  slot="end"></ion-icon>
+        </ion-item>
+      
+        <img  src="../../../assets/images/school-image.jpg" alt="ion">
+        <ion-card-header>
+          <ion-card-title>{{school.name}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+         <p> {{school.address1}}  {{school.address1}} </p> 
+         <p>{{school.city}},  {{school.state}}, {{school.country}}</p>
+         <p>{{school.zip}}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-row>
+</ion-grid>
 </ion-content>
