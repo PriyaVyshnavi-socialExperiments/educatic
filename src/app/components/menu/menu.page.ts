@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterEvent } from '@angular/router';
 import { AuthenticationService } from '../../_services';
 import { NavMenuHelper } from '../../_helpers/nav-menus';
+import { ISchool } from 'src/app/_models';
+import { SchoolService } from 'src/app/_services/school/school.service';
 
 @Component({
   selector: 'app-menu',
@@ -15,10 +17,12 @@ export class MenuPage implements OnInit {
   isRemainder = 0;
   dark = false;
   menuList: any;
+  schoolDetails: ISchool;
 
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService,
+    private schoolService: SchoolService,
     private navMenuHelper: NavMenuHelper) {
     this.router.events.subscribe((event: RouterEvent) => {
       this.activePath = event.url;
@@ -42,6 +46,10 @@ export class MenuPage implements OnInit {
       if (this.currentUser) {
         this.menuList = this.navMenuHelper.menuItems.filter((menu) => menu !== undefined);
       }
+    });
+
+    this.schoolService.getSchoolDetails().subscribe((school) => {
+      this.schoolDetails = school;
     });
   }
 

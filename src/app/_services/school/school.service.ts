@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, EventEmitter } from '@angular/core';
 import { HttpService } from '../http-client/http.client';
 import { OfflineService } from '../offline/offline.service';
 import { tap } from 'rxjs/operators';
@@ -12,7 +12,8 @@ import { NetworkService } from '../../_services/network/network.service';
   providedIn: 'root'
 })
 export class SchoolService extends OfflineService {
-
+  public detailsSchool: EventEmitter<ISchool> = new EventEmitter();
+  
   constructor(
     private http: HttpService,
     public injector: Injector,
@@ -46,4 +47,14 @@ export class SchoolService extends OfflineService {
         })
       );
   }
+
+  /** Set the school details which will emit the the current item to display in right side menu */
+  public setSchoolDetails( school ) {
+    this.detailsSchool.emit( school );
+ }
+
+ /** Will returns the school details to display in right side menu */
+ public getSchoolDetails() {
+     return this.detailsSchool;
+ }
 }

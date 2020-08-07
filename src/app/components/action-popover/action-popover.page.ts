@@ -8,7 +8,7 @@ import { NavParams, PopoverController } from '@ionic/angular';
 })
 export class ActionPopoverPage implements OnInit {
  /** The current item the options are being shown for */
- public currentItem: any;
+ public currentId: any;
 
  /** Available options on popup */
  public showMoreOptions: Array<{
@@ -25,22 +25,22 @@ constructor(
 ngOnInit() {}
 
 public ionViewWillEnter() {
-  this.currentItem = this.navParams.get( 'data' );
+  this.currentId = this.navParams.get( 'id' );
 
   /** Defines the available options */
   this.showMoreOptions = [
       {
-          icon: 'create-outline',
+          icon: 'create',
           id: 'edit',
           name: 'Update',
       },
       {
-        icon: 'trash-outline',
+        icon: 'trash',
         id: 'delete',
         name: 'Delete',
     },
     {
-      icon: 'reader-outline',
+      icon: 'information-circle',
       id: 'details',
       name: 'Details',
   },
@@ -48,9 +48,10 @@ public ionViewWillEnter() {
 }
 
 /** Dismiss the popover with the selected option */
-public selectOption( option ) {
+public selectOption( option, currentId ) {
   this.popoverController.dismiss( {
       selectedOption: option,
+      currentId,
   } );
 }
 
