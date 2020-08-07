@@ -43,7 +43,7 @@ export class NetworkService {
 
     }
 
-    public getCurrentNetworkStatus() {
+    public IsOnline() {
         return this.status.getValue();
       }
 }

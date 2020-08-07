@@ -7,6 +7,8 @@ export * from './login-request';
 export * from './user-profile';
 export * from './offline-storage-request';
 export * from './offline-sync-urls';
+export * from './school';
+export * from './country-state-city';
 
 
 

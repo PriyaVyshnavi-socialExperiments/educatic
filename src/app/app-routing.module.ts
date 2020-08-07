@@ -15,7 +15,12 @@ const routes: Routes = [
       import('./components/authentication/authentication.module').then(
         m => m.AuthenticationModule
       )
+  },  {
+    path: 'action-popover',
+    loadChildren: () => import('./components/action-popover/action-popover.module').then( m => m.ActionPopoverPageModule)
   }
+
+
 ];
 
 @NgModule({
