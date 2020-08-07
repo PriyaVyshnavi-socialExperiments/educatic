@@ -1,87 +1,106 @@
 <ion-app>
   <ion-split-pane contentId="main-content">
-  <ion-menu contentId="main-content" side="start">
-    <ion-header>
-      <ion-toolbar>
-        <ion-list>
-          <ion-item lines="none" detail="false" button>
-            <ion-avatar slot="start">
-               <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y" > 
-            </ion-avatar>
-            <ion-label>
-              <p>Welcome</p>
-              <h3>{{ currentUser.firstName | titlecase }}   {{  currentUser.lastName | titlecase }} ({{ currentUser.role | titlecase }})</h3>
-              <p>{{ currentUser.email }}</p>
-            </ion-label>
-          </ion-item>
-          <ion-item slot="end" lines="none" detail="false">
-            <ion-button color="secondary" shape="round" fill="outline"  routerLink="/profile">
-              Profile
-            </ion-button>
-            <ion-button color="secondary" slot="end" (click)="Logout()"  shape="round" fill="outline">
-              Logout
-            </ion-button>
-          </ion-item>
-        </ion-list>
-      </ion-toolbar>
-    </ion-header>
-   
-    <ion-content>
-      <ion-menu-toggle auto-hide="false"  *ngFor="let menu of menuList; let i = index">
-        <ion-list lines="none">
-          <ion-item [routerLink]="menu.path">
-            <ion-icon [name]="menu.icon" slot="start"></ion-icon>
-            <ion-label>
-              {{menu.name}}
-            </ion-label>
-          </ion-item>
-        </ion-list>
-      </ion-menu-toggle>
-      <ion-list>
-        <ion-item lines="none">
-          <ion-icon slot="start" name="moon"></ion-icon>
-          <ion-label>Dark mode</ion-label>
-          <ion-toggle [(ngModel)]="dark" (ionChange)="ToggleDarkMode()"></ion-toggle>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
+    <ion-menu contentId="main-content" side="start">
+      <ion-header>
+        <ion-toolbar>
+          <ion-list>
+            <ion-item lines="none" detail="false" button>
+              <ion-avatar slot="start">
+                <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
+              </ion-avatar>
+              <ion-label>
+                <p>Welcome</p>
+                <h3>{{ currentUser.firstName | titlecase }} {{  currentUser.lastName | titlecase }}
+                  ({{ currentUser.role | titlecase }})</h3>
+                <p>{{ currentUser.email }}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item slot="end" lines="none" detail="false">
+              <ion-button color="secondary" shape="round" fill="outline" routerLink="/profile">
+                Profile
+              </ion-button>
+              <ion-button color="secondary" slot="end" (click)="Logout()" shape="round" fill="outline">
+                Logout
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-toolbar>
+      </ion-header>
 
-  <!-- School details right side menu -->
-  <ion-menu *ngIf="schoolDetails" side="end" type="push" contentId="main-content"  type="overlay">
-    <ion-header>
-      <ion-toolbar color="danger">
-        <ion-title>School Details</ion-title>
-      </ion-toolbar>
-    </ion-header>
+      <ion-content>
+        <div *ngFor="let menu of menuList; let i = index">
+          <ion-menu-toggle *ngIf="menu.path" auto-hide="false">
+            <ion-list lines="none">
+              <ion-item [routerLink]="menu.path" [class.active-menu]="activePath === menu.path">
+                <ion-icon [name]="menu.icon" slot="start"></ion-icon>
+                <ion-label>{{menu.name}}</ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-menu-toggle>
+
+          <ion-item *ngIf="menu.children?.length>0" (click)="menu.open = !menu.open" [class.active-parent]="menu.open"
+            details="false"  lines="none">
+            <ion-icon [name]="menu.icon" slot="start"></ion-icon>
+            <ion-icon name="chevron-forward-circle" slot="end" *ngIf="!menu.open"></ion-icon>
+            <ion-icon name="chevron-down-circle" slot="end" *ngIf="menu.open"></ion-icon>
+            <ion-label>{{menu.name}}</ion-label>
+          </ion-item>
+
+          <ion-list *ngIf="menu.open" lines="none">
+            <ion-menu-toggle auto-hide="false">
+                <ion-item class="sub-item" *ngFor="let sub of menu.children"  [routerLink]="sub.path" [class.active-menu]="activePath === sub.path">
+                  <ion-icon [name]="sub.icon" slot="start"></ion-icon>
+                  <ion-label>{{sub.name}}</ion-label>
+                </ion-item>
+            </ion-menu-toggle>
+          </ion-list>
+        </div>
+
+        <ion-list>
+          <ion-item lines="none">
+            <ion-icon slot="start" name="moon"></ion-icon>
+            <ion-label>Dark mode</ion-label>
+            <ion-toggle [(ngModel)]="dark" (ionChange)="ToggleDarkMode()"></ion-toggle>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+
+    <!-- School details right side menu -->
+    <ion-menu *ngIf="schoolDetails" side="end" type="push" contentId="main-content" type="overlay">
+      <ion-header>
+        <ion-toolbar color="danger">
+          <ion-title>School Details</ion-title>
+        </ion-toolbar>
+      </ion-header>
       <ion-content *ngIf="schoolDetails">
-        <img  src="../../../assets/images/school-image.jpg" alt="ion">
+        <img src="../../../assets/images/school-image.jpg" alt="ion">
         <h5 padding-left padding-right text-center>{{ schoolDetails.name | uppercase }}</h5>
         <ion-grid text-center>
-            <ion-row>
-                <ion-col class="bold">Address</ion-col>
-                <ion-col>{{ schoolDetails.address1 | titlecase }} {{ schoolDetails.address2 }}</ion-col>
-            </ion-row>
-            <ion-row>
-                <ion-col class="bold">Country</ion-col>
-                <ion-col>{{ schoolDetails.country | titlecase}}</ion-col>
-            </ion-row>
-            <ion-row>
-                <ion-col class="bold">State</ion-col>
-                <ion-col>{{ schoolDetails.state | titlecase }}</ion-col>
-            </ion-row>
-            <ion-row>
-                <ion-col class="bold">City</ion-col>
-                <ion-col>{{ schoolDetails.city | titlecase }}</ion-col>
-            </ion-row>
-            <ion-row>
-                <ion-col class="bold">Zip Code</ion-col>
-                <ion-col>{{ schoolDetails.zip }}</ion-col>
-            </ion-row>
+          <ion-row>
+            <ion-col class="bold">Address</ion-col>
+            <ion-col>{{ schoolDetails.address1 | titlecase }} {{ schoolDetails.address2 }}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="bold">Country</ion-col>
+            <ion-col>{{ schoolDetails.country | titlecase}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="bold">State</ion-col>
+            <ion-col>{{ schoolDetails.state | titlecase }}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="bold">City</ion-col>
+            <ion-col>{{ schoolDetails.city | titlecase }}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="bold">Zip Code</ion-col>
+            <ion-col>{{ schoolDetails.zip }}</ion-col>
+          </ion-row>
         </ion-grid>
-    </ion-content>
-  </ion-menu>
-  <ion-router-outlet id="main-content" main>
-  </ion-router-outlet>
-</ion-split-pane>
+      </ion-content>
+    </ion-menu>
+    <ion-router-outlet id="main-content" main>
+    </ion-router-outlet>
+  </ion-split-pane>
 </ion-app>
