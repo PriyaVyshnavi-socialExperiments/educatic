@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ISchool } from '../../_models';
 import { CountryHelper } from '../../_helpers/countries';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-school-add',
@@ -15,15 +18,22 @@ export class SchoolAddPage implements OnInit {
   stateInfo: any[] = [];
   countryInfo: any[] = [];
   cityInfo: any[] = [];
+  state$: Observable<object>;
 
   constructor(
     private formBuilder: FormBuilder,
     private countryHelper: CountryHelper,
+    public activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit() {
 
     this.getCountries();
+    this.activatedRoute.paramMap
+    .pipe(map(() => window.history.state))
+    .subscribe((state) => {
+       this.school = state?.currentSchool as ISchool
+      });
 
     this.schoolForm = this.formBuilder.group({
       name: new FormControl(this.school?.name, [
@@ -68,7 +78,6 @@ export class SchoolAddPage implements OnInit {
     subscribe(
       data => {
         this.countryInfo=data.Countries;
-        console.log('Data:', this.countryInfo);
       },
       err => console.log(err),
       () => console.log('complete')
@@ -79,11 +88,9 @@ export class SchoolAddPage implements OnInit {
     console.log(countryValue);
     this.stateInfo=this.countryInfo[countryValue.value].States;
     this.cityInfo=this.stateInfo[0].Cities;
-    console.log(this.cityInfo);
   }
 
   onChangeState(stateValue) {
     this.cityInfo=this.stateInfo[stateValue.value].Cities;
-    //console.log(this.cityInfo);
   }
 }

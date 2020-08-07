@@ -33,6 +33,10 @@ const routes: Routes = [
         loadChildren: () => import('../../pages/school-add/school-add.module').then( m => m.SchoolAddPageModule)
       },
       {
+        path: 'school-edit',
+        loadChildren: () => import('../../pages/school-add/school-add.module').then( m => m.SchoolAddPageModule)
+      },
+      {
         path: 'users',
         loadChildren: '../../pages/users/users.module#UsersPageModule',
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }

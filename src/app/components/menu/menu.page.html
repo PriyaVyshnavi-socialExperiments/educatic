@@ -46,9 +46,42 @@
       </ion-list>
     </ion-content>
   </ion-menu>
-  
+
+  <!-- School details right side menu -->
+  <ion-menu side="end" type="push" contentId="main-content"  type="overlay">
+    <ion-header>
+      <ion-toolbar color="danger">
+        <ion-title>School Details</ion-title>
+      </ion-toolbar>
+    </ion-header>
+      <ion-content *ngIf="schoolDetails">
+        <img  src="../../../assets/images/school-image.jpg" alt="ion">
+        <h5 padding-left padding-right text-center>{{ schoolDetails.name | uppercase }}</h5>
+        <ion-grid text-center>
+            <ion-row>
+                <ion-col class="bold">Address</ion-col>
+                <ion-col>{{ schoolDetails.address1 | titlecase }} {{ schoolDetails.address2 }}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col class="bold">Country</ion-col>
+                <ion-col>{{ schoolDetails.country | titlecase}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col class="bold">State</ion-col>
+                <ion-col>{{ schoolDetails.state | titlecase }}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col class="bold">City</ion-col>
+                <ion-col>{{ schoolDetails.city | titlecase }}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col class="bold">Zip Code</ion-col>
+                <ion-col>{{ schoolDetails.zip }}</ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-content>
+  </ion-menu>
   <ion-router-outlet id="main-content" main>
-   
   </ion-router-outlet>
 </ion-split-pane>
 </ion-app>
