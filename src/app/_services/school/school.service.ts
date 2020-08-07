@@ -23,7 +23,7 @@ export class SchoolService extends OfflineService {
   }
 
   public GetSchools() {
-    if (!this.network.IsOnline) {
+    if (!this.network.IsOnline()) {
       return from(this.GetOfflineData('School', 'school-list')).pipe(
         tap(response => {
           if (response && response.length > 0) {

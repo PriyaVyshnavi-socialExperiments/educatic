@@ -29,11 +29,11 @@ const routes: Routes = [
         data: { roles: [Role.SuperAdmin] }
       },
       {
-        path: 'school-add',
+        path: 'school/add',
         loadChildren: () => import('../../pages/school-add/school-add.module').then( m => m.SchoolAddPageModule)
       },
       {
-        path: 'school-edit',
+        path: 'school/edit',
         loadChildren: () => import('../../pages/school-add/school-add.module').then( m => m.SchoolAddPageModule)
       },
       {

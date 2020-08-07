@@ -13,11 +13,26 @@ export class NavMenuHelper {
 
   private menuList = [
     {
-      name: 'Schools',
-      path: '/schools',
+      name: 'School',
       icon: 'business-outline',
       roles: [Role.SuperAdmin],
-      active: true
+      active: true,
+      children: [
+        {
+          name: 'All Schools',
+          path: '/schools',
+          icon: 'list',
+          roles: [Role.SuperAdmin],
+          active: true
+        },
+        {
+          name: 'Add School',
+          path: '/school/add',
+          icon: 'add-circle',
+          roles: [Role.SuperAdmin],
+          active: true
+        }
+      ]
     },
     {
       name: 'Users',
@@ -59,17 +74,30 @@ export class NavMenuHelper {
   }
 
   public MenuList(): IMenuItems[] {
-    return this.menuList.map((menu) => {
+    const mapMenu = (menu) => {
       if (menu.roles.includes(Role[this.userRole])) {
-          const menuItem = {} as IMenuItems;
-          menuItem.active = menu.active;
-          menuItem.icon = menu.icon;
-          menuItem.iconClass = menu.icon;
-          menuItem.name = menu.name;
-          menuItem.path = menu.path;
-          menuItem.roles = menu.roles
-          return menuItem;
+        const menuItem = {} as IMenuItems;
+        menuItem.active = menu.active;
+        menuItem.icon = menu.icon;
+        menuItem.iconClass = menu.icon;
+        menuItem.name = menu.name;
+        menuItem.path = menu.path;
+        menuItem.roles = menu.roles
+        return menuItem;
       }
+    };
+
+    return this.menuList.map((menu) => {
+      let menuItem = {} as IMenuItems;
+      menuItem = mapMenu(menu);
+      if (menu?.children && menu?.children?.length > 0) {
+        menuItem.children =[];
+        menu.children.forEach((m) => {
+          const submenu = mapMenu(m);
+          menuItem.children.push(submenu);
+        })
+      }
+      return menuItem;
     }
     );
   }

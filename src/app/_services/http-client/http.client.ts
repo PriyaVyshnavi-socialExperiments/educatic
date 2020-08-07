@@ -104,32 +104,12 @@ export class HttpService {
             observer.complete();
           },
           (err) => {
-            console.log('OfflineError: ', OfflineSyncURL[endPoint]);
-
+            console.log(err)
             if ((Object as any).values(OfflineSyncURL).includes(endPoint)) {
               this.presentToast();
               this.offlineSyncManager.StoreRequest(endPoint, method, params);
             }
-
-            /**
-             * If an error occurs fire an event on the observer. If the error
-             * is a 401 then fire an additional event on the public `authFailed`
-             * item.
-             */
-            switch (err.status) {
-              case 0:
-
-                /** Publish an offline event to update network status. */
-                this.events.subscribe('offline', () => observer.next(false));
-                break;
-              case 401:
-                this.authFailed.next(err);
-                observer.error(err);
-                break;
-              default:
-                observer.error(err);
-                break;
-            }
+            observer.error(err);
           },
         );
     });
@@ -142,7 +122,7 @@ export class HttpService {
     const toast = await this.toastController.create({
       message: 'You are currently offline however you may continue working on this device.',
       position: 'top',
-      duration: 5000,
+      duration: 3000,
       buttons: [{
         text: 'Close',
         role: 'cancel',

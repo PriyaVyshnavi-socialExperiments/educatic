@@ -14,7 +14,7 @@ import { map } from 'rxjs/operators';
 export class SchoolAddPage implements OnInit {
 
   public schoolForm: FormGroup;
-  public school: ISchool ;
+  public school: ISchool;
   stateInfo: any[] = [];
   countryInfo: any[] = [];
   cityInfo: any[] = [];
@@ -30,9 +30,9 @@ export class SchoolAddPage implements OnInit {
 
     this.getCountries();
     this.activatedRoute.paramMap
-    .pipe(map(() => window.history.state))
-    .subscribe((state) => {
-       this.school = state?.currentSchool as ISchool
+      .pipe(map(() => window.history.state))
+      .subscribe((state) => {
+        this.school = state?.currentSchool as ISchool
       });
 
     this.schoolForm = this.formBuilder.group({
@@ -73,24 +73,24 @@ export class SchoolAddPage implements OnInit {
 
   }
 
-  getCountries(){
+  getCountries() {
     this.countryHelper.AllCountries().
-    subscribe(
-      data => {
-        this.countryInfo=data.Countries;
-      },
-      err => console.log(err),
-      () => console.log('complete')
-    )
+      subscribe(
+        data => {
+          this.countryInfo = data.Countries;
+        },
+        err => console.log(err),
+        () => console.log('complete')
+      )
   }
 
   onChangeCountry(countryValue) {
     console.log(countryValue);
-    this.stateInfo=this.countryInfo[countryValue.value].States;
-    this.cityInfo=this.stateInfo[0].Cities;
+    this.stateInfo = this.countryInfo[countryValue.value].States;
+    this.cityInfo = this.stateInfo[0].Cities;
   }
 
   onChangeState(stateValue) {
-    this.cityInfo=this.stateInfo[stateValue.value].Cities;
+    this.cityInfo = this.stateInfo[stateValue.value].Cities;
   }
 }

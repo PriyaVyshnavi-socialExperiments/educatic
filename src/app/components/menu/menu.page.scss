@@ -1,17 +1,38 @@
 .md-avatar {
-    border-radius: 100px;
-    display: block;
-    font-size: 58px;
-    font-weight: 100;
-    height: 80px;
-    line-height: 80px;
-    margin: auto;
-    position: relative;
-    text-align: center;
-    top: 40px;
-    width: 80px;
+    border-radius   : 100px;
+    display         : block;
+    font-size       : 58px;
+    font-weight     : 100;
+    height          : 80px;
+    line-height     : 80px;
+    margin          : auto;
+    position        : relative;
+    text-align      : center;
+    top             : 40px;
+    width           : 80px;
     background-color: sandybrown;
+
     img {
         border-radius: 100px;
     }
+}
+
+ion-item {
+    --color-activated:  var(--ion-color-warning);
+}
+.active-menu {
+    --ion-text-color: var(--ion-color-warning);
+
+    ion-icon {
+        --ion-text-color-rgb: var(--ion-color-warning);
+    }
+}
+
+.active-parent {
+    font-weight: 500;
+}
+
+.sub-item {
+    padding-left: 20px;
+    font-size   : small;
 }

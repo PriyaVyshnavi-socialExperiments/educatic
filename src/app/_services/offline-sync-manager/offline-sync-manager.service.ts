@@ -51,7 +51,11 @@ export class OfflineSyncManagerService extends OfflineService {
 
     const storedOperations = await this.GetOfflineData('OfflineSyncRequests', 'offline-data');
     let storedObj = JSON.parse(storedOperations);
+
     if (storedObj) {
+      storedObj = storedObj.filter((obj) => {
+        return obj.URL !== action.URL;
+      });
       storedObj.push(action);
     }
     else {

@@ -66,7 +66,7 @@ export class SchoolsPage implements OnInit {
 
   public SchoolEdit(schoolId: string) {
     const currentSchool = this.schools.find(school => school.id === schoolId);
-    this.router.navigateByUrl('/school-edit', { state: { currentSchool } });
+    this.router.navigateByUrl('/school/edit', { state: { currentSchool } });
   }
 
   public async SchoolDelete(schoolId: string) {
