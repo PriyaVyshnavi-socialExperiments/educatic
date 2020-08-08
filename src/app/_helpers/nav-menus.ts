@@ -34,19 +34,34 @@ export class NavMenuHelper {
         }
       ]
     },
+    // {
+    //   name: 'Users',
+    //   path: '/users',
+    //   icon: 'people-outline',
+    //   roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
+    //   active: true
+    // },
     {
-      name: 'Users',
-      path: '/users',
-      icon: 'people-outline',
-      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
-      active: true
-    },
-    {
-      name: 'Teachers',
-      path: '/teachers',
+      name: 'Teacher',
       icon: 'newspaper-outline',
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
-      active: true
+      active: true,
+      children: [
+        {
+          name: 'All Teachers',
+          path: '/teachers',
+          icon: 'list',
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin],
+          active: true
+        },
+        {
+          name: 'Add Teacher',
+          path: '/teacher/add',
+          icon: 'add-circle',
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin],
+          active: true
+        }
+      ]
     },
     {
       name: 'Attendance',

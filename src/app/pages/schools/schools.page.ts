@@ -4,6 +4,7 @@ import { ISchool } from '../../_models';
 import { PopoverController, AlertController, MenuController } from '@ionic/angular';
 import { ActionPopoverPage } from 'src/app/components/action-popover/action-popover.page';
 import { Router } from '@angular/router';
+import { DataShareService } from '../../_services/data-share.service';
 
 @Component({
   selector: 'app-schools',
@@ -18,12 +19,12 @@ export class SchoolsPage implements OnInit {
     public router: Router,
     public alertController: AlertController,
     private menuCtrl: MenuController,
+    private dataShare: DataShareService
   ) { }
 
   ngOnInit() {
     this.schoolService.GetSchools().subscribe((data) => {
       this.schools = [...data]
-      console.log('schools:', data);
     });
   }
 
@@ -66,7 +67,8 @@ export class SchoolsPage implements OnInit {
 
   public SchoolEdit(schoolId: string) {
     const currentSchool = this.schools.find(school => school.id === schoolId);
-    this.router.navigateByUrl('/school/edit', { state: { currentSchool } });
+    this.dataShare.setData(currentSchool);
+    this.router.navigateByUrl(`/school/edit/${schoolId}`);
   }
 
   public async SchoolDelete(schoolId: string) {

@@ -11,3 +11,9 @@ export interface Country {
 export interface Countries {
     Countries: Country[];
 }
+
+export interface CountryStateCity {
+    Countries: Country[];
+    States: State[];
+    Cities: string[];
+}

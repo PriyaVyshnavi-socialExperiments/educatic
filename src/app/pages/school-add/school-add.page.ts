@@ -1,96 +1,174 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ISchool } from '../../_models';
 import { CountryHelper } from '../../_helpers/countries';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Geolocation } from '@capacitor/core';
+import { ToastController } from '@ionic/angular';
+import { SchoolService } from 'src/app/_services/school/school.service';
+import { DataShareService } from 'src/app/_services/data-share.service';
 
 @Component({
   selector: 'app-school-add',
   templateUrl: './school-add.page.html',
   styleUrls: ['./school-add.page.scss'],
 })
-export class SchoolAddPage implements OnInit {
+export class SchoolAddPage implements OnInit, OnDestroy {
 
   public schoolForm: FormGroup;
-  public school: ISchool;
+  public school: any = {};
   stateInfo: any[] = [];
   countryInfo: any[] = [];
   cityInfo: any[] = [];
   state$: Observable<object>;
+  latitude: number;
+  longitude: number;
+  isEditSchool = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private countryHelper: CountryHelper,
-    public activatedRoute: ActivatedRoute
-  ) { }
+    private toastController: ToastController,
+    private schoolService: SchoolService,
+    private dataShare: DataShareService,
+    private route: ActivatedRoute
+  ) {
+
+    //this.getLocation();
+
+  }
 
   ngOnInit() {
 
-    this.getCountries();
-    this.activatedRoute.paramMap
-      .pipe(map(() => window.history.state))
-      .subscribe((state) => {
-        this.school = state?.currentSchool as ISchool
-      });
+    this.route.paramMap.subscribe(params => {
+      this.isEditSchool = params.has('id');
+    });
 
     this.schoolForm = this.formBuilder.group({
-      name: new FormControl(this.school?.name, [
+      name: new FormControl('', [
         Validators.required,
         Validators.maxLength(50),
       ]),
-      address1: new FormControl(this.school?.address1, [
+      address1: new FormControl('', [
         Validators.required,
         Validators.maxLength(100),
       ]),
-      address2: new FormControl(this.school?.address2, [
+      address2: new FormControl('', [
         Validators.maxLength(100),
       ]),
-      country: new FormControl(this.school?.country, [
+      country: new FormControl('', [
         Validators.required,
         Validators.maxLength(50),
       ]),
-      state: new FormControl(this.school?.state, [
+      state: new FormControl('', [
         Validators.required,
         Validators.maxLength(50),
       ]),
-      city: new FormControl(this.school?.city, [
+      city: new FormControl('', [
         Validators.required,
         Validators.maxLength(50),
       ]),
-      zip: new FormControl(this.school?.zip, [
+      zip: new FormControl('', [
         Validators.required,
         Validators.maxLength(10),
       ]),
     });
+
+    //this.getCountries();
+
+    if (this.isEditSchool) {
+      this.dataShare.getData().subscribe((data) => {
+        this.school = data;
+        this.countryHelper.getSelectedCountryWiseStatsCities(this.school.country, this.school.state).then((country) => {
+          this.countryInfo = country.Countries;
+          this.stateInfo = country.States;
+          this.cityInfo = country.Cities;
+        });
+        if (this.school) {
+          this.schoolForm.setValue({
+            name: this.school.name,
+            address1: this.school.address1,
+            address2: this.school.address2,
+            country: this.school.country,
+            state: this.school.state,
+            city: this.school.city,
+            zip: this.school.zip
+          });
+        }
+      });
+    } else {
+      this.getCountries();
+    }
   }
 
   get f() {
-    return this.schoolForm.controls;
+    return this.schoolForm.controls
   }
-  UpdateSchool() {
 
+  UpdateSchool() {
+    if (this.schoolForm.invalid) {
+      return;
+    } else {
+      const schoolInfo = {
+        id: this.school?.id,
+        name: this.f.name.value,
+        address1: this.f.address1.value,
+        address2: this.f.address2.value,
+        country: this.countryInfo[this.f.country.value].CountryName,
+        state: this.stateInfo[this.f.state.value].StateName,
+        city: this.cityInfo[this.f.city.value],
+        latitude: this.latitude.toString(),
+        longitude: this.longitude.toString(),
+        zip: this.f.zip.value
+      } as ISchool;
+      this.schoolService.SubmitSchool(schoolInfo).subscribe(() => {
+        this.presentToast();
+      });
+    }
   }
 
   getCountries() {
-    this.countryHelper.AllCountries().
-      subscribe(
-        data => {
-          this.countryInfo = data.Countries;
-        },
-        err => console.log(err),
-        () => console.log('complete')
-      )
+    this.countryHelper.AllCountries().toPromise().then(
+      data => {
+        this.countryInfo = data.Countries;
+      }
+    )
   }
 
-  onChangeCountry(countryValue) {
-    console.log(countryValue);
-    this.stateInfo = this.countryInfo[countryValue.value].States;
+  onChangeCountry(countryName) {
+    console.log(countryName);
+    this.stateInfo = this.countryInfo.find((c) => c.CountryName === countryName.value).States;
     this.cityInfo = this.stateInfo[0].Cities;
   }
 
-  onChangeState(stateValue) {
-    this.cityInfo = this.stateInfo[stateValue.value].Cities;
+  onChangeState(stateName) {
+    this.cityInfo = this.stateInfo.find((s) => s.StateName === stateName.value).Cities;
+  }
+
+  async getLocation() {
+    const position = await Geolocation.getCurrentPosition();
+    this.latitude = position.coords.latitude;
+    this.longitude = position.coords.longitude;
+  }
+
+  private async presentToast() {
+    const toast = await this.toastController.create({
+      message: 'Profile changed successfully..',
+      position: 'bottom',
+      duration: 5000,
+      color: 'success',
+      buttons: [{
+        text: 'Close',
+        role: 'cancel',
+      }
+      ]
+    });
+    toast.present();
+  }
+
+  ngOnDestroy() {
+    this.dataShare.unsubscribe()
   }
 }
