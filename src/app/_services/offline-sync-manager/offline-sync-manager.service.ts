@@ -41,25 +41,25 @@ export class OfflineSyncManagerService extends OfflineService {
   }
 
   public async StoreRequest(url: string, type: string, data: any) {
-    const action: IStoredRequest = {
+    const currentAction: IStoredRequest = {
       URL: url,
       Type: type,
       Data: data,
       Time: new Date().getTime(),
-      Id: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)
+      Id: data.id
     };
 
     const storedOperations = await this.GetOfflineData('OfflineSyncRequests', 'offline-data');
     let storedObj = JSON.parse(storedOperations);
-
+    console.log("storedObjOfflineData: ", storedObj);
     if (storedObj) {
       storedObj = storedObj.filter((obj) => {
-        return obj.URL !== action.URL;
+        return obj.Id !== currentAction.Id;
       });
-      storedObj.push(action);
+      storedObj.push(currentAction);
     }
     else {
-      storedObj = [action];
+      storedObj = [currentAction];
     }
     return this.SetOfflineData('OfflineSyncRequests', 'offline-data', JSON.stringify(storedObj));
   }

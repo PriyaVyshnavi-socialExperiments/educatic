@@ -33,7 +33,7 @@ const routes: Routes = [
         loadChildren: () => import('../../pages/school-add/school-add.module').then( m => m.SchoolAddPageModule)
       },
       {
-        path: 'school/edit',
+        path: 'school/edit/:id',
         loadChildren: () => import('../../pages/school-add/school-add.module').then( m => m.SchoolAddPageModule)
       },
       {

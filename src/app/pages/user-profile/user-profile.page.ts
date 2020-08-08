@@ -135,7 +135,7 @@ export class UserProfilePage implements OnInit {
     const toast = await this.toastController.create({
       message: 'Profile changed successfully..',
       position: 'bottom',
-      duration: 10000,
+      duration: 5000,
       color: 'success',
       buttons: [{
         text: 'Close',

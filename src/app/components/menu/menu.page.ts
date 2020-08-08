@@ -45,7 +45,6 @@ export class MenuPage implements OnInit {
       this.currentUser = user;
       if (this.currentUser) {
         this.menuList = this.navMenuHelper.menuItems.filter((menu) => menu !== undefined);
-        console.log("this.menuList: ", this.menuList);
       }
     });
 
