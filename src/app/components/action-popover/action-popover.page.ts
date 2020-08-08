@@ -7,53 +7,90 @@ import { NavParams, PopoverController } from '@ionic/angular';
   styleUrls: ['./action-popover.page.scss'],
 })
 export class ActionPopoverPage implements OnInit {
- /** The current item the options are being shown for */
- public currentId: any;
+  /** The current item the options are being shown for */
+  public currentId: any;
+  public type: string;
 
- /** Available options on popup */
- public showMoreOptions: Array<{
-  icon: string;
-  id: string;
-  name: string;
-}>;
+  /** Available options on popup */
+  public showMoreOptions: Array<{
+    icon: string;
+    id: string;
+    name: string;
+  }>;
 
 
-constructor(
-  private navParams: NavParams,
-  private popoverController: PopoverController) { }
+  constructor(
+    private navParams: NavParams,
+    private popoverController: PopoverController) { }
 
-ngOnInit() {}
+  ngOnInit() { }
 
-public ionViewWillEnter() {
-  this.currentId = this.navParams.get( 'id' );
+  public ionViewWillEnter() {
+    this.currentId = this.navParams.get('id');
+    this.type = this.navParams.get('type');
 
-  /** Defines the available options */
-  this.showMoreOptions = [
-      {
-          icon: 'create',
-          id: 'edit',
-          name: 'Update',
-      },
-      {
-        icon: 'trash',
-        id: 'delete',
-        name: 'Delete',
-    },
-    {
-      icon: 'information-circle',
-      id: 'details',
-      name: 'Details',
-  },
-  ];
-}
+    /** Defines the available options */
+    this.PopulateActionMenu(this.type);
+  }
 
-/** Dismiss the popover with the selected option */
-public selectOption( option, currentId ) {
-  this.popoverController.dismiss( {
+  /** Dismiss the popover with the selected option */
+  public selectOption(option, currentId) {
+    this.popoverController.dismiss({
       selectedOption: option,
       currentId,
-  } );
-}
+    });
+  }
 
+  private PopulateActionMenu(type: string) {
+    switch (type) {
+      case 'school':
+        this.showMoreOptions = [
+          {
+            icon: 'create',
+            id: 'edit',
+            name: 'Update',
+          },
+          {
+            icon: 'trash',
+            id: 'delete',
+            name: 'Delete',
+          },
+          {
+            icon: 'information-circle',
+            id: 'details',
+            name: 'Details',
+          },
+          {
+            icon: 'add-circle',
+            id: 'add-teacher',
+            name: 'Add Teacher',
+          },
+        ];
+        break;
+
+      case 'teacher':
+        this.showMoreOptions = [
+          {
+            icon: 'create',
+            id: 'edit',
+            name: 'Update',
+          },
+          {
+            icon: 'trash',
+            id: 'delete',
+            name: 'Delete',
+          },
+          {
+            icon: 'information-circle',
+            id: 'details',
+            name: 'Details',
+          },
+        ];
+        break;
+
+      default:
+        break;
+    }
+  }
 
 }

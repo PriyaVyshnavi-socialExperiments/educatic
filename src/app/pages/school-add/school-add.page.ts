@@ -116,11 +116,11 @@ export class SchoolAddPage implements OnInit, OnDestroy {
         name: this.f.name.value,
         address1: this.f.address1.value,
         address2: this.f.address2.value,
-        country: this.countryInfo[this.f.country.value].CountryName,
-        state: this.stateInfo[this.f.state.value].StateName,
-        city: this.cityInfo[this.f.city.value],
-        latitude: this.latitude.toString(),
-        longitude: this.longitude.toString(),
+        country: this.f.country.value,
+        state: this.f.state.value,
+        city: this.f.city.value,
+        latitude: '19.9894', //this.latitude.toString(),
+        longitude: '73.7276',//this.longitude.toString(),
         zip: this.f.zip.value
       } as ISchool;
       this.schoolService.SubmitSchool(schoolInfo).subscribe(() => {
