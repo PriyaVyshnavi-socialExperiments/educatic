@@ -41,7 +41,7 @@ export class SchoolsPage implements OnInit {
       component: ActionPopoverPage,
       mode: 'ios',
       event: ev,
-      componentProps: { id: schoolId },
+      componentProps: { id: schoolId, type: 'school' },
       cssClass: 'pop-over-style',
     });
     popover.style.cssText = '--min-width: 100px; --max-width: 170px;';

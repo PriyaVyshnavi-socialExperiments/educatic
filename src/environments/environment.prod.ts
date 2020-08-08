@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiBaseUrl : 'https://educaticapi-qa.azurewebsites.net/api',
-  appInsightsKey: '1177adf8-9993-479c-80b2-d636df75c94e',
+  apiBaseUrl : 'https://goofflinee.azurewebsites.net/api',
+  appInsightsKey: '3e02a970-cb6e-4b40-85f7-657a6171d65a',
   sqlLiteDBName: 'educaticDB'
 };
