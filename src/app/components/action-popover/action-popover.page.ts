@@ -61,6 +61,11 @@ export class ActionPopoverPage implements OnInit {
             name: 'Details',
           },
           {
+            icon: 'list',
+            id: 'teachers',
+            name: 'Teachers',
+          },
+          {
             icon: 'add-circle',
             id: 'add-teacher',
             name: 'Add Teacher',

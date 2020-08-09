@@ -44,7 +44,7 @@ export class SchoolsPage implements OnInit {
       componentProps: { id: schoolId, type: 'school' },
       cssClass: 'pop-over-style',
     });
-    popover.style.cssText = '--min-width: 100px; --max-width: 170px;';
+    //popover.style.cssText = '--min-width: 100px; --max-width: 170px;';
     popover.onDidDismiss().then((data) => {
       const actionData = data?.data;
       switch (actionData?.selectedOption) {
@@ -56,6 +56,12 @@ export class SchoolsPage implements OnInit {
           break;
         case 'details':
           this.SchoolDetails(actionData.currentId);
+          break;
+        case 'teachers':
+          this.router.navigateByUrl(`/teachers/${actionData.currentId}`);
+          break;
+        case 'add-teacher':
+          this.router.navigateByUrl(`/teacher/add/${actionData.currentId}`);
           break;
         default:
           break;
