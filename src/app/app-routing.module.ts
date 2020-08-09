@@ -15,15 +15,11 @@ const routes: Routes = [
       import('./components/authentication/authentication.module').then(
         m => m.AuthenticationModule
       )
-  },  {
+  },
+  {
     path: 'action-popover',
     loadChildren: () => import('./components/action-popover/action-popover.module').then( m => m.ActionPopoverPageModule)
   },
-  {
-    path: 'teacher-add',
-    loadChildren: () => import('./pages/teacher-add/teacher-add.module').then( m => m.TeacherAddPageModule)
-  }
-
 
 ];
 

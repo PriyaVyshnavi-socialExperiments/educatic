@@ -47,6 +47,23 @@ const routes: Routes = [
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
+        path: 'teachers/:schoolId',
+        loadChildren: '../../pages/teachers/teachers.module#TeachersPageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
+        path: 'teacher/add/:schoolId',
+        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then( m => m.TeacherAddPageModule)
+      },
+      {
+        path: 'teacher/add',
+        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then( m => m.TeacherAddPageModule)
+      },
+      {
+        path: 'school/edit/:id',
+        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then( m => m.TeacherAddPageModule)
+      },
+      {
         path: 'students',
         loadChildren: '../../pages/students/students.module#StudentsPageModule',
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }

@@ -22,7 +22,6 @@ export class SchoolAddPage implements OnInit, OnDestroy {
   stateInfo: any[] = [];
   countryInfo: any[] = [];
   cityInfo: any[] = [];
-  state$: Observable<object>;
   latitude: number;
   longitude: number;
   isEditSchool = false;
@@ -169,6 +168,5 @@ export class SchoolAddPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.dataShare.unsubscribe()
   }
 }
