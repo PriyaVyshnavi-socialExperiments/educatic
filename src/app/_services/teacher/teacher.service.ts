@@ -38,12 +38,12 @@ export class TeacherService extends OfflineService {
       );
   }
 
-  public GetTeachers() {
+  public GetTeachers(schoolId: string) {
     if (!this.network.IsOnline()) {
       return this.getOfflineTeachers();
     } else {
 
-      return this.http.Get<ITeacher[]>('/teachers')
+      return this.http.Get<ITeacher[]>(`/teachers/${schoolId}`)
         .pipe(
           tap(response => {
             if (response) {

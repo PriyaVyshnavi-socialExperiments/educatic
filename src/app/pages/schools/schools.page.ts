@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { SchoolService } from '../../_services/school/school.service';
-import { ISchool } from '../../_models';
+import { ISchool, IUser } from '../../_models';
 import { PopoverController, AlertController, MenuController } from '@ionic/angular';
-import { ActionPopoverPage } from 'src/app/components/action-popover/action-popover.page';
+import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
 import { Router } from '@angular/router';
 import { DataShareService } from '../../_services/data-share.service';
+import { AuthenticationService } from '../../_services/authentication/authentication.service';
 
 @Component({
   selector: 'app-schools',
@@ -13,16 +14,23 @@ import { DataShareService } from '../../_services/data-share.service';
 })
 export class SchoolsPage implements OnInit {
   schools: ISchool[] = [];
+  currentUser: IUser;
+
   constructor(
     private schoolService: SchoolService,
     private popoverController: PopoverController,
     public router: Router,
     public alertController: AlertController,
     private menuCtrl: MenuController,
-    private dataShare: DataShareService
+    private dataShare: DataShareService,
+    private authenticationService: AuthenticationService,
+
   ) { }
 
   ngOnInit() {
+    this.authenticationService.currentUser.subscribe((user) => {
+      this.currentUser = user;
+    });
     this.schoolService.GetSchools().subscribe((data) => {
       this.schools = [...data]
     });
@@ -47,6 +55,7 @@ export class SchoolsPage implements OnInit {
     //popover.style.cssText = '--min-width: 100px; --max-width: 170px;';
     popover.onDidDismiss().then((data) => {
       const actionData = data?.data;
+      this.currentUser.schoolId = actionData.currentId;
       switch (actionData?.selectedOption) {
         case 'edit':
           this.SchoolEdit(actionData.currentId);
