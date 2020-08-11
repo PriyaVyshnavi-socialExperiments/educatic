@@ -6,6 +6,7 @@ import { IUser, LoginRequest } from '../../_models';
 import { ApplicationInsightsService } from '../../_helpers/application-insights';
 import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
+import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends OfflineService {
@@ -23,6 +24,7 @@ export class AuthenticationService extends OfflineService {
         private http: HttpService,
         private appInsightsService: ApplicationInsightsService,
         public injector: Injector,
+        private menuHelper: NavMenuHelper,
     ) {
         super(injector);
         this.GetOfflineData('User', 'current-user').then((user) => {
@@ -43,6 +45,7 @@ export class AuthenticationService extends OfflineService {
                 // login successful if there's a jwt token in the response
                 if (response && response.token) {
                     // store user details and jwt token in local storage to keep user logged in between page refreshes
+                    response.menuItems = [... this.menuHelper.GetMenuList(response.role)]
                     this.SetOfflineData('User', 'current-user', response);
                     this.currentUserSubject.next(response);
                     this.ready.next(response);

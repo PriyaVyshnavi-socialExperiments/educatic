@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterEvent } from '@angular/router';
 import { AuthenticationService } from '../../_services';
 import { NavMenuHelper } from '../../_helpers/nav-menus';
-import { ISchool } from 'src/app/_models';
-import { SchoolService } from 'src/app/_services/school/school.service';
+import { ISchool, IUser } from '../../_models';
+import { SchoolService } from '../../_services/school/school.service';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.page.html',
   styleUrls: ['./menu.page.scss'],
 })
-export class MenuPage implements OnInit {
+export class MenuPage implements OnInit, OnDestroy {
 
   activePath = '';
-  currentUser: any;
+  currentUser: IUser;
   isRemainder = 0;
   dark = false;
   menuList: any;
@@ -22,8 +22,7 @@ export class MenuPage implements OnInit {
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService,
-    private schoolService: SchoolService,
-    private navMenuHelper: NavMenuHelper) {
+    private schoolService: SchoolService) {
     this.router.events.subscribe((event: RouterEvent) => {
       this.activePath = event.url;
     });
@@ -39,12 +38,15 @@ export class MenuPage implements OnInit {
       }
     );
   }
+  ngOnDestroy(): void {
+  }
 
   public ngOnInit() {
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.ready.subscribe((user) => {
       this.currentUser = user;
       if (this.currentUser) {
-        this.menuList = this.navMenuHelper.menuItems.filter((menu) => menu !== undefined);
+        this.menuList = this.currentUser.menuItems.filter((menu) => menu !== undefined);
+        this.currentUser.menuItems = this.menuList;
       }
     });
 

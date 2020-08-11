@@ -1,18 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { AuthenticationService } from '../../../_services';
 import { LoginRequest } from '../../../_models';
-import { first } from 'rxjs/operators';
 import { ToastController } from '@ionic/angular';
 import { ErrorStateMatcherHelper } from '../../../_helpers/error-state-matcher';
+import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
 
 @Component({
   selector: 'app-signin',
   templateUrl: './signin.component.html',
   styleUrls: ['./signin.component.scss']
 })
-export class SigninComponent implements OnInit {
+export class SigninComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   submitted = false;
   returnUrl: string;
@@ -27,8 +27,11 @@ export class SigninComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
-    public toastController: ToastController
+    public toastController: ToastController,
+    private menuHelper: NavMenuHelper,
   ) { }
+  ngOnDestroy(): void {
+  }
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
       username: new FormControl('', [

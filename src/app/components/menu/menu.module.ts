@@ -30,11 +30,11 @@ const routes: Routes = [
       },
       {
         path: 'school/add',
-        loadChildren: () => import('../../pages/school-add/school-add.module').then( m => m.SchoolAddPageModule)
+        loadChildren: () => import('../../pages/school-add/school-add.module').then(m => m.SchoolAddPageModule)
       },
       {
         path: 'school/edit/:id',
-        loadChildren: () => import('../../pages/school-add/school-add.module').then( m => m.SchoolAddPageModule)
+        loadChildren: () => import('../../pages/school-add/school-add.module').then(m => m.SchoolAddPageModule)
       },
       {
         path: 'users',
@@ -53,15 +53,15 @@ const routes: Routes = [
       },
       {
         path: 'teacher/add/:schoolId',
-        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then( m => m.TeacherAddPageModule)
+        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then(m => m.TeacherAddPageModule)
       },
       {
         path: 'teacher/add',
-        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then( m => m.TeacherAddPageModule)
+        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then(m => m.TeacherAddPageModule)
       },
       {
         path: 'school/edit/:id',
-        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then( m => m.TeacherAddPageModule)
+        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then(m => m.TeacherAddPageModule)
       },
       {
         path: 'students',
