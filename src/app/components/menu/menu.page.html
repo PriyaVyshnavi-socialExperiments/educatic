@@ -28,7 +28,7 @@
       </ion-header>
 
       <ion-content>
-        <div *ngFor="let menu of menuList; let i = index">
+        <div *ngFor="let menu of currentUser.menuItems; let i = index">
           <ion-menu-toggle *ngIf="menu.path" auto-hide="false">
             <ion-list lines="none">
               <ion-item [routerLink]="menu.path" [class.active-menu]="activePath === menu.path">

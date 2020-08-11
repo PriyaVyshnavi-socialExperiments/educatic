@@ -1,4 +1,4 @@
-﻿import { Role } from '.';
+﻿import { Role, IMenuItems } from '.';
 
 export interface IUser {
     id: string;
@@ -8,4 +8,6 @@ export interface IUser {
     schoolId: string;
     role: Role;
     token?: string;
+    menuItems: IMenuItems[];
+
 }

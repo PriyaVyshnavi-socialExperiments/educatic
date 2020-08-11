@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../../_services';
 import { isMobileDevice } from '../../_helpers';
 import { PopoverController } from '@ionic/angular';
@@ -9,7 +9,7 @@ import { Role } from 'src/app/_models';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   isLoggedIn = false;
   isMobileDevice: any;
   currentUser: any;
@@ -18,6 +18,8 @@ export class HomePage implements OnInit {
     public popoverController: PopoverController,
     private router: Router
   ) { }
+  ngOnDestroy(): void {
+  }
 
   public ngOnInit() {
     this.isLoggedIn = this.authenticationService.currentUser ? true : false;
@@ -37,7 +39,7 @@ export class HomePage implements OnInit {
         this.router.navigate(['/teachers']);
         break;
       case Role.Teacher:
-        this.router.navigate(['/student']);
+        this.router.navigate(['/students']);
         break;
       default:
         break;

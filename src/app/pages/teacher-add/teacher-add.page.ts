@@ -5,7 +5,7 @@ import { ToastController } from '@ionic/angular';
 import { TeacherService } from '../../_services/teacher/teacher.service';
 import { DataShareService } from '../../_services/data-share.service';
 import { ActivatedRoute } from '@angular/router';
-import { ITeacher } from 'src/app/_models';
+import { ITeacher, Role } from 'src/app/_models';
 import { SchoolService } from 'src/app/_services/school/school.service';
 
 @Component({
@@ -136,7 +136,8 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         city: this.f.city.value,
         latitude: '19.9894', //this.latitude.toString(),
         longitude: '73.7276',//this.longitude.toString(),
-        zip: this.f.zip.value
+        zip: this.f.zip.value,
+        role: Role.Teacher
       } as ITeacher;
       this.teacherService.SubmitTeacher(schoolInfo).subscribe(() => {
         this.presentToast();

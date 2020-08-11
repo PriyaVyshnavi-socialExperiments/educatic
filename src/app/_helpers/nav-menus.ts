@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { IMenuItems } from '../_models/menu-items';
 import { Role } from '../_models/role';
-import { AuthenticationService } from '../_services/authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class NavMenuHelper {
-  public menuItems: IMenuItems[] = [];
-  private userRole: string;
 
   private menuList = [
     {
@@ -44,7 +41,7 @@ export class NavMenuHelper {
     {
       name: 'Teacher',
       icon: 'newspaper-outline',
-      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin],
       active: true,
       children: [
         {
@@ -79,18 +76,11 @@ export class NavMenuHelper {
     },
   ];
 
-  constructor(private auth: AuthenticationService) {
-    this.auth.currentUser.subscribe(user => {
-      if (user?.role) {
-        this.userRole = user.role;
-        this.menuItems = this.MenuList();
-      }
-    });
-  }
+  constructor() {}
 
-  public MenuList(): IMenuItems[] {
+  public GetMenuList(userRole: string): IMenuItems[] {
     const mapMenu = (menu) => {
-      if (menu.roles.includes(Role[this.userRole])) {
+      if (menu.roles.includes(Role[userRole])) {
         const menuItem = {} as IMenuItems;
         menuItem.active = menu.active;
         menuItem.icon = menu.icon;
@@ -105,7 +95,7 @@ export class NavMenuHelper {
     return this.menuList.map((menu) => {
       let menuItem = {} as IMenuItems;
       menuItem = mapMenu(menu);
-      if (menu?.children && menu?.children?.length > 0) {
+      if (menuItem && menu?.children && menu?.children?.length > 0) {
         menuItem.children =[];
         menu.children.forEach((m) => {
           const submenu = mapMenu(m);

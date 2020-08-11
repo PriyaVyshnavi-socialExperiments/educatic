@@ -3,11 +3,10 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './_helpers/auth.guard';
 
 const routes: Routes = [
-  {
+ {
     path: '',
     canActivate: [AuthGuard],
-    loadChildren: () =>
-      import('./components/menu/menu.module').then(m => m.MenuPageModule)
+    loadChildren: () =>  import('./components/menu/menu.module').then(m => m.MenuPageModule)
   },
   {
     path: 'login',
