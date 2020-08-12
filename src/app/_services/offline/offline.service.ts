@@ -14,6 +14,7 @@ export class OfflineService {
   constructor(public injector: Injector) {
     this.sqlStorageService = injector.get(SqliteStorageService);
     this.networkService = injector.get(NetworkService);
+    this.sqlStorageService.init();
   }
 
   public async SetOfflineData(table: string, key: string, value: any) {
