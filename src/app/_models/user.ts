@@ -8,6 +8,7 @@ export interface IUser {
     schoolId: string;
     role: Role;
     token?: string;
+    forceChangePasswordNextLogin: boolean;
     menuItems: IMenuItems[];
 
 }

@@ -61,7 +61,12 @@ export class SigninComponent implements OnInit, OnDestroy {
       };
       this.authenticationService.Login(this.loginRequest)
         .subscribe( (data) => {
+          if(data.forceChangePasswordNextLogin)
+          {
+            this.router.navigate(['/reset/password']);
+          } else {
             this.router.navigate([this.returnUrl]);
+          }
           },
           error => {
             this.presentToast();
