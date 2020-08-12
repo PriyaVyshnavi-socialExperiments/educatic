@@ -21,7 +21,7 @@ export class TeachersPage implements OnInit {
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
     });
-    this.teacherService.GetTeachers(this.currentUser.schoolId).subscribe((data) => {
+    this.teacherService.GetTeachers(this.currentUser.defaultSchoolId).subscribe((data) => {
       this.teachers = [...data]
     });
   }

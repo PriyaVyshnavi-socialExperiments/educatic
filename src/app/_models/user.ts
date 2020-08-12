@@ -1,7 +1,8 @@
-﻿import { Role, IMenuItems } from '.';
+﻿import { Role, IMenuItems, ISchool } from '.';
 
 export interface IUser {
     id: string;
+    defaultSchoolId: string;
     email: string;
     firstName: string;
     lastName: string;
@@ -10,5 +11,5 @@ export interface IUser {
     token?: string;
     forceChangePasswordNextLogin: boolean;
     menuItems: IMenuItems[];
-
+    schools: ISchool[]
 }

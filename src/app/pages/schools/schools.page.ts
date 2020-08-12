@@ -55,7 +55,7 @@ export class SchoolsPage implements OnInit {
     //popover.style.cssText = '--min-width: 100px; --max-width: 170px;';
     popover.onDidDismiss().then((data) => {
       const actionData = data?.data;
-      this.currentUser.schoolId = actionData.currentId;
+      this.currentUser.defaultSchoolId = actionData.currentId;
       switch (actionData?.selectedOption) {
         case 'edit':
           this.SchoolEdit(actionData.currentId);

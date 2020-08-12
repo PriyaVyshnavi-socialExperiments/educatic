@@ -47,6 +47,7 @@ export class AuthenticationService extends OfflineService {
                     if (response && response.token) {
                         // store user details and jwt token in local storage to keep user logged in between page refreshes
                         response.menuItems = [... this.menuHelper.GetMenuList(response.role)]
+                        console.log(": response", response);
                         this.SetOfflineData('User', 'current-user', response);
                         this.currentUserSubject.next(response);
                         this.ready.next(response);
