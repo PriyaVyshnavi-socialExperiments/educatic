@@ -7,6 +7,7 @@ import { ApplicationInsightsService } from '../../_helpers/application-insights'
 import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
 import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
+import { IResetPassword } from 'src/app/_models/reset-password';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends OfflineService {
@@ -42,17 +43,17 @@ export class AuthenticationService extends OfflineService {
         return this.http.Post<any>(`/login`, loginRequest)
             .pipe(
                 map(response => {
-                // login successful if there's a jwt token in the response
-                if (response && response.token) {
-                    // store user details and jwt token in local storage to keep user logged in between page refreshes
-                    response.menuItems = [... this.menuHelper.GetMenuList(response.role)]
-                    this.SetOfflineData('User', 'current-user', response);
-                    this.currentUserSubject.next(response);
-                    this.ready.next(response);
-                    this.appInsightsService.setUserId(response.id)
-                }
-                return response;
-            }));
+                    // login successful if there's a jwt token in the response
+                    if (response && response.token) {
+                        // store user details and jwt token in local storage to keep user logged in between page refreshes
+                        response.menuItems = [... this.menuHelper.GetMenuList(response.role)]
+                        this.SetOfflineData('User', 'current-user', response);
+                        this.currentUserSubject.next(response);
+                        this.ready.next(response);
+                        this.appInsightsService.setUserId(response.id)
+                    }
+                    return response;
+                }));
     }
 
     public Logout() {
@@ -60,5 +61,15 @@ export class AuthenticationService extends OfflineService {
         this.currentUserSubject.next(null);
         this.ready.next(undefined);
         this.appInsightsService.clearUserId();
+    }
+
+    public ResetPassword(resetPassword: IResetPassword) {
+        return this.http.Post<any>(`/reset/password`, resetPassword)
+            .pipe(
+                map(response => {
+                    return response;
+                }
+                )
+            );
     }
 }

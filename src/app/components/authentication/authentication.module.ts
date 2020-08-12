@@ -9,8 +9,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 @NgModule({
-  declarations: [SigninComponent, SignupComponent],
+  declarations: [SigninComponent, SignupComponent, ResetPasswordComponent],
   imports: [
     CommonModule,
     FormsModule,
