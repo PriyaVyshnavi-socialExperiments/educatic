@@ -6,7 +6,6 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { NgHttpLoaderModule } from 'ng-http-loader';
-import {  RxReactiveFormsModule } from '@rxweb/reactive-form-validators'
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
