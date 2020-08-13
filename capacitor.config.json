@@ -1,6 +1,6 @@
 {
-  "appId": "com.educatic.app",
-  "appName": "educatic",
+  "appId": "com.goOfflineE.app",
+  "appName": "goOfflineE",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

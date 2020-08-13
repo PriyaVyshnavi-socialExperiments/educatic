@@ -65,7 +65,7 @@ export class ApplicationInsightsService {
             const item = envelope.baseData;
             item.properties = item.properties || {};
             item.properties.ApplicationPlatform = this.platform.platforms.name;
-            item.properties.ApplicationName = 'Educatic';
+            item.properties.ApplicationName = 'goOfflineE-App';
         }
         );
     }
