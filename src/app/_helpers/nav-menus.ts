@@ -11,7 +11,7 @@ export class NavMenuHelper {
   private menuList = [
     {
       name: 'Dashboard',
-      icon: 'cellular',
+      icon: 'stats-chart',
       path: '/',
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin],
       active: true,
