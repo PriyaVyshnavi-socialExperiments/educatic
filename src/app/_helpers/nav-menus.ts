@@ -10,6 +10,13 @@ export class NavMenuHelper {
 
   private menuList = [
     {
+      name: 'Dashboard',
+      icon: 'stats-chart',
+      path: '/',
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin],
+      active: true,
+    },
+    {
       name: 'School',
       icon: 'business-outline',
       roles: [Role.SuperAdmin],
