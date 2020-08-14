@@ -4,6 +4,8 @@ import { isMobileDevice } from '../../_helpers';
 import { PopoverController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Role } from 'src/app/_models';
+import { IPowerBIConfig } from 'src/app/_models/power-bi-config';
+import { SchoolService } from 'src/app/_services/school/school.service';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -13,8 +15,10 @@ export class HomePage implements OnInit, OnDestroy {
   isLoggedIn = false;
   isMobileDevice: any;
   currentUser: any;
+  powerBIConfig: any;
   constructor(
     private authenticationService: AuthenticationService,
+    private schoolService: SchoolService,
     public popoverController: PopoverController,
     private router: Router
   ) { }
@@ -28,6 +32,9 @@ export class HomePage implements OnInit, OnDestroy {
       this.currentUser = user;
      // this.RedirectToRoleSpecificURL(user.role)
     });
+    this.schoolService.GetPowerBIConfig().subscribe((config) => {
+      this.powerBIConfig = config[1];
+    })
   }
 
   onEmbedded(data) {

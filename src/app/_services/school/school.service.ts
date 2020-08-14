@@ -6,6 +6,7 @@ import { ISchool, OfflineSyncURL } from '../../_models';
 import { from, of } from 'rxjs';
 import { NetworkService } from '../../_services/network/network.service';
 import { Guid } from 'guid-typescript';
+import { IPowerBIConfig } from 'src/app/_models/power-bi-config';
 
 @Injectable({
   providedIn: 'root'
@@ -58,6 +59,15 @@ export class SchoolService extends OfflineService {
           })
         );
     }
+  }
+
+  public GetPowerBIConfig() {
+      return this.http.Get<IPowerBIConfig[]>('/powerbi/token')
+        .pipe(
+          tap(response => {
+            return response;
+          })
+        );
   }
 
   private getOfflineSchools() {
