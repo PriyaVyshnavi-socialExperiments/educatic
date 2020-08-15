@@ -22,9 +22,10 @@
             <div class="col-xl-12col-lg-12 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Password</mat-label>
-                <input matInput type="password" formControlName="password">
-                <mat-icon matSuffix>
-                  <ion-icon name="key-outline"></ion-icon>
+                <input matInput [type]="hide ? 'password' : 'text'"  formControlName="password">
+                <mat-icon matSuffix (click)="hide = !hide">
+                 
+                  <ion-icon [name]="hide ? 'eye-off' : 'eye'"></ion-icon>
                 </mat-icon>
               </mat-form-field>
             </div>

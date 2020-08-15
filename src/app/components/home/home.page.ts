@@ -32,6 +32,10 @@ export class HomePage implements OnInit, OnDestroy {
       this.currentUser = user;
      // this.RedirectToRoleSpecificURL(user.role)
     });
+    this.refreshDashboard();
+  }
+
+  refreshDashboard(){
     this.schoolService.GetPowerBIConfig().subscribe((config) => {
       this.powerBIConfig = config[1];
     })
