@@ -37,11 +37,6 @@ const routes: Routes = [
         loadChildren: () => import('../../pages/school-add/school-add.module').then(m => m.SchoolAddPageModule)
       },
       {
-        path: 'users',
-        loadChildren: '../../pages/users/users.module#UsersPageModule',
-        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
-      },
-      {
         path: 'teachers',
         loadChildren: '../../pages/teachers/teachers.module#TeachersPageModule',
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
@@ -60,8 +55,20 @@ const routes: Routes = [
         loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then(m => m.TeacherAddPageModule)
       },
       {
-        path: 'school/edit/:id',
-        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then(m => m.TeacherAddPageModule)
+        path: 'class-rooms',
+        loadChildren: () => import('../../pages/class-rooms/class-rooms.module').then( m => m.ClassRoomsPageModule)
+      },
+      {
+        path: 'class-rooms/:schoolId',
+        loadChildren: () => import('../../pages/class-rooms/class-rooms.module').then( m => m.ClassRoomsPageModule)
+      },
+      {
+        path: 'class-room/add',
+        loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then( m => m.ClassRoomAddPageModule)
+      },
+      {
+        path: 'class-room/add/:schoolId',
+        loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then( m => m.ClassRoomAddPageModule)
       },
       {
         path: 'students',

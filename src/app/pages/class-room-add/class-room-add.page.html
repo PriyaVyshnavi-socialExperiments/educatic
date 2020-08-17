@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Add new class</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="limiter">
+    <div class="container-login100">
+      <div class="wrap-login100">
+        <form class="login100-form validate-form" [formGroup]="classRoomForm" (ngSubmit)="SubmitClassRoom()">
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>School</mat-label>
+                <mat-select formControlName="school">
+                  <mat-option *ngFor="let school of schoolInfo; let i = index" value="{{school.id}}">
+                    {{school.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="classRoomForm.get('school').hasError('required')">
+                  A school is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Class Name</mat-label>
+                <input matInput formControlName="classRoomName" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="classRoomForm.get('classRoomName').hasError('required')">
+                  A class name is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Division Name</mat-label>
+                <input matInput formControlName="classDivision" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="classRoomForm.get('classDivision').hasError('required')">
+                  A class division name is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2"></div>
+            <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn mr-3"
+                [disabled]="!classRoomForm.valid " type="submit">
+                Submit
+              </button>
+              <button mat-flat-button type="button" class="login100-form-btn container-login100-form-btn"
+                [routerLink]="['/class-rooms']">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>

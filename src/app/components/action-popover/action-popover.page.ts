@@ -70,6 +70,16 @@ export class ActionPopoverPage implements OnInit {
             id: 'add-teacher',
             name: 'Add Teacher',
           },
+          {
+            icon: 'list',
+            id: 'class-rooms',
+            name: 'Class Rooms',
+          },
+          {
+            icon: 'add-circle',
+            id: 'add-class-room',
+            name: 'Add Class',
+          },
         ];
         break;
 

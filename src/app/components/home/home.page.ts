@@ -38,6 +38,7 @@ export class HomePage implements OnInit, OnDestroy {
   refreshDashboard(){
     this.schoolService.GetPowerBIConfig().subscribe((config) => {
       this.powerBIConfig = config[1];
+      this.powerBIConfig.embedUrl = this.powerBIConfig.embedUrl + '&isMobile=true';
     })
   }
 

@@ -123,7 +123,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
     if (this.teacherForm.invalid) {
       return;
     } else {
-      const schoolInfo = {
+      const teacherInfo = {
         id: this.teacher?.id,
         schoolId: this.f.school.value,
         firstName: this.f.firstname.value,
@@ -139,7 +139,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         zip: this.f.zip.value,
         role: Role.Teacher
       } as ITeacher;
-      this.teacherService.SubmitTeacher(schoolInfo).subscribe(() => {
+      this.teacherService.SubmitTeacher(teacherInfo).subscribe(() => {
         this.presentToast();
         this.teacherForm.reset(this.teacherForm.value);
       });

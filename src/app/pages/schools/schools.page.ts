@@ -52,7 +52,7 @@ export class SchoolsPage implements OnInit {
       componentProps: { id: schoolId, type: 'school' },
       cssClass: 'pop-over-style',
     });
-    //popover.style.cssText = '--min-width: 100px; --max-width: 170px;';
+    //popover.style.cssText = '--min-width: 170px; --max-width: 200px;';
     popover.onDidDismiss().then((data) => {
       const actionData = data?.data;
       this.currentUser.defaultSchoolId = actionData.currentId;
@@ -71,6 +71,12 @@ export class SchoolsPage implements OnInit {
           break;
         case 'add-teacher':
           this.router.navigateByUrl(`/teacher/add/${actionData.currentId}`);
+          break;
+        case 'class-rooms':
+          this.router.navigateByUrl(`/class-rooms/${actionData.currentId}`);
+          break;
+        case 'add-class-room':
+          this.router.navigateByUrl(`/class-room/add/${actionData.currentId}`);
           break;
         default:
           break;
