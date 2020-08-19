@@ -68,6 +68,28 @@ export class NavMenuHelper {
       ]
     },
     {
+      name: 'Class Room',
+      icon: 'newspaper-outline',
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin,  Role.Teacher],
+      active: true,
+      children: [
+        {
+          name: 'All Class Rooms',
+          path: '/class-rooms',
+          icon: 'list',
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin,  Role.Teacher],
+          active: true
+        },
+        {
+          name: 'Add Class Room',
+          path: '/class-room/add',
+          icon: 'add-circle',
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin],
+          active: true
+        }
+      ]
+    },
+    {
       name: 'Attendance',
       path: '/attendance',
       icon: 'calendar-outline',

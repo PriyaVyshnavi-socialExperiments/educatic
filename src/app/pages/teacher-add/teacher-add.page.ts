@@ -16,7 +16,7 @@ import { SchoolService } from 'src/app/_services/school/school.service';
 export class TeacherAddPage implements OnInit, OnDestroy {
 
   public teacherForm: FormGroup;
-  public teacher: any = {};
+  public teacher: ITeacher;
   stateInfo: any[] = [];
   countryInfo: any[] = [];
   cityInfo: any[] = [];
@@ -42,11 +42,11 @@ export class TeacherAddPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.isEditTeacher = params.has('id');
+      this.isEditTeacher = params.has('teacherId');
     });
-
+    this.getSchools();
     this.teacherForm = this.formBuilder.group({
-      school: new FormControl('', [
+      schoolId: new FormControl('', [
         Validators.required
       ]),
       firstname: new FormControl('', [
@@ -96,8 +96,9 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         });
         if (this.teacher) {
           this.teacherForm.setValue({
-            firstname: this.teacher.firstname,
-            lastname: this.teacher.lastname,
+            schoolId: this.teacher.schoolId,
+            firstname: this.teacher.firstName,
+            lastname: this.teacher.lastName,
             email: this.teacher.email,
 
             address1: this.teacher.address1,
@@ -112,7 +113,6 @@ export class TeacherAddPage implements OnInit, OnDestroy {
     } else {
       this.getCountries();
     }
-    this.getSchools();
   }
 
   get f() {
@@ -123,9 +123,9 @@ export class TeacherAddPage implements OnInit, OnDestroy {
     if (this.teacherForm.invalid) {
       return;
     } else {
-      const schoolInfo = {
+      const teacherInfo = {
         id: this.teacher?.id,
-        schoolId: this.f.school.value,
+        schoolId: this.f.schoolId.value,
         firstName: this.f.firstname.value,
         lastName: this.f.lastname.value,
         email: this.f.email.value,
@@ -139,7 +139,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         zip: this.f.zip.value,
         role: Role.Teacher
       } as ITeacher;
-      this.teacherService.SubmitTeacher(schoolInfo).subscribe(() => {
+      this.teacherService.SubmitTeacher(teacherInfo).subscribe(() => {
         this.presentToast();
         this.teacherForm.reset(this.teacherForm.value);
       });

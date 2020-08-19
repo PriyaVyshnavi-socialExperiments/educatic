@@ -1,6 +1,6 @@
 <ion-list>
   <ion-item *ngFor="let option of showMoreOptions" lines="none" detail="false" button (click)="selectOption(option.id, currentId)">
     <ion-icon [name]="option.icon"></ion-icon>
-    <ion-label slot="end">{{ option.name }}</ion-label>
+    <ion-label style="padding-left: 10px;">{{ option.name }}</ion-label>
   </ion-item>
 </ion-list>

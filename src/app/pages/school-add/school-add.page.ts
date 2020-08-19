@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { ISchool } from '../../_models';
 import { CountryHelper } from '../../_helpers/countries';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 import { Geolocation } from '@capacitor/core';
 import { ToastController } from '@ionic/angular';
-import { SchoolService } from 'src/app/_services/school/school.service';
-import { DataShareService } from 'src/app/_services/data-share.service';
+import { SchoolService } from '../../_services/school/school.service';
+import { DataShareService } from '../../_services/data-share.service';
+import { ISchool } from '../../_models/school';
 
 @Component({
   selector: 'app-school-add',
