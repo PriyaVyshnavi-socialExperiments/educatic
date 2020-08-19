@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { CountryHelper } from '../../_helpers/countries';
-import { ToastController } from '@ionic/angular';
-import { TeacherService } from '../../_services/teacher/teacher.service';
-import { DataShareService } from '../../_services/data-share.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { ITeacher, Role } from 'src/app/_models';
-import { SchoolService } from 'src/app/_services/school/school.service';
+import { ToastController } from '@ionic/angular';
+import { CountryHelper } from '../../_helpers/countries';
+import { ITeacher, Role } from '../../_models';
+import { DataShareService } from '../../_services/data-share.service';
+import { SchoolService } from '../../_services/school/school.service';
+import { TeacherService } from '../../_services/teacher/teacher.service';
 
 @Component({
   selector: 'app-teacher-add',

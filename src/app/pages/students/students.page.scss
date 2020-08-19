@@ -1,0 +1,31 @@
+.grid {
+    .grid-items {
+        margin-bottom: 20px;
+    }
+
+    .item-card {
+        cursor          : pointer;
+        height          : 100%;
+        width           : 300px;
+        background-color: whitesmoke;
+    }
+
+}
+
+.pop-over-style {
+    .popover-content {
+        //width: 80% !important; - this wont work or the bottom one.
+        --width: 100px !important;
+    }
+}
+
+.contact-grid {
+    float: unset !important;
+
+    ion-icon {
+        font-size: x-large;
+        position : absolute;
+        right    : 30px;
+        top      : 27px;
+    }
+}

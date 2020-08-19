@@ -69,20 +69,19 @@ export class StudentsPage implements OnInit, AfterViewInit {
   setSchool(selectedValue) {
     this.currentUser.defaultSchoolId = selectedValue.detail.value;
     this.classRooms = this.classRoomService.GetClassRooms(this.currentUser.defaultSchoolId);
-    setTimeout(() =>{
+    setTimeout(() => {
       this.classSelectRef.open();
     }, 1500);
-    this.refresh();
   }
 
-  setClassRoom(ClassId) {
-
+  setClassRoom(selectedValue) {
+    this.classRoomId = selectedValue.detail.value;
+    this.refresh();
   }
 
   public async actionPopover(ev: any, studentId: string) {
     const popover = await this.popoverController.create({
       component: ActionPopoverPage,
-      mode: 'ios',
       event: ev,
       componentProps: { id: studentId, type: 'student' },
       cssClass: 'pop-over-style',
