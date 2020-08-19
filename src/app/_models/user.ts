@@ -3,6 +3,7 @@
 export interface IUser {
     id: string;
     defaultSchoolId: string;
+    classRoomId: string;
     email: string;
     firstName: string;
     lastName: string;

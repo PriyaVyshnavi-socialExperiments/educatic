@@ -9,6 +9,7 @@ import { NavParams, PopoverController } from '@ionic/angular';
 export class ActionPopoverPage implements OnInit {
   /** The current item the options are being shown for */
   public currentId: any;
+  public schoolId: any;
   public type: string;
 
   /** Available options on popup */
@@ -28,7 +29,7 @@ export class ActionPopoverPage implements OnInit {
   public ionViewWillEnter() {
     this.currentId = this.navParams.get('id');
     this.type = this.navParams.get('type');
-
+    this.schoolId = this.navParams.get('schoolId');
     /** Defines the available options */
     this.PopulateActionMenu(this.type);
   }
@@ -38,6 +39,7 @@ export class ActionPopoverPage implements OnInit {
     this.popoverController.dismiss({
       selectedOption: option,
       currentId,
+      schoolId: this.schoolId
     });
   }
 
@@ -103,7 +105,7 @@ export class ActionPopoverPage implements OnInit {
         ];
         break;
 
-        case 'class-room':
+      case 'class-room':
         this.showMoreOptions = [
           {
             icon: 'create',
@@ -115,11 +117,31 @@ export class ActionPopoverPage implements OnInit {
             id: 'delete',
             name: 'Delete',
           },
-          // {
-          //   icon: 'information-circle',
-          //   id: 'details',
-          //   name: 'Details',
-          // },
+          {
+            icon: 'list',
+            id: 'students',
+            name: 'Students',
+          },
+          {
+            icon: 'add-circle',
+            id: 'add-student',
+            name: 'Add Student',
+          },
+        ];
+        break;
+
+      case 'student':
+        this.showMoreOptions = [
+          {
+            icon: 'create',
+            id: 'edit',
+            name: 'Update',
+          },
+          {
+            icon: 'trash',
+            id: 'delete',
+            name: 'Delete',
+          }
         ];
         break;
 
