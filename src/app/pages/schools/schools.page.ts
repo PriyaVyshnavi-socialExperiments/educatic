@@ -40,9 +40,6 @@ export class SchoolsPage implements OnInit {
 
   }
 
-  /**
-   * name
-   */
   public async actionPopover(ev: any, schoolId: string) {
 
     const popover = await this.popoverController.create({

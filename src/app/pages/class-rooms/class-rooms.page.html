@@ -1,15 +1,48 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Class rooms</ion-title>
+    <ion-title>{{ schoolName }}</ion-title>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button ion-button block (click)='selectSchool()'>Choose School</ion-button>
     </ion-buttons>
+    <ion-item [hidden]='true'>
+      <ion-label>Choose School</ion-label>
+      <ion-select placeholder="School" #schoolList (ionChange)='setSchool($event)'>
+        <ion-select-option *ngFor="let school of schools" value="{{ school.id }}">{{ school.name }}</ion-select-option>
+      </ion-select>
+    </ion-item>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-grid class="grid">
+    <ion-row class="ion-justify-content-center">
+      <ion-card class="item-card">
+        <ion-card-content *ngIf="classRooms.length">
+          <ngx-datatable class="material" [limit]="8" [rows]="classRooms" [rowHeight]="50" [columnMode]="'force'"
+            [headerHeight]="50" [footerHeight]="50">
+            <ngx-datatable-column name="Class Room" [sortable]="false" [sortable]="false">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{row.classRoomName}}
+              </ng-template>
+            </ngx-datatable-column>
 
+            <ngx-datatable-column name="Division" [sortable]="false">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{row.classDivision}}
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Actions" [sortable]="false">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <ion-icon class="header-dropdown"  (click)="actionPopover($event, row.classId)" name="ellipsis-vertical-outline" slot="end"></ion-icon>
+              </ng-template>
+        </ngx-datatable-column>
+          </ngx-datatable>
+        </ion-card-content>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
 </ion-content>

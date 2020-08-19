@@ -1,0 +1,24 @@
+.grid {
+    .grid-items {
+        margin-bottom: 20px;
+    }
+
+    .item-card {
+        cursor          : pointer;
+        height          : 100%;
+        width           : 100%;
+        background-color: whitesmoke;
+    }
+
+}
+
+.ngx-header {
+    text-align: center;
+}
+
+ion-icon {
+    font-size: x-large;
+    position: absolute;
+    right: 15%;
+    top: 23%;
+}

@@ -51,6 +51,10 @@ const routes: Routes = [
         loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then(m => m.TeacherAddPageModule)
       },
       {
+        path: 'teacher/edit/:schoolId/:teacherId',
+        loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then(m => m.TeacherAddPageModule)
+      },
+      {
         path: 'teacher/add',
         loadChildren: () => import('../../pages/teacher-add/teacher-add.module').then(m => m.TeacherAddPageModule)
       },
@@ -68,6 +72,10 @@ const routes: Routes = [
       },
       {
         path: 'class-room/add/:schoolId',
+        loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then( m => m.ClassRoomAddPageModule)
+      },
+      {
+        path: 'class-room/edit/:schoolId/:classId',
         loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then( m => m.ClassRoomAddPageModule)
       },
       {

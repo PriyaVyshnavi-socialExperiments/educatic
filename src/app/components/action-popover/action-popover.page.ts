@@ -95,11 +95,31 @@ export class ActionPopoverPage implements OnInit {
             id: 'delete',
             name: 'Delete',
           },
+          // {
+          //   icon: 'information-circle',
+          //   id: 'details',
+          //   name: 'Details',
+          // },
+        ];
+        break;
+
+        case 'class-room':
+        this.showMoreOptions = [
           {
-            icon: 'information-circle',
-            id: 'details',
-            name: 'Details',
+            icon: 'create',
+            id: 'edit',
+            name: 'Update',
           },
+          {
+            icon: 'trash',
+            id: 'delete',
+            name: 'Delete',
+          },
+          // {
+          //   icon: 'information-circle',
+          //   id: 'details',
+          //   name: 'Details',
+          // },
         ];
         break;
 

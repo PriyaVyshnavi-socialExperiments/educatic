@@ -35,7 +35,7 @@ export class ClassRoomAddPage implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.isEditClassRoom = params.has('id');
+      this.isEditClassRoom = params.has('classId');
     });
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
@@ -52,7 +52,7 @@ export class ClassRoomAddPage implements OnInit {
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
-      school: new FormControl('', [
+      schoolId: new FormControl('', [
         Validators.required,
       ])
     });
@@ -82,7 +82,7 @@ export class ClassRoomAddPage implements OnInit {
     } else {
       const classRoomInfo = {
         classId: this.classRoom?.classId,
-        schoolId: this.f.school.value,
+        schoolId: this.f.schoolId.value,
         classDivision: this.f.classDivision.value,
         classRoomName: this.f.classRoomName.value,
         createdBy: this.currentUser.id,
