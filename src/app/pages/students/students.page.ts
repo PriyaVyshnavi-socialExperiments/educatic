@@ -53,7 +53,7 @@ export class StudentsPage implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    this.studentService.GetStudents(this.currentUser.defaultSchoolId, this.classRoomId).subscribe((data) => {
+    this.studentService.GetStudents(this.currentUser.defaultSchoolId, this.currentUser.classRoomId).subscribe((data) => {
       this.students = [...data]
     });
   }
@@ -62,20 +62,23 @@ export class StudentsPage implements OnInit, AfterViewInit {
     this.schoolSelectRef.open();
   }
 
-  selectClass() {
-    this.classSelectRef.open();
+  async selectClass() {
+    if(this.currentUser?.defaultSchoolId) {
+    await this.classSelectRef.open();
+    } else {
+      this.selectSchool();
+    }
   }
 
-  setSchool(selectedValue) {
+  async setSchool(selectedValue) {
     this.currentUser.defaultSchoolId = selectedValue.detail.value;
-    this.classRooms = this.classRoomService.GetClassRooms(this.currentUser.defaultSchoolId);
-    setTimeout(() => {
-      this.classSelectRef.open();
-    }, 1500);
+    this.classRooms =  this.classRoomService.GetClassRooms(this.currentUser.defaultSchoolId);
+    await this.classSelectRef.open();
   }
 
   setClassRoom(selectedValue) {
     this.classRoomId = selectedValue.detail.value;
+    this.currentUser.classRoomId = this.classRoomId;
     this.refresh();
   }
 

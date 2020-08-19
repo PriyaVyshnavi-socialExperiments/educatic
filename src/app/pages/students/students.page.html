@@ -10,14 +10,15 @@
         </ion-buttons>
         <ion-item [hidden]='true'>
             <ion-label>Choose School</ion-label>
-            <ion-select placeholder="School" #schoolList (ionChange)='setSchool($event)'>
+            <ion-select placeholder="School" interface="popover" #schoolList (click)="setSchool($event)"
+                (change)="setSchool($event)" (ionChange)='setSchool($event)'>
                 <ion-select-option *ngFor="let school of schools" value="{{ school.id }}">{{ school.name }}
                 </ion-select-option>
             </ion-select>
         </ion-item>
         <ion-item [hidden]='true'>
             <ion-label>Choose Class</ion-label>
-            <ion-select placeholder="School" #classList (ionChange)='setClassRoom($event)'>
+            <ion-select placeholder="School" #classList (ionChange)='setClassRoom($event)' interface="popover">
                 <ion-select-option *ngFor="let classRoom of classRooms | async" value="{{ classRoom.classId }}">
                     {{ classRoom.classRoomName }} - {{ classRoom.classDivision }}</ion-select-option>
             </ion-select>
@@ -25,8 +26,8 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-grid class="grid">
-        <ion-row  class="ion-justify-content-center" *ngIf="students.length">
+    <ion-grid class="grid" *ngIf="students.length">
+        <ion-row class="ion-justify-content-center">
             <ion-card class="item-card" *ngFor="let student of students">
                 <ion-card-content>
                     <div class="contact-grid">
@@ -48,6 +49,15 @@
                     </div>
                 </ion-card-content>
             </ion-card>
+        </ion-row>
+    </ion-grid>
+    <ion-grid style="height: 100%" *ngIf="!students.length">
+        <ion-row justify-content-center align-items-center class="justify-center">
+            <div text-center>
+                <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+                <h4>No Student Found</h4>
+                <p>Looks like there are no student available at this moment.</p>
+            </div>
         </ion-row>
     </ion-grid>
 </ion-content>
