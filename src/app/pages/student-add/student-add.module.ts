@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { IonicModule } from '@ionic/angular';
 import { StudentAddPageRoutingModule } from './student-add-routing.module';
 import { StudentAddPage } from './student-add.page';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   imports: [
@@ -20,6 +21,7 @@ import { StudentAddPage } from './student-add.page';
     MatInputModule,
     MatSelectModule,
     MatIconModule,
+    MatButtonModule,
   ],
   declarations: [StudentAddPage]
 })
