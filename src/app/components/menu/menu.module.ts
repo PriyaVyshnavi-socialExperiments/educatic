@@ -84,6 +84,36 @@ const routes: Routes = [
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
+        path: 'students/:schoolId',
+        loadChildren: '../../pages/students/students.module#StudentsPageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
+        path: 'students/:schoolId/:classId',
+        loadChildren: '../../pages/students/students.module#StudentsPageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
+        path: 'student/add',
+        loadChildren: () => import('../../pages/student-add/student-add.module').then( m => m.StudentAddPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
+        path: 'student/add/:schoolId',
+        loadChildren: () => import('../../pages/student-add/student-add.module').then( m => m.StudentAddPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
+        path: 'student/add/:schoolId/:classId',
+        loadChildren: () => import('../../pages/student-add/student-add.module').then( m => m.StudentAddPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
+        path: 'student/:schoolId/:classId/edit/:studentId',
+        loadChildren: () => import('../../pages/student-add/student-add.module').then( m => m.StudentAddPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
+      {
         path: 'attendance',
         loadChildren: '../../pages/attendance/attendance.module#AttendancePageModule',
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }

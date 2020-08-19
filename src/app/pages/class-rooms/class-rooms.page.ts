@@ -20,19 +20,19 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
   schoolName: string;
   currentUser: IUser;
 
-  constructor( private classRoomService: ClassRoomService,
+  constructor(private classRoomService: ClassRoomService,
     private authenticationService: AuthenticationService,
     private popoverController: PopoverController,
     private dataShare: DataShareService,
-    public router: Router, ) { }
+    public router: Router,) { }
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
       this.schoolId = user.defaultSchoolId;
       this.schools = user.schools;
-      if(this.schoolId) {
-      this.schoolName = user.schools.find((school) => school.id === this.schoolId).name;
+      if (this.schoolId) {
+        this.schoolName = user.schools.find((school) => school.id === this.schoolId).name;
       }
     });
   }
@@ -67,7 +67,7 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
       component: ActionPopoverPage,
       mode: 'ios',
       event: ev,
-      componentProps: { id: classId, type: 'class-room' },
+      componentProps: { id: classId, schoolId: this.currentUser.defaultSchoolId, type: 'class-room' },
       cssClass: 'pop-over-style',
     });
 
@@ -80,6 +80,12 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
         case 'delete':
           this.ClassRoomEdit(actionData.currentId);
           break;
+        case 'students':
+          this.router.navigateByUrl(`/students/${actionData.schoolId}/${actionData.currentId}`);
+          break;
+        case 'add-student':
+          this.router.navigateByUrl(`/student/add/${actionData.schoolId}/${actionData.currentId}`);
+          break;
         default:
           break;
       }
@@ -87,9 +93,9 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
 
     return await popover.present();
   }
- 
+
   public ClassRoomEdit(classId: string) {
-    const currentClassRoom= this.classRooms.find(classRoom => classRoom.classId === classId);
+    const currentClassRoom = this.classRooms.find(classRoom => classRoom.classId === classId);
     this.dataShare.setData(currentClassRoom);
     this.router.navigateByUrl(`/class-room/edit/${this.currentUser.defaultSchoolId}/${classId}`);
   }
@@ -101,7 +107,7 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
    * name
    */
   public delete() {
-    
+
   }
 
 }

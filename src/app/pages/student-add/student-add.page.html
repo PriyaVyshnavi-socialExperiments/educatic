@@ -1,0 +1,180 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Student</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="limiter">
+    <div class="container-login100">
+      <div class="wrap-login100">
+        <form class="login100-form validate-form" [formGroup]="studentForm" (ngSubmit)="SubmitStudent()">
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>School</mat-label>
+                <mat-select formControlName="schoolId" (selectionChange)="onChangeSchool($event)">
+                  <mat-option *ngFor="let school of schoolInfo; let i = index" value="{{school.id}}">
+                    {{school.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('schoolId').hasError('required')">
+                  A school is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Class Division</mat-label>
+                <mat-select formControlName="classId">
+                  <mat-option *ngFor="let classRoom of classInfo; let i = index" value="{{classRoom.classId}}">
+                    {{ classRoom.classRoomName }} - {{ classRoom.classDivision }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('classId').hasError('required')">
+                  A class division is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstname" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('firstname').hasError('required')">
+                  A first name is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastname" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('lastname').hasError('required')">
+                  A last name is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('email').hasError('required') || studentForm.get('email').touched">
+                  A valid email address is required in order to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Address 1</mat-label>
+                <input matInput formControlName="address1" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('address1').hasError('required')">
+                  A address is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Address 2</mat-label>
+                <input matInput formControlName="address2" autocomplete="off">
+              </mat-form-field>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Country</mat-label>
+                <mat-select (selectionChange)="onChangeCountry($event)" formControlName="country">
+                  <mat-option *ngFor="let country of countryInfo; let i = index" value="{{country.CountryName}}">
+                    {{country.CountryName}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('country').hasError('required')">
+                  A country is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>State</mat-label>
+                <mat-select (selectionChange)="onChangeState($event)" formControlName="state">
+                  <mat-option *ngFor="let state of stateInfo; let j = index" value="{{state.StateName}}">
+                    {{state.StateName}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('state').hasError('required')">
+                  A state is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>City </mat-label>
+                <mat-select formControlName="city">
+                  <mat-option *ngFor="let city of cityInfo; let k = index" value="{{city}}">{{city}}</mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('city').hasError('required')">
+                  A city is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Zip </mat-label>
+                <input matInput formControlName="zip" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="studentForm.get('zip').hasError('required')">
+                  A zip is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2"></div>
+            <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn mr-3"
+                [disabled]="!studentForm.valid " type="submit">
+                Submit
+              </button>
+              <button mat-flat-button type="button" class="login100-form-btn container-login100-form-btn"
+                [routerLink]="['/students']">
+                Cancel
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>

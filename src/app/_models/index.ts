@@ -11,6 +11,7 @@ export * from './school';
 export * from './country-state-city';
 export * from './teacher';
 export * from './class-room';
+export * from './student';
 
 
 

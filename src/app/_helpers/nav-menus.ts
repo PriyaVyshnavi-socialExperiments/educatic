@@ -90,17 +90,32 @@ export class NavMenuHelper {
       ]
     },
     {
+      name: 'Students',
+      icon: 'school-outline',
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      active: true,
+      children: [
+        {
+          name: 'All Students',
+          path: '/students',
+          icon: 'list',
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin,  Role.Teacher],
+          active: true
+        },
+        {
+          name: 'Add Student',
+          path: '/student/add',
+          icon: 'add-circle',
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin,  Role.Teacher],
+          active: true
+        }
+      ]
+    },
+    {
       name: 'Attendance',
       path: '/attendance',
       icon: 'calendar-outline',
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
-      active: true
-    },
-    {
-      name: 'Students',
-      path: '/students',
-      icon: 'school-outline',
-      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
       active: true
     },
   ];
