@@ -19,7 +19,7 @@
         <ion-item [hidden]='true'>
             <ion-label>Choose Class</ion-label>
             <ion-select placeholder="School" #classList (ionChange)='setClassRoom($event)' interface="popover">
-                <ion-select-option *ngFor="let classRoom of classRooms | async" value="{{ classRoom.classId }}">
+                <ion-select-option *ngFor="let classRoom of classRooms" value="{{ classRoom.classId }}">
                     {{ classRoom.classRoomName }} - {{ classRoom.classDivision }}</ion-select-option>
             </ion-select>
         </ion-item>

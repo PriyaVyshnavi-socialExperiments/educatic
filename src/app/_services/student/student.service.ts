@@ -73,6 +73,22 @@ export class StudentService extends OfflineService {
     );
   }
 
+  public GetImages(id) {
+
+  }
+
+  public UploadImage(blobData, name, ext) {
+      return of();
+  }
+
+  public UploadImageFile(file: File) {
+    return of();
+  }
+
+  public DeleteImage(id) {
+    return of();
+  }
+
   private UpdateStudentOfflineList(student: IStudent) {
     this.GetOfflineData('Student', 'student-list').then((data) => {
       let studentList = data as IStudent[];

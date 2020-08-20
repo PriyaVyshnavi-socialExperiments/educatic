@@ -4,8 +4,9 @@
     }
 
     .item-card {
-        height          : 100% !important;
-        width           : 300px !important;
+        cursor          : pointer;
+        height          : 100%;
+        width           : 300px;
         background-color: whitesmoke;
     }
 
@@ -22,17 +23,9 @@
     float: unset !important;
 
     ion-icon {
-        cursor   : pointer;
         font-size: x-large;
         position : absolute;
         right    : 30px;
         top      : 27px;
     }
-}
-
-.justify-center {
-    height         : 100%;
-    flex-direction : column;
-    text-align     : center;
-    justify-content: center;
 }
