@@ -63,8 +63,8 @@ export class StudentsPage implements OnInit, AfterViewInit {
   }
 
   async selectClass() {
-    if(this.currentUser?.defaultSchoolId) {
-    await this.classSelectRef.open();
+    if (this.currentUser?.defaultSchoolId) {
+      await this.classSelectRef.open();
     } else {
       this.selectSchool();
     }
@@ -72,8 +72,12 @@ export class StudentsPage implements OnInit, AfterViewInit {
 
   async setSchool(selectedValue) {
     this.currentUser.defaultSchoolId = selectedValue.detail.value;
-    this.classRooms =  this.classRoomService.GetClassRooms(this.currentUser.defaultSchoolId);
-    await this.classSelectRef.open();
+    await this.classRoomService.GetClassRooms(this.currentUser.defaultSchoolId).toPromise().then((data) => {
+      this.classRooms = data;
+      setTimeout(() =>{
+        this.classSelectRef.open();
+      });
+    });
   }
 
   setClassRoom(selectedValue) {
@@ -99,6 +103,9 @@ export class StudentsPage implements OnInit, AfterViewInit {
           break;
         case 'delete':
           this.StudentEdit(actionData.currentId);
+          break;
+        case 'upload-photo':
+          this.router.navigateByUrl(`student/${actionData.currentId}/photos`);
           break;
         default:
           break;

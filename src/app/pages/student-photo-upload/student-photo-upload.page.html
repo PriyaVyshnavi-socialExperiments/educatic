@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Students</ion-title>
+    <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+        <ion-button ion-button block (click)='uploadPhotos()'>Upload photos</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="grid" *ngIf="studentPhotos.length">
+
+    <ion-row class="ion-justify-content-center">
+      <ion-card class="item-card" *ngFor="let photo of studentPhotos">
+        <ion-card-content>
+          <div class="contact-grid">
+            <ion-icon class="header-dropdown m-r--5" (click)="selectImageSource(photo.id)"
+              name="camera" slot="end"></ion-icon>
+            <img *ngIf="!photo.image" src="assets/images/avatar.svg" alt="">
+            <img *ngIf="photo.image" [src]="photo.image" alt="">
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
+</ion-content>
