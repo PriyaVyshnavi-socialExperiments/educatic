@@ -7,6 +7,7 @@ import { ITeacher, Role } from '../../_models';
 import { DataShareService } from '../../_services/data-share.service';
 import { SchoolService } from '../../_services/school/school.service';
 import { TeacherService } from '../../_services/teacher/teacher.service';
+import { CustomEmailValidator } from '../../_helpers/custom-email-validator';
 
 @Component({
   selector: 'app-teacher-add',
@@ -34,7 +35,8 @@ export class TeacherAddPage implements OnInit, OnDestroy {
     private teacherService: TeacherService,
     private schoolService: SchoolService,
     private dataShare: DataShareService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private emailValidator: CustomEmailValidator
   ) { }
 
   ngOnDestroy(): void {
@@ -59,11 +61,12 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
-      email: new FormControl('', [
+      email: new FormControl('',Validators.compose( [
         Validators.required,
         Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
-        Validators.maxLength(200),
+        Validators.maxLength(200)
       ]),
+      Validators.composeAsync([this.emailValidator.existingEmailValidator()])),
       address1: new FormControl('', [
         Validators.required,
         Validators.maxLength(100),
