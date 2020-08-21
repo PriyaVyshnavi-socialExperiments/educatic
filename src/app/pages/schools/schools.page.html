@@ -32,10 +32,27 @@
           <ion-card-title>{{school.name}}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <p> {{school.address1}} {{school.address1}} </p>
+          <p> {{school.address1}} {{school.address2}} </p>
           <p>{{school.city}}, {{school.state}}, {{school.country}}</p>
           <p>{{school.zip}}</p>
         </ion-card-content>
+
+        <ion-footer>
+          <ion-grid>
+            <ion-row justify-content-around>
+              <ion-col>
+                <ion-button expand="block" (click)="ClassList($event, school.id)" fill="clear">
+                   Classes
+                </ion-button>
+              </ion-col>
+              <ion-col>
+                <ion-button expand="block" (click)="NewClass($event, school.id)" fill="clear">
+                  New Class
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-footer>
       </ion-card>
     </ion-row>
   </ion-grid>

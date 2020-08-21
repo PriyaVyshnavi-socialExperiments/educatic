@@ -30,7 +30,7 @@ export class TeachersPage implements OnInit, AfterViewInit {
   ) { }
 
   ngAfterViewInit(): void {
-    if (this.schoolId) {
+    if (this.currentUser.schoolId) {
       this.refresh();
     } else {
       this.schoolSelectRef.open();
@@ -40,7 +40,7 @@ export class TeachersPage implements OnInit, AfterViewInit {
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
-      this.schoolId = user.defaultSchoolId;
+      this.schoolId = user.schoolId;
       this.schools = user.schools;
     });
   }
@@ -50,12 +50,12 @@ export class TeachersPage implements OnInit, AfterViewInit {
   }
 
   setSchool(selectedValue) {
-    this.currentUser.defaultSchoolId = selectedValue.detail.value;
+    this.currentUser.schoolId = selectedValue.detail.value;
     this.refresh();
   }
 
   refresh() {
-    this.teacherService.GetTeachers(this.currentUser.defaultSchoolId).subscribe((data) => {
+    this.teacherService.GetTeachers(this.currentUser.schoolId).subscribe((data) => {
       this.teachers = [...data]
     });
   }
@@ -71,8 +71,11 @@ export class TeachersPage implements OnInit, AfterViewInit {
     });
 
     popover.onDidDismiss().then((data) => {
+      if(!data.data) {
+        return;
+      }
       const actionData = data?.data;
-      this.currentUser.defaultSchoolId = actionData.currentId;
+      this.currentUser.schoolId = actionData.currentId;
       switch (actionData?.selectedOption) {
         case 'edit':
           this.TeacherEdit(actionData.currentId);
@@ -91,7 +94,7 @@ export class TeachersPage implements OnInit, AfterViewInit {
   public TeacherEdit(teacherId: string) {
     const currentTeacher = this.teachers.find(teacher => teacher.id === teacherId);
     this.dataShare.setData(currentTeacher);
-    this.router.navigateByUrl(`/teacher/edit/${this.currentUser.defaultSchoolId}/${teacherId}`);
+    this.router.navigateByUrl(`/teacher/edit/${this.currentUser.schoolId}/${teacherId}`);
   }
 
 }

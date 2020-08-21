@@ -29,7 +29,7 @@
 
       <ion-content>
         <div *ngFor="let menu of currentUser.menuItems; let i = index">
-          <ion-menu-toggle *ngIf="menu.path" auto-hide="false">
+          <ion-menu-toggle *ngIf="menu && menu.path" auto-hide="false">
             <ion-list lines="none">
               <ion-item [routerLink]="menu.path" [class.active-menu]="activePath === menu.path">
                 <ion-icon [name]="menu.icon" slot="start"></ion-icon>
@@ -38,7 +38,7 @@
             </ion-list>
           </ion-menu-toggle>
 
-          <ion-item *ngIf="menu.children?.length>0" (click)="menu.open = !menu.open" [class.active-parent]="menu.open"
+          <ion-item *ngIf="menu && menu.children?.length>0" (click)="menu.open = !menu.open" [class.active-parent]="menu.open"
             details="false" lines="none">
             <ion-icon [name]="menu.icon" slot="start"></ion-icon>
             <ion-icon name="chevron-forward-circle" slot="end" *ngIf="!menu.open"></ion-icon>
@@ -46,7 +46,7 @@
             <ion-label>{{menu.name}}</ion-label>
           </ion-item>
 
-          <ion-list *ngIf="menu.open" lines="none">
+          <ion-list *ngIf="menu && menu.open" lines="none">
             <ion-menu-toggle auto-hide="false">
               <ion-item class="sub-item" *ngFor="let sub of menu.children" [routerLink]="sub.path"
                 [class.active-menu]="activePath === sub.path">

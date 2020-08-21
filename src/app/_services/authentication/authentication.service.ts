@@ -46,7 +46,10 @@ export class AuthenticationService extends OfflineService {
                     // login successful if there's a jwt token in the response
                     if (response && response.token) {
                         // store user details and jwt token in local storage to keep user logged in between page refreshes
-                        response.menuItems = [... this.menuHelper.GetMenuList(response.role)]
+                        response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
+                        response.schools = [...response.schools];
+                        response.classRooms = [...response.schools[0].classRooms];
+                        response.schoolId = response.schools[0].id;
                         this.SetOfflineData('User', 'current-user', response);
                         this.currentUserSubject.next(response);
                         this.ready.next(response);
@@ -68,8 +71,7 @@ export class AuthenticationService extends OfflineService {
             .pipe(
                 map(response => {
                     return response;
-                }
-                )
+                })
             );
     }
 }

@@ -4,21 +4,15 @@
     }
 
     .item-card {
-        cursor          : pointer;
-        height          : 100%;
-        width           : 100%;
-        background-color: whitesmoke;
+        cursor: pointer;
+        height: 100%;
+        width: 300px;
     }
-
 }
 
-.ngx-header {
-    text-align: center;
-}
-
-ion-icon {
-    font-size: x-large;
-    position: absolute;
-    right: 15%;
-    top: 23%;
+.pop-over-style {
+    .popover-content {
+        //width: 80% !important; - this wont work or the bottom one.
+        --width: 100px !important;
+    }
 }

@@ -29,7 +29,7 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
-      this.schoolId = user.defaultSchoolId;
+      this.schoolId = user.schoolId;
       this.schools = user.schools;
       if (this.schoolId) {
         this.schoolName = user.schools.find((school) => school.id === this.schoolId).name;
@@ -38,7 +38,7 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.schoolId) {
+    if (this.currentUser.schoolId) {
       this.refresh();
     } else {
       this.schoolSelectRef.open();
@@ -46,7 +46,7 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    this.classRoomService.GetClassRooms(this.currentUser.defaultSchoolId).subscribe((data) => {
+    this.classRoomService.GetClassRooms(this.currentUser.schoolId).subscribe((data) => {
       this.classRooms = [...data]
     });
   }
@@ -56,8 +56,8 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
   }
 
   setSchool(selectedValue) {
-    this.currentUser.defaultSchoolId = selectedValue.detail.value;
-    this.schoolName = this.currentUser.schools.find((school) => school.id === this.currentUser.defaultSchoolId).name;
+    this.currentUser.schoolId = selectedValue.detail.value;
+    this.schoolName = this.currentUser.schools.find((school) => school.id === this.currentUser.schoolId).name;
     this.refresh();
   }
 
@@ -67,11 +67,14 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
       component: ActionPopoverPage,
       mode: 'ios',
       event: ev,
-      componentProps: { id: classId, schoolId: this.currentUser.defaultSchoolId, type: 'class-room' },
+      componentProps: { id: classId, schoolId: this.currentUser.schoolId, type: 'class-room' },
       cssClass: 'pop-over-style',
     });
 
     popover.onDidDismiss().then((data) => {
+      if(!data.data) {
+        return;
+      }
       const actionData = data?.data;
       switch (actionData?.selectedOption) {
         case 'edit':
@@ -79,12 +82,6 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
           break;
         case 'delete':
           this.ClassRoomEdit(actionData.currentId);
-          break;
-        case 'students':
-          this.router.navigateByUrl(`/students/${actionData.schoolId}/${actionData.currentId}`);
-          break;
-        case 'add-student':
-          this.router.navigateByUrl(`/student/add/${actionData.schoolId}/${actionData.currentId}`);
           break;
         default:
           break;
@@ -97,7 +94,17 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
   public ClassRoomEdit(classId: string) {
     const currentClassRoom = this.classRooms.find(classRoom => classRoom.classId === classId);
     this.dataShare.setData(currentClassRoom);
-    this.router.navigateByUrl(`/class-room/edit/${this.currentUser.defaultSchoolId}/${classId}`);
+    this.router.navigateByUrl(`/class-room/edit/${this.currentUser.schoolId}/${classId}`);
+  }
+
+  public  StudentList(ev: any, classId: string) {
+    this.currentUser.classRoomId = classId;
+    this.router.navigateByUrl(`/students/${this.currentUser.schoolId}/${classId}`);
+  }
+
+  public  NewStudent(ev: any, classId: string) {
+    this.currentUser.classRoomId = classId;
+    this.router.navigateByUrl(`/student/add/${this.currentUser.schoolId}/${classId}`);
   }
 
   public edit() {

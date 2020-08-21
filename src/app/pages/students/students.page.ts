@@ -37,7 +37,7 @@ export class StudentsPage implements OnInit, AfterViewInit {
   ) { }
 
   ngAfterViewInit(): void {
-    if (this.schoolId) {
+    if (this.currentUser.schoolId) {
       this.refresh();
     } else {
       this.schoolSelectRef.open();
@@ -45,17 +45,22 @@ export class StudentsPage implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.currentUser.subscribe(async (user) => {
       this.currentUser = user;
-      this.schoolId = user.defaultSchoolId;
+      this.schoolId = user.schoolId;
       this.schools = user.schools;
+      this.classRooms = user.classRooms;
     });
   }
 
-  refresh() {
-    this.studentService.GetStudents(this.currentUser.defaultSchoolId, this.currentUser.classRoomId).subscribe((data) => {
+  async refresh() {
+    if (this.currentUser.classRoomId) {
+    this.studentService.GetStudents(this.currentUser.schoolId, this.currentUser.classRoomId).subscribe((data) => {
       this.students = [...data]
     });
+  } else {
+    await this.classSelectRef.open();
+  }
   }
 
   selectSchool() {
@@ -63,7 +68,7 @@ export class StudentsPage implements OnInit, AfterViewInit {
   }
 
   async selectClass() {
-    if (this.currentUser?.defaultSchoolId) {
+    if (this.currentUser.schoolId) {
       await this.classSelectRef.open();
     } else {
       this.selectSchool();
@@ -71,8 +76,8 @@ export class StudentsPage implements OnInit, AfterViewInit {
   }
 
   async setSchool(selectedValue) {
-    this.currentUser.defaultSchoolId = selectedValue.detail.value;
-    await this.classRoomService.GetClassRooms(this.currentUser.defaultSchoolId).toPromise().then((data) => {
+    this.currentUser.schoolId = selectedValue.detail.value;
+    await this.classRoomService.GetClassRooms(this.currentUser.schoolId).toPromise().then((data) => {
       this.classRooms = data;
       setTimeout(() =>{
         this.classSelectRef.open();
@@ -95,8 +100,11 @@ export class StudentsPage implements OnInit, AfterViewInit {
     });
 
     popover.onDidDismiss().then((data) => {
+      if(!data.data) {
+        return;
+      }
       const actionData = data?.data;
-      this.currentUser.defaultSchoolId = actionData.currentId;
+      this.currentUser.schoolId = actionData.currentId;
       switch (actionData?.selectedOption) {
         case 'edit':
           this.StudentEdit(actionData.currentId);
@@ -118,6 +126,6 @@ export class StudentsPage implements OnInit, AfterViewInit {
   StudentEdit(studentId: string) {
     const currentStudent = this.students.find(student => student.id === studentId);
     this.dataShare.setData(currentStudent);
-    this.router.navigateByUrl(`/student/${this.currentUser.defaultSchoolId}/${this.classRoomId}/edit/${studentId}`);
+    this.router.navigateByUrl(`/student/${this.currentUser.schoolId}/${this.classRoomId}/edit/${studentId}`);
   }
 }

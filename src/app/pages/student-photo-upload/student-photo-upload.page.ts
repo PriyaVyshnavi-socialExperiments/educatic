@@ -32,7 +32,7 @@ export class StudentPhotoUploadPage implements OnInit {
   }
 
   async uploadPhotos() {
-    
+
   }
 
   async addImage(source: CameraSource, id) {
@@ -46,8 +46,8 @@ export class StudentPhotoUploadPage implements OnInit {
 
     // const blobData = this.b64toBlob(image.base64String, `image/${image.format}`);
     // const imageName = 'Give me a name';
-    
-    this.studentPhotos[id].image = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl)); 
+
+    this.studentPhotos[id].image = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
     // this.studentService.UploadImage(blobData, imageName, image.format).subscribe((newImage) => {
     //   this.studentPhotos[id].image = newImage
     // });

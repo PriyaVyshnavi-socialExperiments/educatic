@@ -3,11 +3,13 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { CountryHelper } from 'src/app/_helpers/countries';
-import { IStudent, Role } from 'src/app/_models';
+import { IStudent, Role, IUser } from 'src/app/_models';
 import { DataShareService } from 'src/app/_services/data-share.service';
 import { StudentService } from 'src/app/_services/student/student.service';
 import { SchoolService } from 'src/app/_services/school/school.service';
 import { ClassRoomService } from 'src/app/_services/class-room/class-room.service';
+import { AuthenticationService } from '../../_services';
+
 
 @Component({
   selector: 'app-student-add',
@@ -26,6 +28,8 @@ export class StudentAddPage implements OnInit, OnDestroy {
   latitude: number;
   longitude: number;
   isEdit = false;
+  currentUser: IUser;
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -35,21 +39,29 @@ export class StudentAddPage implements OnInit, OnDestroy {
     private schoolService: SchoolService,
     private classRoomService: ClassRoomService,
     private dataShare: DataShareService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthenticationService
   ) { }
 
 
 
   ngOnInit() {
+    this.authService.currentUser.subscribe((user) => {
+      this.currentUser = user;
+      console.log("this.addstudet: ", this.currentUser);
+
+    });
+
     this.route.paramMap.subscribe(params => {
       this.isEdit = params.has('studentId');
     });
+
     this.getSchools();
     this.studentForm = this.formBuilder.group({
-      classId: new FormControl('', [
+      classId: new FormControl(this.currentUser.classRoomId, [
         Validators.required
       ]),
-      schoolId: new FormControl('', [
+      schoolId: new FormControl(this.currentUser.schoolId, [
         Validators.required
       ]),
       firstname: new FormControl('', [

@@ -1,16 +1,17 @@
 ﻿import { Role, IMenuItems, ISchool } from '.';
+import { IClassRoom } from './class-room';
 
 export interface IUser {
     id: string;
-    defaultSchoolId: string;
-    classRoomId: string;
     email: string;
     firstName: string;
     lastName: string;
-    schoolId: string;
     role: Role;
     token?: string;
     forceChangePasswordNextLogin: boolean;
     menuItems: IMenuItems[];
-    schools: ISchool[]
+    schools: ISchool[];
+    classRooms: IClassRoom[];
+    schoolId: string;
+    classRoomId: string;
 }
