@@ -9,6 +9,7 @@ import { StudentService } from 'src/app/_services/student/student.service';
 import { SchoolService } from 'src/app/_services/school/school.service';
 import { ClassRoomService } from 'src/app/_services/class-room/class-room.service';
 import { AuthenticationService } from '../../_services';
+import { CustomEmailValidator } from 'src/app/_helpers/custom-email-validator';
 
 
 @Component({
@@ -40,7 +41,8 @@ export class StudentAddPage implements OnInit, OnDestroy {
     private classRoomService: ClassRoomService,
     private dataShare: DataShareService,
     private route: ActivatedRoute,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    private emailValidator: CustomEmailValidator
   ) { }
 
 
@@ -75,11 +77,12 @@ export class StudentAddPage implements OnInit, OnDestroy {
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
-      email: new FormControl('', [
+      email: new FormControl('',Validators.compose( [
         Validators.required,
         Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
-        Validators.maxLength(200),
+        Validators.maxLength(200)
       ]),
+      Validators.composeAsync([this.emailValidator.existingEmailValidator()])),
       address1: new FormControl('', [
         Validators.required,
         Validators.maxLength(100),

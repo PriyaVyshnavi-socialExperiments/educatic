@@ -60,18 +60,17 @@ export class SigninComponent implements OnInit, OnDestroy {
         password: this.f.password.value
       };
       this.authenticationService.Login(this.loginRequest)
-        .subscribe( (user) => {
-          if(user.forceChangePasswordNextLogin)
-          {
+        .subscribe((user) => {
+          if (user.forceChangePasswordNextLogin) {
             this.router.navigate(['/reset/password']);
           } else {
-            if(user.role === Role.Student) {
+            if (user.role === Role.Student) {
               this.router.navigate(['/courses']);
             } else {
               this.router.navigate([this.returnUrl]);
             }
           }
-          },
+        },
           error => {
             this.presentToast();
             this.loading = false;

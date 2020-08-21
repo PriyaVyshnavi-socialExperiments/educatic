@@ -60,8 +60,14 @@
                 <input matInput formControlName="email" required autocomplete="off">
                 <mat-icon matSuffix>
                 </mat-icon>
-                <mat-error *ngIf="teacherForm.get('email').hasError('required') || teacherForm.get('email').touched">
+                <mat-error *ngIf="teacherForm.get('email').hasError('required')">
+                  A email is required to proceed.
+                </mat-error>
+                <mat-error *ngIf="teacherForm.get('email').hasError('pattern')">
                   A valid email address is required in order to proceed.
+                </mat-error>
+                <mat-error *ngIf="teacherForm.get('email').hasError('existingEmail')">
+                  Email already exists.
                 </mat-error>
               </mat-form-field>
             </div>

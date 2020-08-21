@@ -29,16 +29,16 @@ export class HomePage implements OnInit, OnDestroy {
     this.isLoggedIn = this.authenticationService.currentUser ? true : false;
     this.isMobileDevice = isMobileDevice;
     this.authenticationService.currentUser.subscribe((user) => {
-      if( !user) {
+      if (!user) {
         return;
       }
       this.currentUser = user;
-     //this.RedirectToRoleSpecificURL(user.role)
+      this.RedirectToRoleSpecificURL(user.role)
     });
     this.refreshDashboard();
   }
 
-  refreshDashboard(){
+  refreshDashboard() {
     this.schoolService.GetPowerBIConfig().subscribe((config) => {
       this.powerBIConfig = config[0];
       this.powerBIConfig.embedUrl = this.powerBIConfig.embedUrl + '&isMobile=true';
@@ -52,13 +52,16 @@ export class HomePage implements OnInit, OnDestroy {
   private RedirectToRoleSpecificURL(userRole) {
     switch (userRole) {
       case Role.SuperAdmin:
-        this.router.navigate(['/schools']);
+        this.router.navigate(['/']);
         break;
       case Role.SchoolSuperAdmin:
-        this.router.navigate(['/teachers']);
+        this.router.navigate(['/']);
         break;
       case Role.Teacher:
-        this.router.navigate(['/students']);
+        this.router.navigate(['/']);
+        break;
+      case Role.Student:
+        this.router.navigate(['/courses']);
         break;
       default:
         break;

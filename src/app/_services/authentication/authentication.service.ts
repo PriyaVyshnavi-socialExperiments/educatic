@@ -1,6 +1,6 @@
 ﻿import { Injectable, Injector } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 import { IUser, LoginRequest } from '../../_models';
 import { ApplicationInsightsService } from '../../_helpers/application-insights';
@@ -74,4 +74,8 @@ export class AuthenticationService extends OfflineService {
                 })
             );
     }
+
+    public VerifyEmail(emailId: string) {
+          return this.http.Get<boolean>(`/verifyemail/${emailId}`);
+      }
 }
