@@ -39,6 +39,9 @@ export class TeachersPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
+      if( !user) {
+        return;
+      }
       this.currentUser = user;
       this.schoolId = user.schoolId;
       this.schools = user.schools;

@@ -28,12 +28,16 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
       this.currentUser = user;
       this.schoolId = user.schoolId;
       this.schools = user.schools;
       if (this.schoolId) {
         this.schoolName = user.schools.find((school) => school.id === this.schoolId).name;
       }
+      this.refresh();
     });
   }
 
@@ -72,7 +76,7 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
     });
 
     popover.onDidDismiss().then((data) => {
-      if(!data.data) {
+      if (!data.data) {
         return;
       }
       const actionData = data?.data;
@@ -97,13 +101,15 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
     this.router.navigateByUrl(`/class-room/edit/${this.currentUser.schoolId}/${classId}`);
   }
 
-  public  StudentList(ev: any, classId: string) {
+  public StudentList(ev: any, classId: string) {
     this.currentUser.classRoomId = classId;
+    this.currentUser.classRooms = this.classRooms;
     this.router.navigateByUrl(`/students/${this.currentUser.schoolId}/${classId}`);
   }
 
-  public  NewStudent(ev: any, classId: string) {
+  public NewStudent(ev: any, classId: string) {
     this.currentUser.classRoomId = classId;
+    this.currentUser.classRooms = this.classRooms;
     this.router.navigateByUrl(`/student/add/${this.currentUser.schoolId}/${classId}`);
   }
 

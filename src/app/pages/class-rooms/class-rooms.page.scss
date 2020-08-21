@@ -16,3 +16,10 @@
         --width: 100px !important;
     }
 }
+
+.justify-center {
+    height         : 100%;
+    flex-direction : column;
+    text-align     : center;
+    justify-content: center;
+}

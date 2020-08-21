@@ -38,6 +38,9 @@ export class ClassRoomAddPage implements OnInit {
       this.isEditClassRoom = params.has('classId');
     });
     this.authenticationService.currentUser.subscribe((user) => {
+      if( !user) {
+        return;
+      }
       this.currentUser = user;
     });
 
