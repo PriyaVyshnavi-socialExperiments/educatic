@@ -46,6 +46,9 @@ export class StudentsPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe(async (user) => {
+      if( !user) {
+        return;
+      }
       this.currentUser = user;
       this.schoolId = user.schoolId;
       this.schools = user.schools;
@@ -59,7 +62,17 @@ export class StudentsPage implements OnInit, AfterViewInit {
       this.students = [...data]
     });
   } else {
-    await this.classSelectRef.open();
+    await this.classRoomService.GetClassRooms(this.currentUser.schoolId).toPromise().then((data) => {
+      this.classRooms = data;
+      setTimeout(() =>{
+        if (!data.length) {
+          this.selectSchool()
+        } else {
+          this.currentUser.classRooms = this.classRooms;
+          this.classSelectRef.open();
+        }
+      });
+    });
   }
   }
 
@@ -80,6 +93,7 @@ export class StudentsPage implements OnInit, AfterViewInit {
     await this.classRoomService.GetClassRooms(this.currentUser.schoolId).toPromise().then((data) => {
       this.classRooms = data;
       setTimeout(() =>{
+        this.currentUser.classRooms = this.classRooms;
         this.classSelectRef.open();
       });
     });

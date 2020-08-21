@@ -47,9 +47,10 @@ export class StudentAddPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authService.currentUser.subscribe((user) => {
+      if( !user) {
+        return;
+      }
       this.currentUser = user;
-      console.log("this.addstudet: ", this.currentUser);
-
     });
 
     this.route.paramMap.subscribe(params => {

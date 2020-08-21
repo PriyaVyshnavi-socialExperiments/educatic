@@ -17,13 +17,24 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid class="grid">
+  <ion-grid style="height: 100%" *ngIf="!classRooms.length">
+    <ion-row justify-content-center align-items-center class="justify-center">
+      <div text-center>
+        <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+        <h4>No classes available for this school( <strong>{{ schoolName }})</strong></h4>
+        <p>Looks like there are no classes available at this moment.
+        </p>
+      </div>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid class="grid" *ngIf="classRooms.length">
     <ion-row class="ion-justify-content-center">
       <ion-card *ngFor="let classRoom of classRooms" class="item-card">
         <ion-card-content>
           <ion-item lines="none">
             <ion-label>
-              <h3> <strong>Class:</strong>  {{classRoom.classRoomName}}</h3>
+              <h3> <strong>Class:</strong> {{classRoom.classRoomName}}</h3>
             </ion-label>
             <ion-icon name="ellipsis-vertical-outline" (click)="actionPopover($event, classRoom.classId)" slot="end">
             </ion-icon>
@@ -39,7 +50,7 @@
             <ion-row justify-content-around>
               <ion-col>
                 <ion-button expand="block" (click)="StudentList($event, classRoom.classId)" fill="clear">
-                   Students
+                  Students
                 </ion-button>
               </ion-col>
               <ion-col>

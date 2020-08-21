@@ -29,6 +29,9 @@ export class SchoolsPage implements OnInit {
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
+      if( !user) {
+        return;
+      }
       this.currentUser = user;
     });
     this.schoolService.GetSchools().subscribe((data) => {
