@@ -51,8 +51,11 @@ export class SchoolsPage implements OnInit {
     });
     //popover.style.cssText = '--min-width: 170px; --max-width: 200px;';
     popover.onDidDismiss().then((data) => {
+      if(!data.data) {
+        return;
+      }
       const actionData = data?.data;
-      this.currentUser.defaultSchoolId = actionData.currentId;
+      this.currentUser.schoolId = actionData.currentId;
       switch (actionData?.selectedOption) {
         case 'edit':
           this.SchoolEdit(actionData.currentId);
@@ -68,12 +71,6 @@ export class SchoolsPage implements OnInit {
           break;
         case 'add-teacher':
           this.router.navigateByUrl(`/teacher/add/${actionData.currentId}`);
-          break;
-        case 'class-rooms':
-          this.router.navigateByUrl(`/class-rooms/${actionData.currentId}`);
-          break;
-        case 'add-class-room':
-          this.router.navigateByUrl(`/class-room/add/${actionData.currentId}`);
           break;
         default:
           break;
@@ -116,6 +113,16 @@ export class SchoolsPage implements OnInit {
     const currentSchool = this.schools.find(school => school.id === schoolId);
     this.schoolService.setSchoolDetails(currentSchool)
     this.menuCtrl.open('end');
+  }
+
+  public  ClassList(ev: any, schoolId: string) {
+    this.currentUser.schoolId = schoolId;
+    this.router.navigateByUrl(`/class-rooms/${schoolId}`);
+  }
+
+  public  NewClass(ev: any, schoolId: string) {
+    this.currentUser.schoolId = schoolId;
+    this.router.navigateByUrl(`/class-room/add/${schoolId}`);
   }
 
 }

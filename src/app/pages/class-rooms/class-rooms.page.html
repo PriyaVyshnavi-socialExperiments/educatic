@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>{{ schoolName }}</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button ion-button block (click)='selectSchool()'>Choose School</ion-button>
@@ -19,29 +19,37 @@
 <ion-content>
   <ion-grid class="grid">
     <ion-row class="ion-justify-content-center">
-      <ion-card class="item-card">
-        <ion-card-content *ngIf="classRooms.length">
-          <ngx-datatable class="material" [limit]="8" [rows]="classRooms" [rowHeight]="50" [columnMode]="'force'"
-            [headerHeight]="50" [footerHeight]="50">
-            <ngx-datatable-column name="Class Room" [sortable]="false" [sortable]="false">
-              <ng-template let-row="row" ngx-datatable-cell-template>
-                {{row.classRoomName}}
-              </ng-template>
-            </ngx-datatable-column>
-
-            <ngx-datatable-column name="Division" [sortable]="false">
-              <ng-template let-row="row" ngx-datatable-cell-template>
-                {{row.classDivision}}
-              </ng-template>
-            </ngx-datatable-column>
-
-            <ngx-datatable-column name="Actions" [sortable]="false">
-              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
-                <ion-icon class="header-dropdown"  (click)="actionPopover($event, row.classId)" name="ellipsis-vertical-outline" slot="end"></ion-icon>
-              </ng-template>
-        </ngx-datatable-column>
-          </ngx-datatable>
+      <ion-card *ngFor="let classRoom of classRooms" class="item-card">
+        <ion-card-content>
+          <ion-item lines="none">
+            <ion-label>
+              <h3> <strong>Class:</strong>  {{classRoom.classRoomName}}</h3>
+            </ion-label>
+            <ion-icon name="ellipsis-vertical-outline" (click)="actionPopover($event, classRoom.classId)" slot="end">
+            </ion-icon>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>
+              <h3> <strong>Division:</strong> {{classRoom.classDivision}}</h3>
+            </ion-label>
+          </ion-item>
         </ion-card-content>
+        <ion-footer>
+          <ion-grid>
+            <ion-row justify-content-around>
+              <ion-col>
+                <ion-button expand="block" (click)="StudentList($event, classRoom.classId)" fill="clear">
+                   Students
+                </ion-button>
+              </ion-col>
+              <ion-col>
+                <ion-button expand="block" (click)="NewStudent($event, classRoom.classId)" fill="clear">
+                  New Student
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-footer>
       </ion-card>
     </ion-row>
   </ion-grid>

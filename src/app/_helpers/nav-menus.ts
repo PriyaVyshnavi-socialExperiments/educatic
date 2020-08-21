@@ -70,14 +70,14 @@ export class NavMenuHelper {
     {
       name: 'Class Room',
       icon: 'text-sharp',
-      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin,  Role.Teacher],
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
       active: true,
       children: [
         {
           name: 'All Class Rooms',
           path: '/class-rooms',
           icon: 'list',
-          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin,  Role.Teacher],
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
           active: true
         },
         {
@@ -92,21 +92,43 @@ export class NavMenuHelper {
     {
       name: 'Students',
       icon: 'people-sharp',
-      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
       active: true,
       children: [
         {
           name: 'All Students',
           path: '/students',
           icon: 'list',
-          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin,  Role.Teacher],
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
           active: true
         },
         {
           name: 'Add Student',
           path: '/student/add',
           icon: 'add-circle',
-          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin,  Role.Teacher],
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
+          active: true
+        }
+      ]
+    },
+    {
+      name: 'Course',
+      icon: 'school',
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      active: true,
+      children: [
+        {
+          name: 'All Course',
+          path: '/courses',
+          icon: 'list',
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+          active: true
+        },
+        {
+          name: 'Add Course',
+          path: '/course/add',
+          icon: 'add-circle',
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
           active: true
         }
       ]
@@ -120,7 +142,7 @@ export class NavMenuHelper {
     },
   ];
 
-  constructor() {}
+  constructor() { }
 
   public GetMenuList(userRole: string): IMenuItems[] {
     const mapMenu = (menu) => {
@@ -140,10 +162,12 @@ export class NavMenuHelper {
       let menuItem = {} as IMenuItems;
       menuItem = mapMenu(menu);
       if (menuItem && menu?.children && menu?.children?.length > 0) {
-        menuItem.children =[];
-        menu.children.forEach((m) => {
-          const submenu = mapMenu(m);
-          menuItem.children.push(submenu);
+        menuItem.children = [];
+        menu.children.forEach((child) => {
+          const submenu = mapMenu(child);
+          if (submenu) {
+            menuItem.children.push(submenu);
+          }
         })
       }
       return menuItem;

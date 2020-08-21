@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from '../../../_services';
-import { IUser } from '../../../_models';
+import { IUser, Role } from '../../../_models';
 import { ConfirmedValidator } from '../../../_helpers/confirmed.validator';
 import { IResetPassword } from 'src/app/_models/reset-password';
 import { ToastController } from '@ionic/angular';
@@ -65,7 +65,11 @@ export class ResetPasswordComponent implements OnInit {
       };
       this.authenticationService.ResetPassword(this.resetPassword)
         .subscribe((data) => {
-          this.router.navigate(['/']);
+          if(this.currentUser.role === Role.Student) {
+            this.router.navigate(['/courses']);
+          } else {
+            this.router.navigate(['/']);
+          }
           this.presentToast('Password changed successfully.', 'success');
         },
           error => {

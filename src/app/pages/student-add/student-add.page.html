@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>Student</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -16,7 +16,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>School</mat-label>
-                <mat-select formControlName="schoolId" (selectionChange)="onChangeSchool($event)">
+                <mat-select formControlName="schoolId" [(value)]="currentUser.schoolId" (selectionChange)="onChangeSchool($event)">
                   <mat-option *ngFor="let school of schoolInfo; let i = index" value="{{school.id}}">
                     {{school.name}}
                   </mat-option>

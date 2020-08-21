@@ -120,6 +120,16 @@ const routes: Routes = [
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
+        path: 'courses',
+        loadChildren: () => import('../../pages/courses/courses/courses.module').then( m => m.CoursesPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+      },
+      {
+        path: 'course/add',
+        loadChildren: () => import('../../pages/course-add/course-add/course-add-routing.module').then( m => m.CourseAddPageRoutingModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+      },
+      {
         path: 'attendance',
         loadChildren: '../../pages/attendance/attendance.module#AttendancePageModule',
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }

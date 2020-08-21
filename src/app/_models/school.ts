@@ -1,3 +1,5 @@
+import { IClassRoom } from '.';
+
 export interface ISchool {
     id: string;
     name: string;
@@ -11,4 +13,5 @@ export interface ISchool {
     longitude: string;
     syncDateTime?: Date;
     createdBy: string;
+    classRooms: IClassRoom[];
 }

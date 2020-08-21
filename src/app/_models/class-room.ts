@@ -1,3 +1,5 @@
+import { IStudent } from '.';
+
 export interface IClassRoom {
     classId: string;
     schoolId: string;
@@ -5,4 +7,5 @@ export interface IClassRoom {
     classDivision: string;
     createdBy: string;
     updatedBy: string;
+    students: IStudent[];
 }

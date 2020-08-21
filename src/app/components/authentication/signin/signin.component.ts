@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { AuthenticationService } from '../../../_services';
-import { LoginRequest } from '../../../_models';
+import { LoginRequest, Role } from '../../../_models';
 import { ToastController } from '@ionic/angular';
 import { ErrorStateMatcherHelper } from '../../../_helpers/error-state-matcher';
 import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
@@ -60,12 +60,16 @@ export class SigninComponent implements OnInit, OnDestroy {
         password: this.f.password.value
       };
       this.authenticationService.Login(this.loginRequest)
-        .subscribe( (data) => {
-          if(data.forceChangePasswordNextLogin)
+        .subscribe( (user) => {
+          if(user.forceChangePasswordNextLogin)
           {
             this.router.navigate(['/reset/password']);
           } else {
-            this.router.navigate([this.returnUrl]);
+            if(user.role === Role.Student) {
+              this.router.navigate(['/courses']);
+            } else {
+              this.router.navigate([this.returnUrl]);
+            }
           }
           },
           error => {

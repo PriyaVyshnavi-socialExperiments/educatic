@@ -30,7 +30,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.isMobileDevice = isMobileDevice;
     this.authenticationService.currentUser.subscribe((user) => {
       this.currentUser = user;
-     // this.RedirectToRoleSpecificURL(user.role)
+     //this.RedirectToRoleSpecificURL(user.role)
     });
     this.refreshDashboard();
   }
