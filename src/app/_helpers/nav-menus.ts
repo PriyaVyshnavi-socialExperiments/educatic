@@ -69,7 +69,7 @@ export class NavMenuHelper {
     },
     {
       name: 'Class Room',
-      icon: 'newspaper-outline',
+      icon: 'text-sharp',
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin,  Role.Teacher],
       active: true,
       children: [
@@ -91,7 +91,7 @@ export class NavMenuHelper {
     },
     {
       name: 'Students',
-      icon: 'school-outline',
+      icon: 'people-sharp',
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
       active: true,
       children: [

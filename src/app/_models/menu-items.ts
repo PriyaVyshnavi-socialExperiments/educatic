@@ -5,6 +5,7 @@ export interface IMenuItems {
   icon: string;
   iconClass: string;
   active: boolean;
+  open: boolean;
   roles: string[];
   children: IMenuItems[];
 }

@@ -16,7 +16,7 @@
               </ion-label>
             </ion-item>
             <ion-item slot="end" lines="none" detail="false">
-              <ion-button color="secondary" shape="round" fill="outline" routerLink="/profile">
+              <ion-button color="secondary" shape="round" (click)="Profile()" fill="outline">
                 Profile
               </ion-button>
               <ion-button color="secondary" slot="end" (click)="Logout()" shape="round" fill="outline">
@@ -39,7 +39,7 @@
           </ion-menu-toggle>
 
           <ion-item *ngIf="menu.children?.length>0" (click)="menu.open = !menu.open" [class.active-parent]="menu.open"
-            details="false"  lines="none">
+            details="false" lines="none">
             <ion-icon [name]="menu.icon" slot="start"></ion-icon>
             <ion-icon name="chevron-forward-circle" slot="end" *ngIf="!menu.open"></ion-icon>
             <ion-icon name="chevron-down-circle" slot="end" *ngIf="menu.open"></ion-icon>
@@ -48,10 +48,11 @@
 
           <ion-list *ngIf="menu.open" lines="none">
             <ion-menu-toggle auto-hide="false">
-                <ion-item class="sub-item" *ngFor="let sub of menu.children"  [routerLink]="sub.path" [class.active-menu]="activePath === sub.path">
-                  <ion-icon [name]="sub.icon" slot="start"></ion-icon>
-                  <ion-label>{{sub.name}}</ion-label>
-                </ion-item>
+              <ion-item class="sub-item" *ngFor="let sub of menu.children" [routerLink]="sub.path"
+                [class.active-menu]="activePath === sub.path">
+                <ion-icon [name]="sub.icon" slot="start"></ion-icon>
+                <ion-label>{{sub.name}}</ion-label>
+              </ion-item>
             </ion-menu-toggle>
           </ion-list>
         </div>
