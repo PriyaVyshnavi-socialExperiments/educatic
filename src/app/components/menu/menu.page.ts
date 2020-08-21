@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterEvent } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 import { AuthenticationService } from '../../_services';
 import { NavMenuHelper } from '../../_helpers/nav-menus';
 import { ISchool, IUser } from '../../_models';
@@ -22,6 +23,7 @@ export class MenuPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authenticationService: AuthenticationService,
+    public menuCtrl: MenuController,
     private schoolService: SchoolService) {
     this.router.events.subscribe((event: RouterEvent) => {
       this.activePath = event.url;
@@ -59,6 +61,11 @@ export class MenuPage implements OnInit, OnDestroy {
     this.authenticationService.Logout();
     this.menuList = [];
     this.router.navigate(['/login']);
+  }
+
+  public Profile() {
+    this.menuCtrl.toggle();
+    this.router.navigate(['/profile']);
   }
 
   public ToggleDarkMode() {
