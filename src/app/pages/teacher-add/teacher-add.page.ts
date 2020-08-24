@@ -163,7 +163,6 @@ export class TeacherAddPage implements OnInit, OnDestroy {
   }
 
   onChangeCountry(countryName) {
-    console.log(countryName);
     this.stateInfo = this.countryInfo.find((c) => c.CountryName === countryName.value).States;
     this.cityInfo = this.stateInfo[0].Cities;
   }
