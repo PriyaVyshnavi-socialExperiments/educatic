@@ -17,6 +17,7 @@ import { JwtInterceptor } from './_helpers/jwt.interceptor';
 import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/material/core';
 import { MenuPageModule } from './components/menu/menu.module';
 import { AuthenticationModule } from './components/authentication/authentication.module';
+import { BLOB_STORAGE_TOKEN, azureBlobStorageFactory } from './_services/azure-blob/token';
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,6 +36,10 @@ import { AuthenticationModule } from './components/authentication/authentication
     AppCenterAnalytics,
     StatusBar,
     SplashScreen,
+    {
+      provide: BLOB_STORAGE_TOKEN,
+      useFactory: azureBlobStorageFactory
+    },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },

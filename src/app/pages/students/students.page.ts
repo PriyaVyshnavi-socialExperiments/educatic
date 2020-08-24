@@ -46,7 +46,7 @@ export class StudentsPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe(async (user) => {
-      if( !user) {
+      if (!user) {
         return;
       }
       this.currentUser = user;
@@ -58,22 +58,22 @@ export class StudentsPage implements OnInit, AfterViewInit {
 
   async refresh() {
     if (this.currentUser.classRoomId) {
-    this.studentService.GetStudents(this.currentUser.schoolId, this.currentUser.classRoomId).subscribe((data) => {
-      this.students = [...data]
-    });
-  } else {
-    await this.classRoomService.GetClassRooms(this.currentUser.schoolId).toPromise().then((data) => {
-      this.classRooms = data;
-      setTimeout(() =>{
-        if (!data.length) {
-          this.selectSchool()
-        } else {
-          this.currentUser.classRooms = this.classRooms;
-          this.classSelectRef.open();
-        }
+      this.studentService.GetStudents(this.currentUser.schoolId, this.currentUser.classRoomId).subscribe((data) => {
+        this.students = [...data]
       });
-    });
-  }
+    } else {
+      await this.classRoomService.GetClassRooms(this.currentUser.schoolId).toPromise().then((data) => {
+        this.classRooms = data;
+        setTimeout(() => {
+          if (!data.length) {
+            this.selectSchool()
+          } else {
+            this.currentUser.classRooms = this.classRooms;
+            this.classSelectRef.open();
+          }
+        });
+      });
+    }
   }
 
   selectSchool() {
@@ -92,7 +92,7 @@ export class StudentsPage implements OnInit, AfterViewInit {
     this.currentUser.schoolId = selectedValue.detail.value;
     await this.classRoomService.GetClassRooms(this.currentUser.schoolId).toPromise().then((data) => {
       this.classRooms = data;
-      setTimeout(() =>{
+      setTimeout(() => {
         this.currentUser.classRooms = this.classRooms;
         this.classSelectRef.open();
       });
@@ -114,11 +114,11 @@ export class StudentsPage implements OnInit, AfterViewInit {
     });
 
     popover.onDidDismiss().then((data) => {
-      if(!data.data) {
+      if (!data.data) {
         return;
       }
       const actionData = data?.data;
-      this.currentUser.schoolId = actionData.currentId;
+      //this.currentUser.schoolId = actionData.currentId;
       switch (actionData?.selectedOption) {
         case 'edit':
           this.StudentEdit(actionData.currentId);
@@ -127,7 +127,7 @@ export class StudentsPage implements OnInit, AfterViewInit {
           this.StudentEdit(actionData.currentId);
           break;
         case 'upload-photo':
-          this.router.navigateByUrl(`student/${actionData.currentId}/photos`);
+          this.router.navigateByUrl(`${this.currentUser.schoolId}/${this.currentUser.classRoomId}/student/${actionData.currentId}/photos`);
           break;
         default:
           break;

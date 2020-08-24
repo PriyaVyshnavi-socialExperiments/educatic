@@ -5,8 +5,11 @@ import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
 import { Guid } from 'guid-typescript';
 import { IStudent, OfflineSyncURL } from '../../_models';
-import { map, finalize, tap, catchError } from 'rxjs/operators';
+import { map, finalize, tap, catchError, flatMap, concatMap } from 'rxjs/operators';
 import { from, of } from 'rxjs';
+import { IStudentPhoto } from '../../_models/student-photos';
+import { BlobUploadsViewStateService } from '../../_services/azure-blob/blob-uploads-view-state.service';
+import { BlobSharedViewStateService } from '../../_services/azure-blob/blob-shared-view-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +21,8 @@ export class StudentService extends OfflineService {
     private http: HttpService,
     public injector: Injector,
     private network: NetworkService,
+    private blobUpload: BlobUploadsViewStateService,
+    private blobShared: BlobSharedViewStateService,
   ) {
     super(injector);
   }
@@ -77,12 +82,33 @@ export class StudentService extends OfflineService {
 
   }
 
-  public UploadImage(blobData, name, ext) {
-      return of();
+  public async UploadStudentPhoto(studentPhoto: IStudentPhoto) {
+    await this.GetOfflineData('StudentPhotos', studentPhoto.id).then((data) => {
+      let studentPhotos = data ? data as IStudentPhoto[] : [];
+      studentPhotos = studentPhotos.filter((obj) => {
+        return obj.sequenceId !== studentPhoto.sequenceId;
+      });
+      studentPhotos.push(studentPhoto);
+      this.SetOfflineData('StudentPhotos', studentPhoto.id, studentPhotos);
+    });
   }
 
-  public UploadImageFile(file: File) {
-    return of();
+  public GetStudentPhotos(studentId: string) {
+    return from(this.GetOfflineData('Student', studentId)).pipe(
+      tap(data => {
+        if (data && data.length > 0) {
+          return data as IStudentPhoto[];
+        } else {
+          return of(false);
+        }
+      })
+    );
+  }
+
+
+  public UploadImageFile(file) {
+    this.blobShared.setContainer$ = 'student-ptotos';
+    return this.blobUpload.uploadFile(file);
   }
 
   public DeleteImage(id) {
