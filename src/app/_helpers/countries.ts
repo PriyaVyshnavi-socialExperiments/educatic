@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Countries, CountryStateCity } from '../_models/country-state-city';
 import { map } from 'rxjs/operators';
+import { Country } from '../_models/countres-states-cities';
 
 
 @Injectable({
@@ -11,23 +11,21 @@ import { map } from 'rxjs/operators';
 
 export class CountryHelper {
 
-    private countryStateCity: CountryStateCity;
-
     constructor(private http: HttpClient) { }
 
-    public AllCountries(): Observable<Countries> {
+    public AllCountries(): Observable<Country[]> {
         return this.http
-            .get<Countries>('./assets/countries/countries.json')
+            .get<Country[]>('./assets/countries/countries-states-cities.json')
             .pipe(map(countries => countries));
     }
 
     getSelectedCountryWiseStatsCities(countryName: string, stateName: string) {
         return this.AllCountries().toPromise().then(
             countryInfo => {
-                const states = countryInfo.Countries.find((c) => c.CountryName === countryName).States;
-                const cities = states.find((s) => s.StateName === stateName).Cities;
+                const states = countryInfo.find((c) => c.name === countryName).states;
+                const cities = states.find((s) => s.name === stateName).cities;
                 return {
-                    Countries: countryInfo.Countries,
+                    Countries: countryInfo,
                     States: states,
                     Cities: cities
                 };

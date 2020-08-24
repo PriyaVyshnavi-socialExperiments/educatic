@@ -49,7 +49,7 @@
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Country</mat-label>
                 <mat-select (selectionChange)="onChangeCountry($event)" formControlName="country">
-                  <mat-option *ngFor="let country of countryInfo; let i = index" value="{{country.CountryName}}">{{country.CountryName}}
+                  <mat-option *ngFor="let country of countryInfo; let i = index" value="{{country.name}}">{{country.name}}
                   </mat-option>
                 </mat-select>
                 <mat-icon matSuffix>
@@ -66,7 +66,7 @@
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>State</mat-label>
                 <mat-select (selectionChange)="onChangeState($event)" formControlName="state">
-                  <mat-option *ngFor="let state of stateInfo; let j = index" value="{{state.StateName}}">{{state.StateName}}
+                  <mat-option *ngFor="let state of stateInfo; let j = index" value="{{state.name}}">{{state.name}}
                   </mat-option>
                 </mat-select>
                 <mat-icon matSuffix>
@@ -80,7 +80,7 @@
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>City </mat-label>
                 <mat-select formControlName="city">
-                  <mat-option *ngFor="let city of cityInfo; let k = index" value="{{city}}">{{city}}</mat-option>
+                  <mat-option *ngFor="let city of cityInfo; let k = index" value="{{city.name}}">{{city.name}}</mat-option>
                 </mat-select>
                 <mat-icon matSuffix>
                 </mat-icon>
