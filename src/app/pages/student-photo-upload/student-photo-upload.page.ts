@@ -1,9 +1,13 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActionSheetController, Platform } from '@ionic/angular';
-import { Plugins, CameraResultType, CameraSource, Capacitor } from '@capacitor/core';
+import { Plugins, CameraResultType, CameraSource, Capacitor, FilesystemDirectory } from '@capacitor/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { StudentService } from '../../_services/student/student.service';
-const { Camera } = Plugins;
+import { IStudentPhoto } from '../../_models/student-photos';
+import { ActivatedRoute } from '@angular/router';
+import { AuthenticationService } from '../../_services';
+import { IUser } from '../../_models';
+const { Camera, Filesystem } = Plugins;
 
 @Component({
   selector: 'app-student-photo-upload',
@@ -13,18 +17,32 @@ const { Camera } = Plugins;
 export class StudentPhotoUploadPage implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
   studentPhotos = [];
+  currentUser: IUser;
+  studentId: string;
 
   constructor(
     private actionSheetCtrl: ActionSheetController,
     private platform: Platform,
     private studentService: StudentService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private route: ActivatedRoute,
+    private authenticationService: AuthenticationService,
   ) { }
 
   ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      this.studentId = params.get('studentId');
+    });
     for (let i = 0; i < 5; i++) {
       this.studentPhotos.push({ id: i, image: '' });
     }
+    this.authenticationService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.DisplayStudentPhotos();
+    });
   }
 
   async selectImageSource(id) {
@@ -32,7 +50,22 @@ export class StudentPhotoUploadPage implements OnInit {
   }
 
   async uploadPhotos() {
+    this.studentPhotos.forEach(photo => {
+      const blobData = this.b64toBlob(photo.image.base64String, `image/${photo.format}`);
+    });
+  }
 
+  DisplayStudentPhotos() {
+    this.studentService.GetStudentPhotos(this.studentId).subscribe((studentPhotos) => {
+      if (studentPhotos && studentPhotos.length > 0) {
+        studentPhotos.forEach(studentPhoto => {
+          const unsafeImageUrl = URL.createObjectURL(JSON.parse(studentPhoto.blobData));
+          const imageUrl = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);
+          this.studentPhotos[studentPhoto.sequenceId].image = imageUrl;
+        });
+      }
+
+    });
   }
 
   async addImage(source: CameraSource, id) {
@@ -40,17 +73,38 @@ export class StudentPhotoUploadPage implements OnInit {
       quality: 100,
       width: 400,
       allowEditing: false,
-      resultType: CameraResultType.DataUrl,
+      resultType: CameraResultType.Base64,
       source: CameraSource.Prompt
     });
 
-    // const blobData = this.b64toBlob(image.base64String, `image/${image.format}`);
-    // const imageName = 'Give me a name';
+    const blobData = this.b64toBlob(image.base64String, `image/${image.format}`);
+    this.studentService.UploadImageFile(this.blobToFile(blobData, `${this.studentId}/${id}_photo.${image.format}`)).subscribe((res) => {
+    });
 
-    this.studentPhotos[id].image = this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
-    // this.studentService.UploadImage(blobData, imageName, image.format).subscribe((newImage) => {
-    //   this.studentPhotos[id].image = newImage
-    // });
+    //  const file: File = target.files[0];
+
+    const studentPhoto = {
+      id: this.studentId,
+      schoolId: this.currentUser.schoolId,
+      classId: this.currentUser.classRoomId,
+      blobData: JSON.stringify(blobData),
+      format: `image/${image.format}`,
+      imageName: `${this.studentId}_${id}`,
+      sequenceId: id
+    } as IStudentPhoto
+
+    await this.studentService.UploadStudentPhoto(studentPhoto).then(() => {
+      const unsafeImageUrl = URL.createObjectURL(blobData);
+      const imageUrl = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);
+      this.studentPhotos[id].image = imageUrl;// this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+    });
+  }
+
+  public blobToFile = (theBlob: Blob, fileName: string): File => {
+    const b: any = theBlob;
+    b.lastModifiedDate = new Date();
+    b.name = fileName;
+    return theBlob as File;
   }
 
   // Used for browser direct file upload
@@ -58,9 +112,9 @@ export class StudentPhotoUploadPage implements OnInit {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
-    this.studentService.UploadImageFile(file).subscribe((newImage) => {
-      this.studentPhotos.push(newImage);
-    });
+    // this.studentService.UploadImageFile(file).subscribe((newImage) => {
+    //   this.studentPhotos.push(newImage);
+    // });
   }
 
   deleteImage(image, index) {

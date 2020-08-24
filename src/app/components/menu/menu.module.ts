@@ -114,7 +114,7 @@ const routes: Routes = [
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
-        path: 'student/:studentId/photos',
+        path: ':schoolId/:classId/student/:studentId/photos',
         loadChildren: () => import('../../pages/student-photo-upload/student-photo-upload.module')
         .then( m => m.StudentPhotoUploadPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
