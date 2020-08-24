@@ -129,18 +129,17 @@ export class SchoolAddPage implements OnInit, OnDestroy {
   getCountries() {
     this.countryHelper.AllCountries().toPromise().then(
       data => {
-        this.countryInfo = data.Countries;
+        this.countryInfo = data;
       }
     )
   }
 
   onChangeCountry(countryName) {
-    this.stateInfo = this.countryInfo.find((c) => c.CountryName === countryName.value).States;
-    this.cityInfo = this.stateInfo[0].Cities;
+    this.stateInfo = this.countryInfo.find((c) => c.name === countryName.value).states;
   }
 
   onChangeState(stateName) {
-    this.cityInfo = this.stateInfo.find((s) => s.StateName === stateName.value).Cities;
+    this.cityInfo = this.stateInfo.find((s) => s.name === stateName.value).cities;
   }
 
   async getLocation() {
