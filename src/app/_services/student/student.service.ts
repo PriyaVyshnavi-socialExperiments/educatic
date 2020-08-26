@@ -5,8 +5,8 @@ import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
 import { Guid } from 'guid-typescript';
 import { IStudent, OfflineSyncURL } from '../../_models';
-import { map, finalize, tap, catchError, flatMap, concatMap } from 'rxjs/operators';
-import { from, of } from 'rxjs';
+import { map, finalize, tap, catchError, flatMap, concatMap, timeout } from 'rxjs/operators';
+import { from, of, Observable, forkJoin } from 'rxjs';
 import { IStudentPhoto } from '../../_models/student-photos';
 import { BlobUploadsViewStateService } from '../../_services/azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../../_services/azure-blob/blob-shared-view-state.service';
@@ -106,9 +106,15 @@ export class StudentService extends OfflineService {
   }
 
 
-  public UploadImageFile(file) {
+  public UploadImageFile(studentBlobData) {
     this.blobShared.setContainer$ = 'student-ptotos';
-    return this.blobUpload.uploadFile(file);
+    this.blobShared.resetSasToken$ = true;
+    const studentPhotos = [];
+    studentBlobData.forEach(data => {
+      studentPhotos.push(this.blobUpload.uploadFile(data));
+    });
+    this.blobShared.resetSasToken$ = false;
+    return forkJoin(studentPhotos);
   }
 
   public DeleteImage(id) {

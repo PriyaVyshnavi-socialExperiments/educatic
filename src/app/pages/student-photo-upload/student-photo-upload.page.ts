@@ -16,9 +16,11 @@ const { Camera, Filesystem } = Plugins;
 })
 export class StudentPhotoUploadPage implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+  
   studentPhotos = [];
   currentUser: IUser;
   studentId: string;
+  studentBlobData: File[] =[];
 
   constructor(
     private actionSheetCtrl: ActionSheetController,
@@ -50,9 +52,10 @@ export class StudentPhotoUploadPage implements OnInit {
   }
 
   async uploadPhotos() {
-    this.studentPhotos.forEach(photo => {
-      const blobData = this.b64toBlob(photo.image.base64String, `image/${photo.format}`);
-    });
+    //this.studentBlobData.forEach(photo => {
+      this.studentService.UploadImageFile(this.studentBlobData)
+      .subscribe((res) => {});
+    //});
   }
 
   DisplayStudentPhotos() {
@@ -78,8 +81,11 @@ export class StudentPhotoUploadPage implements OnInit {
     });
 
     const blobData = this.b64toBlob(image.base64String, `image/${image.format}`);
-    this.studentService.UploadImageFile(this.blobToFile(blobData, `${this.studentId}/${id}_photo.${image.format}`)).subscribe((res) => {
-    });
+    const imageFile = this.blobToFile(blobData, `${this.currentUser.schoolId}/${this.studentId}/${id}_photo.${image.format}`);
+    // this.studentService.UploadImageFile(
+    //   this.blobToFile(blobData, `${this.currentUser.schoolId}/${this.studentId}/${id}_photo.${image.format}`)
+    // ).subscribe((res) => {
+    // });
 
     //  const file: File = target.files[0];
 
@@ -87,11 +93,13 @@ export class StudentPhotoUploadPage implements OnInit {
       id: this.studentId,
       schoolId: this.currentUser.schoolId,
       classId: this.currentUser.classRoomId,
-      blobData: JSON.stringify(blobData),
+      blobData: imageFile,
       format: `image/${image.format}`,
       imageName: `${this.studentId}_${id}`,
       sequenceId: id
     } as IStudentPhoto
+
+    this.studentBlobData = [...this.studentBlobData, imageFile]
 
     await this.studentService.UploadStudentPhoto(studentPhoto).then(() => {
       const unsafeImageUrl = URL.createObjectURL(blobData);
