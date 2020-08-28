@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './teachers.page.html',
   styleUrls: ['./teachers.page.scss'],
 })
-export class TeachersPage implements OnInit, AfterViewInit {
+export class TeachersPage implements OnInit {
   @ViewChild('schoolList') schoolSelectRef: IonSelect;
 
   teachers: ITeacher[] = [];
@@ -29,13 +29,13 @@ export class TeachersPage implements OnInit, AfterViewInit {
 
   ) { }
 
-  ngAfterViewInit(): void {
-    if (this.currentUser.schoolId) {
-      this.refresh();
-    } else {
-      this.schoolSelectRef.open();
-    }
-  }
+  // ngAfterViewInit(): void {
+  //   if (this.currentUser.defaultSchool.id) {
+  //     this.refresh();
+  //   } else {
+  //     this.schoolSelectRef.open();
+  //   }
+  // }
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
@@ -43,7 +43,6 @@ export class TeachersPage implements OnInit, AfterViewInit {
         return;
       }
       this.currentUser = user;
-      this.schoolId = user.schoolId;
       this.schools = user.schools;
     });
   }
@@ -53,14 +52,13 @@ export class TeachersPage implements OnInit, AfterViewInit {
   }
 
   setSchool(selectedValue) {
-    this.currentUser.schoolId = selectedValue.detail.value;
+    this.authenticationService.ResetDefaultSchool(selectedValue.detail.value);
     this.refresh();
   }
 
   refresh() {
-    this.teacherService.GetTeachers(this.currentUser.schoolId).subscribe((data) => {
-      this.teachers = [...data]
-    });
+    this.schoolId = this.currentUser.defaultSchool.id;
+    this.teachers = [...this.currentUser.defaultSchool.teachers]
   }
 
   public async actionPopover(ev: any, schoolId: string) {
@@ -78,7 +76,6 @@ export class TeachersPage implements OnInit, AfterViewInit {
         return;
       }
       const actionData = data?.data;
-      this.currentUser.schoolId = actionData.currentId;
       switch (actionData?.selectedOption) {
         case 'edit':
           this.TeacherEdit(actionData.currentId);
@@ -97,7 +94,7 @@ export class TeachersPage implements OnInit, AfterViewInit {
   public TeacherEdit(teacherId: string) {
     const currentTeacher = this.teachers.find(teacher => teacher.id === teacherId);
     this.dataShare.setData(currentTeacher);
-    this.router.navigateByUrl(`/teacher/edit/${this.currentUser.schoolId}/${teacherId}`);
+    this.router.navigateByUrl(`/teacher/edit/${this.currentUser.defaultSchool.id}/${teacherId}`);
   }
 
 }

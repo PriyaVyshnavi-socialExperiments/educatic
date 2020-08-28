@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Student</ion-title>
+    <ion-title>{{schoolInfo.name}}</ion-title>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
@@ -13,7 +13,7 @@
       <div class="wrap-login100">
         <form class="login100-form validate-form" [formGroup]="studentForm" (ngSubmit)="SubmitStudent()">
           <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+            <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>School</mat-label>
                 <mat-select formControlName="schoolId" [(value)]="currentUser.schoolId" (selectionChange)="onChangeSchool($event)">
@@ -27,7 +27,7 @@
                   A school is required to proceed.
                 </mat-error>
               </mat-form-field>
-            </div>
+            </div> -->
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Class Division</mat-label>

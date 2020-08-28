@@ -14,7 +14,7 @@ export class SignupComponent implements OnInit {
   chide = true;
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private router: Router
   ) {}
   ngOnInit() {
@@ -28,7 +28,7 @@ export class SignupComponent implements OnInit {
       cpassword: ['', Validators.required]
     });
     // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
   }
   get f() {
     return this.loginForm.controls;

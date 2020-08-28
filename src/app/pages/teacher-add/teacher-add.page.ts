@@ -35,7 +35,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
     private teacherService: TeacherService,
     private schoolService: SchoolService,
     private dataShare: DataShareService,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private emailValidator: CustomEmailValidator
   ) { }
 
@@ -43,9 +43,8 @@ export class TeacherAddPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      this.isEditTeacher = params.has('teacherId');
-    });
+    this.isEditTeacher = this.activatedRoute.snapshot.paramMap.has('teacherId');
+
     this.getSchools();
     this.teacherForm = this.formBuilder.group({
       schoolId: new FormControl('', [

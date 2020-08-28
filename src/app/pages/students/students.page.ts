@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { IonSelect, PopoverController } from '@ionic/angular';
 
 import { IStudent, IUser, ISchool, IClassRoom } from '../../_models';
@@ -7,7 +7,6 @@ import { AuthenticationService } from '../../_services';
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
 import { DataShareService } from '../../_services/data-share.service';
 import { StudentService } from '../../_services/student/student.service';
-import { ClassRoomService } from 'src/app/_services/class-room/class-room.service';
 
 @Component({
   selector: 'app-students',
@@ -15,93 +14,57 @@ import { ClassRoomService } from 'src/app/_services/class-room/class-room.servic
   styleUrls: ['./students.page.scss'],
 })
 export class StudentsPage implements OnInit, AfterViewInit {
-  @ViewChild('schoolList') schoolSelectRef: IonSelect;
   @ViewChild('classList') classSelectRef: IonSelect;
-
   students: IStudent[] = [];
   schools: ISchool[] = [];
   classRooms: any;
   schoolId: string;
   classRoomId: string;
-
   currentUser: IUser;
 
   constructor(
     private studentService: StudentService,
-    private classRoomService: ClassRoomService,
     private authenticationService: AuthenticationService,
     private popoverController: PopoverController,
     private dataShare: DataShareService,
     public router: Router,
+    private activatedRoute: ActivatedRoute,
 
   ) { }
 
-  ngAfterViewInit(): void {
-    if (this.currentUser.schoolId) {
-      this.refresh();
-    } else {
-      this.schoolSelectRef.open();
-    }
-  }
-
   ngOnInit() {
+    this.classRoomId = this.activatedRoute.snapshot.paramMap.get('id');
     this.authenticationService.currentUser.subscribe(async (user) => {
       if (!user) {
         return;
       }
       this.currentUser = user;
-      this.schoolId = user.schoolId;
+      this.schoolId = user.defaultSchool.id;
       this.schools = user.schools;
-      this.classRooms = user.classRooms;
+      this.classRooms = user.defaultSchool.classRooms;
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.refresh();
   }
 
   async refresh() {
-    if (this.currentUser.classRoomId) {
-      this.studentService.GetStudents(this.currentUser.schoolId, this.currentUser.classRoomId).subscribe((data) => {
+    if (this.classRoomId) {
+      this.studentService.GetStudents(this.currentUser.defaultSchool.id, this.classRoomId).subscribe((data) => {
         this.students = [...data]
       });
     } else {
-      await this.classRoomService.GetClassRooms(this.currentUser.schoolId).toPromise().then((data) => {
-        this.classRooms = data;
-        setTimeout(() => {
-          if (!data.length) {
-            this.selectSchool()
-          } else {
-            this.currentUser.classRooms = this.classRooms;
-            this.classSelectRef.open();
-          }
-        });
-      });
+      this.classSelectRef.open();
     }
-  }
-
-  selectSchool() {
-    this.schoolSelectRef.open();
   }
 
   async selectClass() {
-    if (this.currentUser.schoolId) {
-      await this.classSelectRef.open();
-    } else {
-      this.selectSchool();
-    }
-  }
-
-  async setSchool(selectedValue) {
-    this.currentUser.schoolId = selectedValue.detail.value;
-    await this.classRoomService.GetClassRooms(this.currentUser.schoolId).toPromise().then((data) => {
-      this.classRooms = data;
-      setTimeout(() => {
-        this.currentUser.classRooms = this.classRooms;
-        this.classSelectRef.open();
-      });
-    });
+    await this.classSelectRef.open();
   }
 
   setClassRoom(selectedValue) {
     this.classRoomId = selectedValue.detail.value;
-    this.currentUser.classRoomId = this.classRoomId;
     this.refresh();
   }
 
@@ -118,7 +81,6 @@ export class StudentsPage implements OnInit, AfterViewInit {
         return;
       }
       const actionData = data?.data;
-      //this.currentUser.schoolId = actionData.currentId;
       switch (actionData?.selectedOption) {
         case 'edit':
           this.StudentEdit(actionData.currentId);
@@ -127,7 +89,7 @@ export class StudentsPage implements OnInit, AfterViewInit {
           this.StudentEdit(actionData.currentId);
           break;
         case 'upload-photo':
-          this.router.navigateByUrl(`${this.currentUser.schoolId}/${this.currentUser.classRoomId}/student/${actionData.currentId}/photos`);
+          this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${actionData.currentId}/photos`);
           break;
         default:
           break;
@@ -140,6 +102,6 @@ export class StudentsPage implements OnInit, AfterViewInit {
   StudentEdit(studentId: string) {
     const currentStudent = this.students.find(student => student.id === studentId);
     this.dataShare.setData(currentStudent);
-    this.router.navigateByUrl(`/student/${this.currentUser.schoolId}/${this.classRoomId}/edit/${studentId}`);
+    this.router.navigateByUrl(`/student/${this.currentUser.defaultSchool.id}/${this.classRoomId}/edit/${studentId}`);
   }
 }

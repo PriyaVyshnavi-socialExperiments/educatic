@@ -12,7 +12,7 @@ import { ActionPopoverPage } from '../../components/action-popover/action-popove
   templateUrl: './class-rooms.page.html',
   styleUrls: ['./class-rooms.page.scss'],
 })
-export class ClassRoomsPage implements OnInit, AfterViewInit {
+export class ClassRoomsPage implements OnInit {
   @ViewChild('schoolList') schoolSelectRef: IonSelect;
   classRooms: IClassRoom[] = [];
   schools: ISchool[] = [];
@@ -32,27 +32,15 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
         return;
       }
       this.currentUser = user;
-      this.schoolId = user.schoolId;
       this.schools = user.schools;
-      if (this.schoolId) {
-        this.schoolName = user.schools.find((school) => school.id === this.schoolId).name;
-      }
       this.refresh();
     });
-  }
-
-  ngAfterViewInit(): void {
-    if (this.currentUser.schoolId) {
-      this.refresh();
-    } else {
-      this.schoolSelectRef.open();
-    }
   }
 
   refresh() {
-    this.classRoomService.GetClassRooms(this.currentUser.schoolId).subscribe((data) => {
-      this.classRooms = [...data]
-    });
+    this.schoolId = this.currentUser.defaultSchool.id;
+    this.schoolName = this.currentUser.defaultSchool.name;
+    this.classRooms = [...this.currentUser.defaultSchool.classRooms]
   }
 
   public selectSchool() {
@@ -60,8 +48,7 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
   }
 
   setSchool(selectedValue) {
-    this.currentUser.schoolId = selectedValue.detail.value;
-    this.schoolName = this.currentUser.schools.find((school) => school.id === this.currentUser.schoolId).name;
+    this.authenticationService.ResetDefaultSchool(selectedValue.detail.value);
     this.refresh();
   }
 
@@ -71,7 +58,7 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
       component: ActionPopoverPage,
       mode: 'ios',
       event: ev,
-      componentProps: { id: classId, schoolId: this.currentUser.schoolId, type: 'class-room' },
+      componentProps: { id: classId, schoolId: this.currentUser.defaultSchool.id, type: 'class-room' },
       cssClass: 'pop-over-style',
     });
 
@@ -98,19 +85,15 @@ export class ClassRoomsPage implements OnInit, AfterViewInit {
   public ClassRoomEdit(classId: string) {
     const currentClassRoom = this.classRooms.find(classRoom => classRoom.classId === classId);
     this.dataShare.setData(currentClassRoom);
-    this.router.navigateByUrl(`/class-room/edit/${this.currentUser.schoolId}/${classId}`);
+    this.router.navigateByUrl(`/class-room/edit/${this.currentUser.defaultSchool.id}/${classId}`);
   }
 
   public StudentList(ev: any, classId: string) {
-    this.currentUser.classRoomId = classId;
-    this.currentUser.classRooms = this.classRooms;
-    this.router.navigateByUrl(`/students/${this.currentUser.schoolId}/${classId}`);
+    this.router.navigateByUrl(`/students/${this.currentUser.defaultSchool.id}/${classId}`);
   }
 
   public NewStudent(ev: any, classId: string) {
-    this.currentUser.classRoomId = classId;
-    this.currentUser.classRooms = this.classRooms;
-    this.router.navigateByUrl(`/student/add/${this.currentUser.schoolId}/${classId}`);
+    this.router.navigateByUrl(`/student/add/${this.currentUser.defaultSchool.id}/${classId}`);
   }
 
   public edit() {

@@ -24,7 +24,7 @@ export class SigninComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
     public toastController: ToastController,
@@ -43,7 +43,7 @@ export class SigninComponent implements OnInit, OnDestroy {
       ])
     });
     // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
   }
   get f() {
     return this.loginForm.controls;

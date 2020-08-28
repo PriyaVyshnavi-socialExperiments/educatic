@@ -5,17 +5,8 @@
             <ion-back-button defaultHref="/"></ion-back-button>
         </ion-buttons>
         <ion-buttons slot="end">
-            <!-- <ion-button ion-button block (click)='selectSchool()'>Choose School</ion-button> -->
             <ion-button ion-button block (click)='selectClass()'>Choose Class</ion-button>
         </ion-buttons>
-        <ion-item [hidden]='true'>
-            <ion-label>Choose School</ion-label>
-            <ion-select placeholder="School" interface="popover" #schoolList (click)="setSchool($event)"
-                (change)="setSchool($event)" (ionChange)='setSchool($event)'>
-                <ion-select-option *ngFor="let school of schools" value="{{ school.id }}">{{ school.name }}
-                </ion-select-option>
-            </ion-select>
-        </ion-item>
         <ion-item [hidden]='true'>
             <ion-label>Choose Class</ion-label>
             <ion-select placeholder="School" #classList (ionChange)='setClassRoom($event)' interface="popover">

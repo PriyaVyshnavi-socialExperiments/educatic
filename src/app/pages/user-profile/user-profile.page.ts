@@ -23,7 +23,7 @@ export class UserProfilePage implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
     private modalCtrl: ModalController,
@@ -71,7 +71,7 @@ export class UserProfilePage implements OnInit {
         validator: ConfirmedValidator('password', 'cpassword')
       });
     // get return url from route parameters or default to '/'
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || '/';
   }
   get f() {
     return this.profileForm.controls;

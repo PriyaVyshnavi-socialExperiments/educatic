@@ -7,7 +7,7 @@ import { StudentService } from '../../_services/student/student.service';
 import { IStudentPhoto } from '../../_models/student-photos';
 import { ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '../../_services';
-import { IUser } from '../../_models';
+import { IUser, ISchool } from '../../_models';
 import { ImageHelper } from 'src/app/_helpers/image-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
 const { Camera, Filesystem } = Plugins;
@@ -19,28 +19,30 @@ const { Camera, Filesystem } = Plugins;
 })
 export class StudentPhotoUploadPage implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-
   studentPhotos = [];
   currentUser: IUser;
   studentId: string;
+  classId: string;
   studentBlobData: File[] = [];
   studentBlobDataURLs: string[] = [];
+  school: ISchool;
+
 
   constructor(
     private actionSheetCtrl: ActionSheetController,
     private platform: Platform,
     private studentService: StudentService,
     private sanitizer: DomSanitizer,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private authenticationService: AuthenticationService,
     public alertController: AlertController
 
   ) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      this.studentId = params.get('studentId');
-    });
+    this.studentId = this.activatedRoute.snapshot.paramMap.get('studentId');
+    this.classId = this.activatedRoute.snapshot.paramMap.get('classId');
+
     for (let i = 0; i < 5; i++) {
       this.studentPhotos.push({ id: i, image: '' });
     }
@@ -49,6 +51,7 @@ export class StudentPhotoUploadPage implements OnInit {
         return;
       }
       this.currentUser = user;
+      this.school = user.defaultSchool;
       this.DisplayStudentPhotos();
     });
   }
@@ -61,7 +64,7 @@ export class StudentPhotoUploadPage implements OnInit {
     const queueMessage = {
       location: '',
       latLong: '',
-      schoolId: this.currentUser.schoolId,
+      schoolId: this.currentUser.defaultSchool.id,
       classId: '',
       studentId: this.studentId,
       teacherId: this.currentUser.id,
@@ -81,7 +84,6 @@ export class StudentPhotoUploadPage implements OnInit {
           this.studentPhotos[studentPhoto.sequenceId].image = imageUrl;
         });
       }
-
     });
   }
 
@@ -95,7 +97,8 @@ export class StudentPhotoUploadPage implements OnInit {
     });
 
     const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
-    const blobURL = `${this.currentUser.schoolId}/${this.studentId}/${id}_photo.${image.format}`;
+    const blobURL = `${this.school.name}_${this.school.id}/${this.classId}/${this.studentId}/${id}_photo.${image.format}`;
+
     const imageFile = ImageHelper.blobToFile(blobData, blobURL);
     this.studentService.UploadImageFile(imageFile).subscribe((res) => {
       console.log("res: ", res)
@@ -104,8 +107,8 @@ export class StudentPhotoUploadPage implements OnInit {
     this.studentBlobDataURLs = [...this.studentBlobDataURLs, blobURL]
     const studentPhoto = {
       id: this.studentId,
-      schoolId: this.currentUser.schoolId,
-      classId: this.currentUser.classRoomId,
+      schoolId: this.currentUser.defaultSchool.id,
+      classId: this.classId,
       blobData: imageFile,
       format: `image/${image.format}`,
       imageName: `${this.studentId}_${id}`,
@@ -141,7 +144,7 @@ export class StudentPhotoUploadPage implements OnInit {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Confirm!',
-      message: '<strong>Are you sure you want to upload photo?</strong>!!!',
+      message: '<strong>Are you sure you want upload photo(s) to process?</strong>!!!',
       buttons: [
         {
           text: 'Cancel',

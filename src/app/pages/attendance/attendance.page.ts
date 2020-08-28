@@ -1,23 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { AlertController, IonSelect } from '@ionic/angular';
 import { CameraSource, Camera, CameraResultType } from '@capacitor/core';
 import { ImageHelper } from '../../_helpers/image-helper';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IUser } from '../../_models';
+import { IUser, ISchool } from '../../_models';
 import { AuthenticationService } from '../../_services';
 import { AttendanceService } from '../../_services/attendance/attendance.service';
 import { IQueueMessage } from 'src/app/_models/queue-message';
+import { dateFormat } from 'src/app/_helpers';
 
 @Component({
   selector: 'app-attendance',
   templateUrl: './attendance.page.html',
   styleUrls: ['./attendance.page.scss'],
 })
-export class AttendancePage implements OnInit {
+export class AttendancePage implements OnInit, AfterViewInit {
+  @ViewChild('classList') classSelectRef: IonSelect;
+
   attendancePhoto: any;
   currentUser: IUser;
   uploadAttendancePhoto: File;
-  blobDataURLs: string[] = [];
+  blobDataURL: string;
+  classRooms: any;
+  classRoomId: string;
+  classRoomName: string;
+  school: ISchool;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -32,18 +39,36 @@ export class AttendancePage implements OnInit {
         return;
       }
       this.currentUser = user;
+      this.school = user.defaultSchool;
+      this.classRooms = user.defaultSchool.classRooms;
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.classRoomId) {
+      this.selectClass();
+    }
+  }
+
+  async selectClass() {
+    await this.classSelectRef.open();
+  }
+
+  setClassRoom(selectedValue) {
+    this.classRoomId = selectedValue.detail.value;
+    const classRoom = this.currentUser.defaultSchool.classRooms.find((c) => c.classId === this.classRoomId);
+    this.classRoomName = `${classRoom.classRoomName} - ${classRoom.classDivision}`;
   }
 
   async uploadPhoto() {
     const queueMessage = {
       location: '',
       latLong: '',
-      schoolId: this.currentUser.schoolId,
+      schoolId: this.currentUser.defaultSchool.id,
       classId: '',
       studentId: '',
       teacherId: this.currentUser.id,
-      pictureURLs: this.blobDataURLs,
+      pictureURLs: [this.blobDataURL],
       pictureTimestamp: Date.UTC.toString(),
     } as IQueueMessage
     this.attendanceService.QueueBlobMessage(queueMessage)
@@ -51,6 +76,9 @@ export class AttendancePage implements OnInit {
   }
 
   async selectImageSource() {
+    if (!this.classRoomId) {
+      return this.selectClass();
+    }
     await this.addImage(CameraSource.Camera);
   }
 
@@ -62,14 +90,13 @@ export class AttendancePage implements OnInit {
       resultType: CameraResultType.Base64,
       source: CameraSource.Prompt
     });
-
-    const blobUrl = `${this.currentUser.schoolId}/attendancePhoto${new Date().getTime()}.${image.format}`;
-    this.blobDataURLs.push(blobUrl);
+    this.blobDataURL = `${this.school.name}_${this.school.id}/${this.classRoomId}`;
+    this.blobDataURL = `${this.blobDataURL}/${dateFormat(new Date())}.${image.format}`;
     const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
-    this.uploadAttendancePhoto = ImageHelper.blobToFile(blobData, blobUrl);
+    this.uploadAttendancePhoto = ImageHelper.blobToFile(blobData, this.blobDataURL);
 
     this.attendanceService.UploadImageFile(this.uploadAttendancePhoto)
-    .subscribe((res) => { });
+      .subscribe((res) => { });
 
     const unsafeImageUrl = URL.createObjectURL(blobData);
     const imageUrl = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);
@@ -80,7 +107,7 @@ export class AttendancePage implements OnInit {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Confirm!',
-      message: '<strong>Are you sure you want to upload attendance photo?</strong>!!!',
+      message: `<strong>Are you sure you want to process attendance? <br/> ${this.classRoomName}</strong>`,
       buttons: [
         {
           text: 'Cancel',
