@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { AlertController } from '@ionic/angular';
 import { ActionSheetController, Platform } from '@ionic/angular';
 import { Plugins, CameraResultType, CameraSource, Capacitor, FilesystemDirectory } from '@capacitor/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -7,6 +8,8 @@ import { IStudentPhoto } from '../../_models/student-photos';
 import { ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '../../_services';
 import { IUser } from '../../_models';
+import { ImageHelper } from 'src/app/_helpers/image-helper';
+import { IQueueMessage } from 'src/app/_models/queue-message';
 const { Camera, Filesystem } = Plugins;
 
 @Component({
@@ -16,11 +19,12 @@ const { Camera, Filesystem } = Plugins;
 })
 export class StudentPhotoUploadPage implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-  
+
   studentPhotos = [];
   currentUser: IUser;
   studentId: string;
-  studentBlobData: File[] =[];
+  studentBlobData: File[] = [];
+  studentBlobDataURLs: string[] = [];
 
   constructor(
     private actionSheetCtrl: ActionSheetController,
@@ -29,6 +33,8 @@ export class StudentPhotoUploadPage implements OnInit {
     private sanitizer: DomSanitizer,
     private route: ActivatedRoute,
     private authenticationService: AuthenticationService,
+    public alertController: AlertController
+
   ) { }
 
   ngOnInit() {
@@ -52,10 +58,18 @@ export class StudentPhotoUploadPage implements OnInit {
   }
 
   async uploadPhotos() {
-    //this.studentBlobData.forEach(photo => {
-      this.studentService.UploadImageFile(this.studentBlobData)
-      .subscribe((res) => {});
-    //});
+    const queueMessage = {
+      location: '',
+      latLong: '',
+      schoolId: this.currentUser.schoolId,
+      classId: '',
+      studentId: this.studentId,
+      teacherId: this.currentUser.id,
+      pictureURLs: this.studentBlobDataURLs,
+      pictureTimestamp: Date.UTC.toString(),
+    } as IQueueMessage
+
+    this.studentService.QueueBlobMessage(queueMessage).subscribe((res) => { });
   }
 
   DisplayStudentPhotos() {
@@ -80,15 +94,14 @@ export class StudentPhotoUploadPage implements OnInit {
       source: CameraSource.Prompt
     });
 
-    const blobData = this.b64toBlob(image.base64String, `image/${image.format}`);
-    const imageFile = this.blobToFile(blobData, `${this.currentUser.schoolId}/${this.studentId}/${id}_photo.${image.format}`);
-    // this.studentService.UploadImageFile(
-    //   this.blobToFile(blobData, `${this.currentUser.schoolId}/${this.studentId}/${id}_photo.${image.format}`)
-    // ).subscribe((res) => {
-    // });
-
-    //  const file: File = target.files[0];
-
+    const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
+    const blobURL = `${this.currentUser.schoolId}/${this.studentId}/${id}_photo.${image.format}`;
+    const imageFile = ImageHelper.blobToFile(blobData, blobURL);
+    this.studentService.UploadImageFile(imageFile).subscribe((res) => {
+      console.log("res: ", res)
+    }
+    )
+    this.studentBlobDataURLs = [...this.studentBlobDataURLs, blobURL]
     const studentPhoto = {
       id: this.studentId,
       schoolId: this.currentUser.schoolId,
@@ -99,20 +112,13 @@ export class StudentPhotoUploadPage implements OnInit {
       sequenceId: id
     } as IStudentPhoto
 
-    this.studentBlobData = [...this.studentBlobData, imageFile]
+    //this.studentBlobData = [...this.studentBlobData, imageFile]
 
     await this.studentService.UploadStudentPhoto(studentPhoto).then(() => {
       const unsafeImageUrl = URL.createObjectURL(blobData);
       const imageUrl = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);
       this.studentPhotos[id].image = imageUrl;// this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
     });
-  }
-
-  public blobToFile = (theBlob: Blob, fileName: string): File => {
-    const b: any = theBlob;
-    b.lastModifiedDate = new Date();
-    b.name = fileName;
-    return theBlob as File;
   }
 
   // Used for browser direct file upload
@@ -131,24 +137,26 @@ export class StudentPhotoUploadPage implements OnInit {
     });
   }
 
-  b64toBlob(b64Data, contentType = '', sliceSize = 512) {
-    const byteCharacters = atob(b64Data);
-    const byteArrays = [];
+  async uploadPhotoAlertConfirm() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Confirm!',
+      message: '<strong>Are you sure you want to upload photo?</strong>!!!',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+        }, {
+          text: 'Okay',
+          handler: () => {
+            this.uploadPhotos();
+          }
+        }
+      ]
+    });
 
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    const blob = new Blob(byteArrays, { type: contentType });
-    return blob;
+    await alert.present();
   }
 
 }

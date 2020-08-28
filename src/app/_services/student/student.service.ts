@@ -5,11 +5,12 @@ import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
 import { Guid } from 'guid-typescript';
 import { IStudent, OfflineSyncURL } from '../../_models';
-import { map, finalize, tap, catchError, flatMap, concatMap, timeout } from 'rxjs/operators';
-import { from, of, Observable, forkJoin } from 'rxjs';
+import { map, finalize, tap, catchError, flatMap, concatMap, timeout, switchMap, take, concatAll, mergeMap } from 'rxjs/operators';
+import { from, of, Observable, forkJoin, concat, combineLatest, defer, Subject, zip } from 'rxjs';
 import { IStudentPhoto } from '../../_models/student-photos';
 import { BlobUploadsViewStateService } from '../../_services/azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../../_services/azure-blob/blob-shared-view-state.service';
+import { IQueueMessage } from 'src/app/_models/queue-message';
 
 @Injectable({
   providedIn: 'root'
@@ -105,16 +106,40 @@ export class StudentService extends OfflineService {
     );
   }
 
+  
 
   public UploadImageFile(studentBlobData) {
-    this.blobShared.setContainer$ = 'student-ptotos';
+    this.blobShared.setContainer$ = 'student-photos';
     this.blobShared.resetSasToken$ = true;
-    const studentPhotos = [];
-    studentBlobData.forEach(data => {
-      studentPhotos.push(this.blobUpload.uploadFile(data));
-    });
-    this.blobShared.resetSasToken$ = false;
-    return forkJoin(studentPhotos);
+    return this.blobUpload.uploadFile(studentBlobData);
+
+    // const studentPhotos = [];
+    // studentBlobData.forEach(data => {
+    //   studentPhotos.push(this.blobUpload.uploadFile(data).toPromise());
+    // });
+    // this.blobShared.resetSasToken$ = false;
+
+    // forkJoin(studentPhotos).subscribe((s) => console.log(s));
+
+    // studentPhotos.push(this.QueueBlobMessage(queueMessage));
+   
+
+    //  forkJoin(studentPhotos).subscribe((s) => console.log(s));
+
+    //   forkJoin(studentPhotos
+    //   // getMultiValueObservable(), forkJoin on works for observables that complete
+    // ).pipe(
+    //   map(([first]) => {
+    //     // forkJoin returns an array of values, here we map those values to an object
+    //     return { first };
+    //   })
+    // ).subscribe((n) => console.log(n));;
+
+    //of(studentPhotos).pipe (mergeMap(d => from(d))).subscribe();
+  }
+
+  public QueueBlobMessage(queueData: IQueueMessage) {
+    return this.http.Post<any>('/queue/message', queueData);
   }
 
   public DeleteImage(id) {

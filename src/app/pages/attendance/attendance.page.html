@@ -4,9 +4,35 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
+    <ion-buttons  *ngIf="attendancePhoto" slot="end">
+      <ion-button ion-button block (click)='uploadPhotoAlertConfirm()'>Process Attendance</ion-button>
+  </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
+
 <ion-content>
-  attendance
+  
+  <ion-grid style="height: 100%" *ngIf="!attendancePhoto" (click)="selectImageSource()">
+    <ion-row justify-content-center align-items-center class="justify-center">
+      <div text-center>
+        <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+        <h4><strong>Click here to upload attendance photo</strong></h4>
+      </div>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid class="grid" *ngIf="attendancePhoto" >
+    <ion-row class="ion-justify-content-center">
+      <ion-card class="item-card">
+        <ion-card-content>
+          <div class="contact-grid" (click)="selectImageSource()">
+            <ion-icon class="header-dropdown m-r--5" (click)="selectImageSource()"
+              name="camera" slot="end"></ion-icon>
+            <img [src]="attendancePhoto" alt="">
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
 </ion-content>
