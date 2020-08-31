@@ -104,4 +104,8 @@ export class StudentsPage implements OnInit, AfterViewInit {
     this.dataShare.setData(currentStudent);
     this.router.navigateByUrl(`/student/${this.currentUser.defaultSchool.id}/${this.classRoomId}/edit/${studentId}`);
   }
+
+  UploadPhoto(studentId: string) {
+    this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${studentId}/photos`);
+  }
 }

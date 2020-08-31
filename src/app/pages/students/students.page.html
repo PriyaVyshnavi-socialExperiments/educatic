@@ -37,8 +37,25 @@
                             <span class="phone">
                                 <i class="material-icons">phone</i>264-625-2583</span>
                         </div>
+
                     </div>
                 </ion-card-content>
+                <ion-footer>
+                    <ion-grid>
+                        <ion-row justify-content-around>
+                            <ion-col>
+                                <ion-button expand="block" (click)="UploadPhoto(student.id)" fill="clear">
+                                    Upload photo
+                                </ion-button>
+                            </ion-col>
+                            <ion-col>
+                                <ion-button expand="block" (click)="StudentEdit(student.id)" fill="clear">
+                                    Edit
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-footer>
             </ion-card>
         </ion-row>
     </ion-grid>

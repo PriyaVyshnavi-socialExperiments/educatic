@@ -1,10 +1,11 @@
 export interface IQueueMessage {
-    location: string;
-    latLong: string;
     schoolId: string;
     classId: string;
+    courseId: string;
     teacherId: string;
     studentId: string;
     pictureURLs: string[];
-    pictureTimestamp: string;
+    pictureTimestamp?: Date;
+    latitude: string;
+    longitude: string;
 }

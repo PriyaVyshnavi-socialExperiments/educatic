@@ -142,7 +142,8 @@
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>City </mat-label>
                 <mat-select formControlName="city">
-                  <mat-option *ngFor="let city of cityInfo; let k = index" value="{{city.name}}">{{city.name}}</mat-option>
+                  <mat-option *ngFor="let city of cityInfo; let k = index" value="{{city.name}}">{{city.name}}
+                  </mat-option>
                 </mat-select>
                 <mat-icon matSuffix>
                 </mat-icon>
@@ -164,17 +165,19 @@
                 </mat-error>
               </mat-form-field>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2"></div>
-            <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 mb-2">
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2" style="text-align: center;">
               <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn mr-3"
-                [disabled]="!studentForm.valid " type="submit">
+                [disabled]="!studentForm.valid" type="submit">
                 Submit
               </button>
-              <button mat-flat-button type="button" class="login100-form-btn container-login100-form-btn"
-                [routerLink]="['/students']">
+              <button mat-flat-button type="button" color="secondary"
+                class="login100-form-btn container-login100-form-btn" [routerLink]="['/students']">
                 Cancel
+              </button>
+              <button *ngIf="student?.id" mat-flat-button type="button" color="tertiary"
+                class="login100-form-btn container-login100-form-btn mt-2" (click) ="UploadPhoto()">
+                Upload Photo
               </button>
             </div>
 

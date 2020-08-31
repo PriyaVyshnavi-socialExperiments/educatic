@@ -34,9 +34,8 @@ export class StudentService extends OfflineService {
     }
     return this.http.Post<Response>(OfflineSyncURL.Student, studentInfo)
       .pipe(
-        map(response => {
-          if (response) {
-          }
+        map((response: any) => {
+          response.studentId = studentInfo.id;
           return response;
         }),
         finalize(() => {
@@ -109,7 +108,7 @@ export class StudentService extends OfflineService {
   
 
   public UploadImageFile(studentBlobData) {
-    this.blobShared.setContainer$ = 'student-photos';
+    this.blobShared.setContainer$ = 'students';
     this.blobShared.resetSasToken$ = true;
     return this.blobUpload.uploadFile(studentBlobData);
 

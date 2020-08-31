@@ -24,7 +24,7 @@ export class AttendanceService extends OfflineService {
     }
 
     public UploadImageFile(attendancePhoto: File) {
-        this.blobShared.setContainer$ = 'attendance-photo';
+        this.blobShared.setContainer$ = 'attendance';
         this.blobShared.resetSasToken$ = true;
         return this.blobUpload.uploadFile(attendancePhoto);
       }

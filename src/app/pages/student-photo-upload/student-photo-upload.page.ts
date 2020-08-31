@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { ActionSheetController, Platform } from '@ionic/angular';
-import { Plugins, CameraResultType, CameraSource, Capacitor, FilesystemDirectory } from '@capacitor/core';
+import { Plugins, CameraResultType, CameraSource, Geolocation } from '@capacitor/core';
+
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { StudentService } from '../../_services/student/student.service';
 import { IStudentPhoto } from '../../_models/student-photos';
@@ -10,6 +11,7 @@ import { AuthenticationService } from '../../_services';
 import { IUser, ISchool } from '../../_models';
 import { ImageHelper } from 'src/app/_helpers/image-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
+import { GeolocationHelper } from 'src/app/_helpers/geolocation';
 const { Camera, Filesystem } = Plugins;
 
 @Component({
@@ -26,7 +28,6 @@ export class StudentPhotoUploadPage implements OnInit {
   studentBlobData: File[] = [];
   studentBlobDataURLs: string[] = [];
   school: ISchool;
-
 
   constructor(
     private actionSheetCtrl: ActionSheetController,
@@ -61,15 +62,16 @@ export class StudentPhotoUploadPage implements OnInit {
   }
 
   async uploadPhotos() {
+    const position = await GeolocationHelper.GetGeolocation();
     const queueMessage = {
-      location: '',
-      latLong: '',
       schoolId: this.currentUser.defaultSchool.id,
-      classId: '',
+      classId: this.classId,
       studentId: this.studentId,
       teacherId: this.currentUser.id,
       pictureURLs: this.studentBlobDataURLs,
-      pictureTimestamp: Date.UTC.toString(),
+      pictureTimestamp: new Date(),
+      latitude: position.coords.latitude.toString(),
+      longitude: position.coords.longitude.toString(),
     } as IQueueMessage
 
     this.studentService.QueueBlobMessage(queueMessage).subscribe((res) => { });
@@ -97,7 +99,8 @@ export class StudentPhotoUploadPage implements OnInit {
     });
 
     const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
-    const blobURL = `${this.school.name}_${this.school.id}/${this.classId}/${this.studentId}/${id}_photo.${image.format}`;
+    const schoolName = this.school.name.replace(/\s/g, '');
+    const blobURL = `${schoolName}_${this.school.id}/${this.classId}/${this.studentId}/${id}_photo.${image.format}`;
 
     const imageFile = ImageHelper.blobToFile(blobData, blobURL);
     this.studentService.UploadImageFile(imageFile).subscribe((res) => {

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { CountryHelper } from 'src/app/_helpers/countries';
 import { IStudent, Role, IUser, ISchool } from 'src/app/_models';
@@ -39,7 +39,8 @@ export class StudentAddPage implements OnInit, OnDestroy {
     private dataShare: DataShareService,
     private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
-    private emailValidator: CustomEmailValidator
+    private emailValidator: CustomEmailValidator,
+    public router: Router,
   ) { }
 
   ngOnInit() {
@@ -49,16 +50,11 @@ export class StudentAddPage implements OnInit, OnDestroy {
       }
       this.currentUser = user;
       this.schoolInfo = user.defaultSchool;
+      this.classInfo = user.defaultSchool.classRooms;
     });
-
-
     this.isEdit = this.activatedRoute.snapshot.paramMap.has('studentId');
-
     this.studentForm = this.formBuilder.group({
       classId: new FormControl('', [
-        Validators.required
-      ]),
-      schoolId: new FormControl('', [
         Validators.required
       ]),
       firstname: new FormControl('', [
@@ -76,7 +72,8 @@ export class StudentAddPage implements OnInit, OnDestroy {
         Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
         Validators.maxLength(200)
       ]),
-        Validators.composeAsync([this.emailValidator.existingEmailValidator()])),
+        //Validators.composeAsync([this.emailValidator.existingEmailValidator()])
+        ),
       address1: new FormControl('', [
         Validators.required,
         Validators.maxLength(100),
@@ -109,7 +106,6 @@ export class StudentAddPage implements OnInit, OnDestroy {
         });
         if (this.student) {
           this.studentForm.setValue({
-            schoolId: this.student.schoolId,
             classId: this.student.classId,
             firstname: this.student.firstName,
             lastname: this.student.lastName,
@@ -124,7 +120,11 @@ export class StudentAddPage implements OnInit, OnDestroy {
           });
         }
       });
+      this.studentForm.controls['email'].setAsyncValidators(
+        this.emailValidator.existingEmailValidator(this.student.email));
     } else {
+      this.studentForm.controls['email'].setAsyncValidators(
+        this.emailValidator.existingEmailValidator());
       this.getCountries();
     }
   }
@@ -143,7 +143,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
       const studentInfo = {
         id: this.student?.id,
         classId: this.f.classId.value,
-        schoolId: this.f.schoolId.value,
+        schoolId: this.schoolInfo.id,
         firstName: this.f.firstname.value,
         lastName: this.f.lastname.value,
         email: this.f.email.value,
@@ -157,9 +157,13 @@ export class StudentAddPage implements OnInit, OnDestroy {
         zip: this.f.zip.value,
         role: Role.Student
       } as IStudent;
-      this.studentService.SubmitStudent(studentInfo).subscribe(() => {
+      this.studentService.SubmitStudent(studentInfo).subscribe((res) => {
+        this.student = studentInfo;
+        this.student.id = res.studentId;
         this.presentToast();
-        this.studentForm.reset(this.studentForm.value);
+        this.dataShare.setData(this.student);
+        this.router.navigateByUrl(`/student/${this.currentUser.defaultSchool.id}/${this.student.classId}/edit/${this.student.id}`);
+        //this.studentForm.reset(this.studentForm.value);
       });
     }
   }
@@ -184,6 +188,10 @@ export class StudentAddPage implements OnInit, OnDestroy {
     this.classRoomService.GetClassRooms(schoolId.value).toPromise().then((data) => {
       this.classInfo = data;
     });
+  }
+
+  UploadPhoto() {
+    this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.student.classId}/student/${this.student.id}/photos`);
   }
 
   private async presentToast() {
