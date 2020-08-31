@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { from, OperatorFunction, Subject } from 'rxjs';
-import { map, mergeMap, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, mergeMap, startWith, switchMap, tap, take } from 'rxjs/operators';
 import { BlobContainerRequest, BlobItemUpload } from './azure-storage';
 import { BlobSharedViewStateService } from './blob-shared-view-state.service';
 import { BlobStorageService } from './blob-storage.service';
@@ -34,6 +34,7 @@ export class BlobUploadsViewStateService {
 
   public uploadFile = (file: File) =>
     this.blobState.getStorageOptionsWithContainer().pipe(
+      take(1),
       switchMap(options =>
         this.blobStorage
           .uploadToBlobStorage(file, {

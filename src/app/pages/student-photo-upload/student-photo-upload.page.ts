@@ -118,8 +118,6 @@ export class StudentPhotoUploadPage implements OnInit {
       sequenceId: id
     } as IStudentPhoto
 
-    //this.studentBlobData = [...this.studentBlobData, imageFile]
-
     await this.studentService.UploadStudentPhoto(studentPhoto).then(() => {
       const unsafeImageUrl = URL.createObjectURL(blobData);
       const imageUrl = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);

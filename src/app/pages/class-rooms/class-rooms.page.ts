@@ -96,6 +96,10 @@ export class ClassRoomsPage implements OnInit {
     this.router.navigateByUrl(`/student/add/${this.currentUser.defaultSchool.id}/${classId}`);
   }
 
+  public TakeAttendance(ev: any, classId: string) {
+    this.router.navigateByUrl(`/attendance/${this.currentUser.defaultSchool.id}/${classId}`);
+  }
+
   public edit() {
 
   }
