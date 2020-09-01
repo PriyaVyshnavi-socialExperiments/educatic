@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { SchoolService } from '../../_services/school/school.service';
 import { ISchool, IUser } from '../../_models';
 import { PopoverController, AlertController, MenuController } from '@ionic/angular';
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
 import { Router } from '@angular/router';
-import { DataShareService } from '../../_services/data-share.service';
 import { AuthenticationService } from '../../_services/authentication/authentication.service';
 
 @Component({
@@ -17,25 +15,21 @@ export class SchoolsPage implements OnInit {
   currentUser: IUser;
 
   constructor(
-    private schoolService: SchoolService,
     private popoverController: PopoverController,
     public router: Router,
     public alertController: AlertController,
     private menuCtrl: MenuController,
-    private dataShare: DataShareService,
     private authenticationService: AuthenticationService,
 
   ) { }
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
-      if( !user) {
+      if (!user) {
         return;
       }
       this.currentUser = user;
-    });
-    this.schoolService.GetSchools().subscribe((data) => {
-      this.schools = [...data]
+      this.schools = [...this.currentUser.schools]
     });
   }
 
@@ -52,13 +46,12 @@ export class SchoolsPage implements OnInit {
       componentProps: { id: schoolId, type: 'school' },
       cssClass: 'pop-over-style',
     });
-    //popover.style.cssText = '--min-width: 170px; --max-width: 200px;';
     popover.onDidDismiss().then((data) => {
-      if(!data.data) {
+      if (!data.data) {
         return;
       }
       const actionData = data?.data;
-      this.currentUser.schoolId = actionData.currentId;
+      this.authenticationService.ResetDefaultSchool(actionData.currentId);
       switch (actionData?.selectedOption) {
         case 'edit':
           this.SchoolEdit(actionData.currentId);
@@ -67,7 +60,7 @@ export class SchoolsPage implements OnInit {
           this.SchoolDelete(actionData.currentId);
           break;
         case 'details':
-          this.SchoolDetails(actionData.currentId);
+          this.SchoolDetails();
           break;
         case 'teachers':
           this.router.navigateByUrl(`/teachers/${actionData.currentId}`);
@@ -84,8 +77,6 @@ export class SchoolsPage implements OnInit {
   }
 
   public SchoolEdit(schoolId: string) {
-    const currentSchool = this.schools.find(school => school.id === schoolId);
-    this.dataShare.setData(currentSchool);
     this.router.navigateByUrl(`/school/edit/${schoolId}`);
   }
 
@@ -112,20 +103,17 @@ export class SchoolsPage implements OnInit {
     await alert.present();
   }
 
-  public SchoolDetails(schoolId: string) {
-    const currentSchool = this.schools.find(school => school.id === schoolId);
-    this.schoolService.setSchoolDetails(currentSchool)
+  public SchoolDetails() {
     this.menuCtrl.open('end');
   }
 
-  public  ClassList(ev: any, schoolId: string) {
-    this.currentUser.schoolId = schoolId;
+  public ClassList(ev: any, schoolId: string) {
+    this.authenticationService.ResetDefaultSchool(schoolId);
     this.router.navigateByUrl(`/class-rooms/${schoolId}`);
   }
 
-  public  NewClass(ev: any, schoolId: string) {
-    this.currentUser.schoolId = schoolId;
+  public NewClass(ev: any, schoolId: string) {
+    this.authenticationService.ResetDefaultSchool(schoolId);
     this.router.navigateByUrl(`/class-room/add/${schoolId}`);
   }
-
 }

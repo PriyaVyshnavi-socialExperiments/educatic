@@ -48,12 +48,11 @@ export class AuthenticationService extends OfflineService {
                         // store user details and jwt token in local storage to keep user logged in between page refreshes
                         response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
                         response.schools = [...response.schools];
-                        response.classRooms = [...response.schools[0].classRooms];
-                        response.schoolId = response.schools[0].id;
-                        this.SetOfflineData('User', 'current-user', response);
                         this.currentUserSubject.next(response);
                         this.ready.next(response);
                         this.appInsightsService.setUserId(response.id)
+                        this.ResetDefaultSchool(response.schools[0].id)
+                        //this.SetOfflineData('User', 'current-user', response);
                     }
                     return response;
                 }));
@@ -76,6 +75,13 @@ export class AuthenticationService extends OfflineService {
     }
 
     public VerifyEmail(emailId: string) {
-          return this.http.Get<boolean>(`/verifyemail/${emailId}`);
-      }
+        return this.http.Get<boolean>(`/verifyemail/${emailId}`);
+    }
+
+    public ResetDefaultSchool(schoolId: string) {
+        this.currentUser.subscribe((currentUser) => {
+            currentUser.defaultSchool = currentUser.schools?.find((s) => s.id === schoolId);
+            this.SetOfflineData('User', 'current-user', currentUser);
+        });
+    }
 }

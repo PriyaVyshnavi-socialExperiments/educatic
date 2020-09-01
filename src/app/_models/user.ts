@@ -1,5 +1,4 @@
 ﻿import { Role, IMenuItems, ISchool } from '.';
-import { IClassRoom } from './class-room';
 
 export interface IUser {
     id: string;
@@ -11,7 +10,5 @@ export interface IUser {
     forceChangePasswordNextLogin: boolean;
     menuItems: IMenuItems[];
     schools: ISchool[];
-    classRooms: IClassRoom[];
-    schoolId: string;
-    classRoomId: string;
+    defaultSchool: ISchool;
 }

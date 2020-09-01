@@ -30,7 +30,7 @@ export class SchoolAddPage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private schoolService: SchoolService,
     private dataShare: DataShareService,
-    private route: ActivatedRoute
+    private activatedRoute: ActivatedRoute
   ) {
 
     //this.getLocation();
@@ -39,9 +39,7 @@ export class SchoolAddPage implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.route.paramMap.subscribe(params => {
-      this.isEditSchool = params.has('id');
-    });
+    this.isEditSchool = this.activatedRoute.snapshot.paramMap.has('id');
 
     this.schoolForm = this.formBuilder.group({
       name: new FormControl('', [

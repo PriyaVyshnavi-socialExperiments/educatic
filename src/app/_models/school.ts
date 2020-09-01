@@ -1,4 +1,4 @@
-import { IClassRoom } from '.';
+import { IClassRoom, ITeacher } from '.';
 
 export interface ISchool {
     id: string;
@@ -14,4 +14,5 @@ export interface ISchool {
     syncDateTime?: Date;
     createdBy: string;
     classRooms: IClassRoom[];
+    teachers: ITeacher[]
 }

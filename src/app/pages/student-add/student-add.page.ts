@@ -1,16 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { CountryHelper } from 'src/app/_helpers/countries';
-import { IStudent, Role, IUser } from 'src/app/_models';
+import { IStudent, Role, IUser, ISchool } from 'src/app/_models';
 import { DataShareService } from 'src/app/_services/data-share.service';
 import { StudentService } from 'src/app/_services/student/student.service';
 import { SchoolService } from 'src/app/_services/school/school.service';
 import { ClassRoomService } from 'src/app/_services/class-room/class-room.service';
 import { AuthenticationService } from '../../_services';
 import { CustomEmailValidator } from 'src/app/_helpers/custom-email-validator';
-
 
 @Component({
   selector: 'app-student-add',
@@ -24,47 +23,38 @@ export class StudentAddPage implements OnInit, OnDestroy {
   stateInfo: any[] = [];
   countryInfo: any[] = [];
   cityInfo: any[] = [];
-  schoolInfo: any[] = [];
+  schoolInfo: ISchool;
   classInfo: any[] = [];
   latitude: number;
   longitude: number;
   isEdit = false;
   currentUser: IUser;
 
-
   constructor(
     private formBuilder: FormBuilder,
     private countryHelper: CountryHelper,
     private toastController: ToastController,
     private studentService: StudentService,
-    private schoolService: SchoolService,
     private classRoomService: ClassRoomService,
     private dataShare: DataShareService,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
-    private emailValidator: CustomEmailValidator
+    private emailValidator: CustomEmailValidator,
+    public router: Router,
   ) { }
-
-
 
   ngOnInit() {
     this.authService.currentUser.subscribe((user) => {
-      if( !user) {
+      if (!user) {
         return;
       }
       this.currentUser = user;
+      this.schoolInfo = user.defaultSchool;
+      this.classInfo = user.defaultSchool.classRooms;
     });
-
-    this.route.paramMap.subscribe(params => {
-      this.isEdit = params.has('studentId');
-    });
-
-    this.getSchools();
+    this.isEdit = this.activatedRoute.snapshot.paramMap.has('studentId');
     this.studentForm = this.formBuilder.group({
-      classId: new FormControl(this.currentUser.classRoomId, [
-        Validators.required
-      ]),
-      schoolId: new FormControl(this.currentUser.schoolId, [
+      classId: new FormControl('', [
         Validators.required
       ]),
       firstname: new FormControl('', [
@@ -77,12 +67,13 @@ export class StudentAddPage implements OnInit, OnDestroy {
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
-      email: new FormControl('',Validators.compose( [
+      email: new FormControl('', Validators.compose([
         Validators.required,
         Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
         Validators.maxLength(200)
       ]),
-      Validators.composeAsync([this.emailValidator.existingEmailValidator()])),
+        //Validators.composeAsync([this.emailValidator.existingEmailValidator()])
+        ),
       address1: new FormControl('', [
         Validators.required,
         Validators.maxLength(100),
@@ -115,7 +106,6 @@ export class StudentAddPage implements OnInit, OnDestroy {
         });
         if (this.student) {
           this.studentForm.setValue({
-            schoolId: this.student.schoolId,
             classId: this.student.classId,
             firstname: this.student.firstName,
             lastname: this.student.lastName,
@@ -130,7 +120,11 @@ export class StudentAddPage implements OnInit, OnDestroy {
           });
         }
       });
+      this.studentForm.controls['email'].setAsyncValidators(
+        this.emailValidator.existingEmailValidator(this.student.email));
     } else {
+      this.studentForm.controls['email'].setAsyncValidators(
+        this.emailValidator.existingEmailValidator());
       this.getCountries();
     }
   }
@@ -149,7 +143,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
       const studentInfo = {
         id: this.student?.id,
         classId: this.f.classId.value,
-        schoolId: this.f.schoolId.value,
+        schoolId: this.schoolInfo.id,
         firstName: this.f.firstname.value,
         lastName: this.f.lastname.value,
         email: this.f.email.value,
@@ -163,17 +157,15 @@ export class StudentAddPage implements OnInit, OnDestroy {
         zip: this.f.zip.value,
         role: Role.Student
       } as IStudent;
-      this.studentService.SubmitStudent(studentInfo).subscribe(() => {
+      this.studentService.SubmitStudent(studentInfo).subscribe((res) => {
+        this.student = studentInfo;
+        this.student.id = res.studentId;
         this.presentToast();
-        this.studentForm.reset(this.studentForm.value);
+        this.dataShare.setData(this.student);
+        this.router.navigateByUrl(`/student/${this.currentUser.defaultSchool.id}/${this.student.classId}/edit/${this.student.id}`);
+        //this.studentForm.reset(this.studentForm.value);
       });
     }
-  }
-
-  getSchools() {
-    this.schoolService.GetSchools().toPromise().then((schools) => {
-      this.schoolInfo = schools;
-    });
   }
 
   getCountries() {
@@ -196,6 +188,10 @@ export class StudentAddPage implements OnInit, OnDestroy {
     this.classRoomService.GetClassRooms(schoolId.value).toPromise().then((data) => {
       this.classInfo = data;
     });
+  }
+
+  UploadPhoto() {
+    this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.student.classId}/student/${this.student.id}/photos`);
   }
 
   private async presentToast() {

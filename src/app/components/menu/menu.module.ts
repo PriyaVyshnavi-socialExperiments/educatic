@@ -133,7 +133,12 @@ const routes: Routes = [
         path: 'attendance',
         loadChildren: '../../pages/attendance/attendance.module#AttendancePageModule',
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
-      }
+      },
+      {
+        path: 'attendance/:schoolId/:classId',
+        loadChildren: '../../pages/attendance/attendance.module#AttendancePageModule',
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
+      },
     ]
   }
 ]

@@ -5,11 +5,12 @@ import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
 import { Guid } from 'guid-typescript';
 import { IStudent, OfflineSyncURL } from '../../_models';
-import { map, finalize, tap, catchError, flatMap, concatMap } from 'rxjs/operators';
+import { map, finalize, tap, catchError} from 'rxjs/operators';
 import { from, of } from 'rxjs';
 import { IStudentPhoto } from '../../_models/student-photos';
 import { BlobUploadsViewStateService } from '../../_services/azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../../_services/azure-blob/blob-shared-view-state.service';
+import { IQueueMessage } from 'src/app/_models/queue-message';
 
 @Injectable({
   providedIn: 'root'
@@ -33,9 +34,8 @@ export class StudentService extends OfflineService {
     }
     return this.http.Post<Response>(OfflineSyncURL.Student, studentInfo)
       .pipe(
-        map(response => {
-          if (response) {
-          }
+        map((response: any) => {
+          response.studentId = studentInfo.id;
           return response;
         }),
         finalize(() => {
@@ -105,10 +105,14 @@ export class StudentService extends OfflineService {
     );
   }
 
+  public UploadImageFile(studentBlobData) {
+    this.blobShared.setContainer$ = 'students';
+    this.blobShared.resetSasToken$ = true;
+    return this.blobUpload.uploadFile(studentBlobData);
+  }
 
-  public UploadImageFile(file) {
-    this.blobShared.setContainer$ = 'student-ptotos';
-    return this.blobUpload.uploadFile(file);
+  public QueueBlobMessage(queueData: IQueueMessage) {
+    return this.http.Post<any>('/queue/message', queueData);
   }
 
   public DeleteImage(id) {

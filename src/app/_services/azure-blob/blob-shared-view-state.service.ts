@@ -3,7 +3,8 @@ import {
   BehaviorSubject,
   MonoTypeOperatorFunction,
   Observable,
-  OperatorFunction
+  OperatorFunction,
+  Subject
 } from 'rxjs';
 import {
   filter,
@@ -27,10 +28,12 @@ import { SasGeneratorService } from './sas-generator.service';
 })
 export class BlobSharedViewStateService {
   private selectedContainerInner$ = new BehaviorSubject<string>(undefined);
+  private sasToken$ = new Subject<BlobStorageRequest>();
 
   containers$ = this.getStorageOptions().pipe(
     switchMap(options => this.blobStorage.getContainers(options))
   );
+
   itemsInContainer$ = this.selectedContainer$.pipe(
     filter(containerName => !!containerName),
     switchMap(containerName =>
@@ -51,6 +54,16 @@ export class BlobSharedViewStateService {
 
   set setContainer$(containerName) {
     this.selectedContainerInner$.next(containerName);
+  }
+
+  set resetSasToken$(isReset: boolean) {
+    if (isReset) {
+      this.sasGenerator.getSasToken(this.selectedContainerInner$.value).subscribe((token) => {
+        this.sasToken$.next(token);
+      })
+    } else {
+      this.sasToken$.next(undefined);
+    }
   }
 
   constructor(
@@ -96,6 +109,6 @@ export class BlobSharedViewStateService {
   }
 
   private getStorageOptions(): Observable<BlobStorageRequest> {
-    return this.sasGenerator.getSasToken(this.selectedContainerInner$.value);
+    return this.sasToken$;
   }
 }

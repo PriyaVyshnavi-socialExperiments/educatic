@@ -20,4 +20,5 @@ export class DataShareService {
   public getData() {
     return this.dataShareSubject.asObservable();
   }
+
 }

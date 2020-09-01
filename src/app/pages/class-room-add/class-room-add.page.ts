@@ -24,7 +24,7 @@ export class ClassRoomAddPage implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private classService: ClassRoomService,
     private dataShare: DataShareService,
     private schoolService: SchoolService,
@@ -34,9 +34,8 @@ export class ClassRoomAddPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      this.isEditClassRoom = params.has('classId');
-    });
+    this.isEditClassRoom= this.activatedRoute.snapshot.paramMap.has('classId');
+
     this.authenticationService.currentUser.subscribe((user) => {
       if( !user) {
         return;
