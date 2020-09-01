@@ -12,6 +12,7 @@ import { IUser, ISchool } from '../../_models';
 import { ImageHelper } from 'src/app/_helpers/image-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
 import { GeolocationHelper } from 'src/app/_helpers/geolocation';
+import { LocationService } from 'src/app/_services/location/location.service';
 const { Camera } = Plugins;
 
 @Component({
@@ -36,7 +37,8 @@ export class StudentPhotoUploadPage implements OnInit {
     private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
     private authenticationService: AuthenticationService,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public locationService: LocationService
 
   ) { }
 
@@ -62,7 +64,7 @@ export class StudentPhotoUploadPage implements OnInit {
   }
 
   async uploadPhotos() {
-    const position = await GeolocationHelper.GetGeolocation();
+    const location = await this.locationService.GetGeolocation();
     const queueMessage = {
       schoolId: this.currentUser.defaultSchool.id,
       classId: this.classId,
@@ -70,8 +72,8 @@ export class StudentPhotoUploadPage implements OnInit {
       teacherId: this.currentUser.id,
       pictureURLs: this.studentBlobDataURLs,
       pictureTimestamp: new Date(),
-      latitude: position.coords.latitude.toString(),
-      longitude: position.coords.longitude.toString(),
+      latitude: location.lat,
+      longitude: location.lng,
     } as IQueueMessage
 
     this.studentService.QueueBlobMessage(queueMessage).subscribe((res) => { });

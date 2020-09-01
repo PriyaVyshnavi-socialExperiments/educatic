@@ -9,6 +9,7 @@ import { AttendanceService } from '../../_services/attendance/attendance.service
 import { IQueueMessage } from 'src/app/_models/queue-message';
 import { dateFormat } from 'src/app/_helpers';
 import { GeolocationHelper } from 'src/app/_helpers/geolocation';
+import { LocationService } from 'src/app/_services/location/location.service';
 
 @Component({
   selector: 'app-attendance',
@@ -31,7 +32,8 @@ export class AttendancePage implements OnInit, AfterViewInit {
     private sanitizer: DomSanitizer,
     private authenticationService: AuthenticationService,
     private attendanceService: AttendanceService,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public locationService: LocationService
   ) { }
 
   ngOnInit() {
@@ -62,7 +64,7 @@ export class AttendancePage implements OnInit, AfterViewInit {
   }
 
   async uploadPhoto() {
-    const position = await GeolocationHelper.GetGeolocation();
+    const location = await this.locationService.GetGeolocation();
     const queueMessage = {
       schoolId: this.currentUser.defaultSchool.id,
       classId: this.classRoomId,
@@ -70,8 +72,8 @@ export class AttendancePage implements OnInit, AfterViewInit {
       teacherId: this.currentUser.id,
       pictureURLs: [this.blobDataURL],
       pictureTimestamp: new Date(),
-      latitude: position.coords.latitude.toString(),
-      longitude: position.coords.longitude.toString(),
+      latitude: location.lat,
+      longitude: location.lng,
     } as IQueueMessage
     this.attendanceService.QueueBlobMessage(queueMessage)
       .subscribe((res) => { });

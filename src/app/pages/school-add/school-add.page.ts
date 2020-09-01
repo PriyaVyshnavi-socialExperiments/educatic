@@ -7,6 +7,7 @@ import { ToastController } from '@ionic/angular';
 import { SchoolService } from '../../_services/school/school.service';
 import { DataShareService } from '../../_services/data-share.service';
 import { ISchool } from '../../_models/school';
+import { AuthenticationService } from '../../_services/authentication/authentication.service';
 
 @Component({
   selector: 'app-school-add',
@@ -30,11 +31,10 @@ export class SchoolAddPage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private schoolService: SchoolService,
     private dataShare: DataShareService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private authenticationService: AuthenticationService,
+
   ) {
-
-    //this.getLocation();
-
   }
 
   ngOnInit() {
@@ -71,16 +71,20 @@ export class SchoolAddPage implements OnInit, OnDestroy {
       ]),
     });
 
-    //this.getCountries();
-
     if (this.isEditSchool) {
-      this.dataShare.getData().subscribe((data) => {
-        this.school = data;
+      const schoolId = this.activatedRoute.snapshot.paramMap.get('id');
+
+      this.authenticationService.currentUser.subscribe((user) => {
+        if (!user) {
+          return;
+        }
+        this.school = user.schools.find((s) => s.id === schoolId);
         this.countryHelper.getSelectedCountryWiseStatsCities(this.school.country, this.school.state).then((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
         });
+
         if (this.school) {
           this.schoolForm.setValue({
             name: this.school.name,

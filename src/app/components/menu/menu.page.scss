@@ -40,3 +40,8 @@ ion-item {
     padding-left: 20px;
     font-size   : small;
 }
+
+.left-menu {
+    --background: var(--ion-item-background, var(--ion-background-color, #fff));
+}
+

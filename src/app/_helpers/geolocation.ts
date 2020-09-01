@@ -8,7 +8,7 @@ import { Geolocation } from '@capacitor/core';
 
 export class GeolocationHelper {
 
-    public static  GetGeolocation() {
-        return Geolocation.getCurrentPosition();
-    }
+    // public static  GetGeolocation() {
+    //     return Geolocation.getCurrentPosition();
+    // }
 }
