@@ -10,8 +10,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "ios": "ionic build && npx cap sync ios && npx cap open ios",
-    "android": "ionic build && npx cap sync android && npx cap open android"
+    "ios": "ionic build --prod && npx cap sync ios && npx cap open ios",
+    "android": "ionic build --prod && npx cap sync android && npx cap open android"
   },
   "private": true,
   "dependencies": {

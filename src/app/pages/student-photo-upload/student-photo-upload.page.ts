@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { ActionSheetController, Platform } from '@ionic/angular';
-import { Plugins, CameraResultType, CameraSource, Geolocation } from '@capacitor/core';
+import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
 
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { StudentService } from '../../_services/student/student.service';
 import { IStudentPhoto } from '../../_models/student-photos';
 import { ActivatedRoute } from '@angular/router';
@@ -12,7 +12,7 @@ import { IUser, ISchool } from '../../_models';
 import { ImageHelper } from 'src/app/_helpers/image-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
 import { GeolocationHelper } from 'src/app/_helpers/geolocation';
-const { Camera, Filesystem } = Plugins;
+const { Camera } = Plugins;
 
 @Component({
   selector: 'app-student-photo-upload',
