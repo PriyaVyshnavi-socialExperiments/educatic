@@ -41,7 +41,7 @@ describe('ClassRoomsPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create class rooms page', () => {
     expect(component).toBeTruthy();
   });
 });

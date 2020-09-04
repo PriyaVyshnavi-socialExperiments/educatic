@@ -54,7 +54,7 @@ describe('StudentAddPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create student add page', () => {
     expect(component).toBeTruthy();
   });
 });

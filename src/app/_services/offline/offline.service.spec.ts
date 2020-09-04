@@ -14,7 +14,7 @@ describe('OfflineService', () => {
     service = TestBed.inject(OfflineService);
   });
 
-  it('should be created', () => {
+  it('should be created offline service', () => {
     expect(service).toBeTruthy();
   });
 });

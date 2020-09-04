@@ -38,7 +38,7 @@ describe('StudentPhotoUploadPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create student photo upload page', () => {
     expect(component).toBeTruthy();
   });
 });

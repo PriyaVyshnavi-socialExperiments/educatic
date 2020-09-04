@@ -33,7 +33,7 @@ describe('ResetPasswordComponent', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create reset password component', () => {
     expect(component).toBeTruthy();
   });
 });

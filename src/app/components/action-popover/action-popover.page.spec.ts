@@ -22,7 +22,7 @@ describe('ActionPopoverPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create action popover page', () => {
     expect(component).toBeTruthy();
   });
 });

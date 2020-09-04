@@ -37,7 +37,7 @@ describe('TeacherAddPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create teacher add page', () => {
     expect(component).toBeTruthy();
   });
 });

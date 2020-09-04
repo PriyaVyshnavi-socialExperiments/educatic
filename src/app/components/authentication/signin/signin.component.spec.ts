@@ -29,7 +29,7 @@ describe('SigninComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-  it('should create', () => {
+  it('should create signin component', () => {
     expect(component).toBeTruthy();
   });
 });

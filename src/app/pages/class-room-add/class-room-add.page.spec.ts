@@ -39,7 +39,7 @@ describe('ClassRoomAddPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create class room add page', () => {
     expect(component).toBeTruthy();
   });
 });

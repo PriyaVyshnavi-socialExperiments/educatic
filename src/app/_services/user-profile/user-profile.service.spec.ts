@@ -14,7 +14,7 @@ describe('UserProfileService', () => {
     service = TestBed.inject(UserProfileService);
   });
 
-  it('should be created', () => {
+  it('should be created user profile service', () => {
     expect(service).toBeTruthy();
   });
 });

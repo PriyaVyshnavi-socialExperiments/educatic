@@ -41,7 +41,7 @@ describe('UserProfilePage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create user profile page', () => {
     expect(component).toBeTruthy();
   });
 });

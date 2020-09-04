@@ -18,7 +18,7 @@ describe('CoursesPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create courses page', () => {
     expect(component).toBeTruthy();
   });
 });

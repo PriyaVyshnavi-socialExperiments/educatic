@@ -32,6 +32,9 @@ module.exports = function (config) {
       outputFile: "test.xml",
       useBrowserName: false
     },
+    files: [
+      {pattern: 'src/**/*.svg', watched: false, included: false, served: true},
+    ],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,

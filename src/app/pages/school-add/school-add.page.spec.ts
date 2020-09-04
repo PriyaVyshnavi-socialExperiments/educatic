@@ -14,7 +14,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
 
-fdescribe('SchoolAddPage', () => {
+describe('SchoolAddPage', () => {
   let component: SchoolAddPage;
   let fixture: ComponentFixture<SchoolAddPage>;
 
@@ -41,7 +41,7 @@ fdescribe('SchoolAddPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create school add page', () => {
     expect(component).toBeTruthy();
   });
 });
