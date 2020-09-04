@@ -28,7 +28,7 @@ export class HomePage implements OnInit, OnDestroy {
   public ngOnInit() {
     this.isLoggedIn = this.authenticationService.currentUser ? true : false;
     this.isMobileDevice = isMobileDevice;
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.currentUser?.subscribe((user) => {
       if (!user) {
         return;
       }

@@ -3,9 +3,7 @@ import { BlobSharedViewStateService } from '../../_services/azure-blob/blob-shar
 import { OfflineService } from '../offline/offline.service';
 import { Injectable, Injector } from '@angular/core';
 import { HttpService } from '../http-client/http.client';
-import { NetworkService } from '../network/network.service';
 import { IQueueMessage } from 'src/app/_models/queue-message';
-import { forkJoin } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -16,7 +14,6 @@ export class AttendanceService extends OfflineService {
     constructor(
         private http: HttpService,
         public injector: Injector,
-        private network: NetworkService,
         private blobUpload: BlobUploadsViewStateService,
         private blobShared: BlobSharedViewStateService,
     ) {

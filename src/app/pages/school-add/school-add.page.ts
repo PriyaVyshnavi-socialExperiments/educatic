@@ -74,7 +74,7 @@ export class SchoolAddPage implements OnInit, OnDestroy {
     if (this.isEditSchool) {
       const schoolId = this.activatedRoute.snapshot.paramMap.get('id');
 
-      this.authenticationService.currentUser.subscribe((user) => {
+      this.authenticationService.currentUser?.subscribe((user) => {
         if (!user) {
           return;
         }

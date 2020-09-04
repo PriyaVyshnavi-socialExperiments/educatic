@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AlertController } from '@ionic/angular';
-import { ActionSheetController, Platform } from '@ionic/angular';
 import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
-
 import { DomSanitizer } from '@angular/platform-browser';
 import { StudentService } from '../../_services/student/student.service';
 import { IStudentPhoto } from '../../_models/student-photos';
@@ -11,8 +9,8 @@ import { AuthenticationService } from '../../_services';
 import { IUser, ISchool } from '../../_models';
 import { ImageHelper } from 'src/app/_helpers/image-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
-import { GeolocationHelper } from 'src/app/_helpers/geolocation';
 import { LocationService } from 'src/app/_services/location/location.service';
+
 const { Camera } = Plugins;
 
 @Component({
@@ -31,8 +29,6 @@ export class StudentPhotoUploadPage implements OnInit {
   school: ISchool;
 
   constructor(
-    private actionSheetCtrl: ActionSheetController,
-    private platform: Platform,
     private studentService: StudentService,
     private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
@@ -49,7 +45,7 @@ export class StudentPhotoUploadPage implements OnInit {
     for (let i = 0; i < 5; i++) {
       this.studentPhotos.push({ id: i, image: '' });
     }
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.currentUser?.subscribe((user) => {
       if (!user) {
         return;
       }

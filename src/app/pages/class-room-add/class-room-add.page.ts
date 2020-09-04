@@ -36,7 +36,7 @@ export class ClassRoomAddPage implements OnInit {
   ngOnInit() {
     this.isEditClassRoom= this.activatedRoute.snapshot.paramMap.has('classId');
 
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.currentUser?.subscribe((user) => {
       if( !user) {
         return;
       }

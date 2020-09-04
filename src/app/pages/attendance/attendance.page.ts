@@ -8,7 +8,6 @@ import { AuthenticationService } from '../../_services';
 import { AttendanceService } from '../../_services/attendance/attendance.service';
 import { IQueueMessage } from 'src/app/_models/queue-message';
 import { dateFormat } from 'src/app/_helpers';
-import { GeolocationHelper } from 'src/app/_helpers/geolocation';
 import { LocationService } from 'src/app/_services/location/location.service';
 
 @Component({

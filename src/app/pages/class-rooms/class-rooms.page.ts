@@ -27,7 +27,7 @@ export class ClassRoomsPage implements OnInit {
     public router: Router,) { }
 
   ngOnInit() {
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.currentUser?.subscribe((user) => {
       if (!user) {
         return;
       }

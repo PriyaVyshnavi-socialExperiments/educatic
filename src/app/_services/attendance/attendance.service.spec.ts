@@ -1,12 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-
-import { StudentService } from './student.service';
 import { HttpClientModule } from '@angular/common/http';
+import { AttendanceService } from './attendance.service';
 import { BlobUploadsViewStateService } from '../azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../azure-blob/blob-shared-view-state.service';
 
-describe('StudentService', () => {
-  let service: StudentService;
+describe('AttendanceService', () => {
+  let service: AttendanceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -16,7 +15,7 @@ describe('StudentService', () => {
         {provide: BlobSharedViewStateService, useValue: null},
       ]
     });
-    service = TestBed.inject(StudentService);
+    service = TestBed.inject(AttendanceService);
   });
 
   it('should be created', () => {

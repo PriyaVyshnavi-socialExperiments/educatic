@@ -43,9 +43,9 @@ export class TeacherAddPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isEditTeacher = this.activatedRoute.snapshot.paramMap.has('teacherId');
+    // this.isEditTeacher = this.activatedRoute.snapshot.paramMap.has('teacherId');
 
-    this.getSchools();
+    // this.getSchools();
     this.teacherForm = this.formBuilder.group({
       schoolId: new FormControl('', [
         Validators.required
@@ -88,33 +88,33 @@ export class TeacherAddPage implements OnInit, OnDestroy {
       ]),
     });
 
-    if (this.isEditTeacher) {
-      this.dataShare.getData().subscribe((data) => {
-        this.teacher = data;
-        this.countryHelper.getSelectedCountryWiseStatsCities(this.teacher.country, this.teacher.state).then((country) => {
-          this.countryInfo = country.Countries;
-          this.stateInfo = country.States;
-          this.cityInfo = country.Cities;
-        });
-        if (this.teacher) {
-          this.teacherForm.setValue({
-            schoolId: this.teacher.schoolId,
-            firstname: this.teacher.firstName,
-            lastname: this.teacher.lastName,
-            email: this.teacher.email,
+    // if (this.isEditTeacher) {
+    //   this.dataShare.getData().subscribe((data) => {
+    //     this.teacher = data;
+    //     this.countryHelper.getSelectedCountryWiseStatsCities(this.teacher.country, this.teacher.state).then((country) => {
+    //       this.countryInfo = country.Countries;
+    //       this.stateInfo = country.States;
+    //       this.cityInfo = country.Cities;
+    //     });
+    //     if (this.teacher) {
+    //       this.teacherForm.setValue({
+    //         schoolId: this.teacher.schoolId,
+    //         firstname: this.teacher.firstName,
+    //         lastname: this.teacher.lastName,
+    //         email: this.teacher.email,
 
-            address1: this.teacher.address1,
-            address2: this.teacher.address2,
-            country: this.teacher.country,
-            state: this.teacher.state,
-            city: this.teacher.city,
-            zip: this.teacher.zip
-          });
-        }
-      });
-    } else {
-      this.getCountries();
-    }
+    //         address1: this.teacher.address1,
+    //         address2: this.teacher.address2,
+    //         country: this.teacher.country,
+    //         state: this.teacher.state,
+    //         city: this.teacher.city,
+    //         zip: this.teacher.zip
+    //       });
+    //     }
+    //   });
+    // } else {
+    //   //this.getCountries();
+    // }
   }
 
   get f() {
