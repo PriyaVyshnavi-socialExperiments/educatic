@@ -47,7 +47,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.isEditTeacher = this.activatedRoute.snapshot.paramMap.has('teacherId');
 
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.currentUser?.subscribe((user) => {
       if (!user) {
         return;
       }

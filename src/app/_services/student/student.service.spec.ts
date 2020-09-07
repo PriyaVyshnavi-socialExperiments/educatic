@@ -4,6 +4,7 @@ import { StudentService } from './student.service';
 import { HttpClientModule } from '@angular/common/http';
 import { BlobUploadsViewStateService } from '../azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../azure-blob/blob-shared-view-state.service';
+import { BlobDownloadsViewStateService } from '../azure-blob/blob-downloads-view-state.service';
 
 describe('StudentService', () => {
   let service: StudentService;
@@ -14,6 +15,7 @@ describe('StudentService', () => {
       providers: [
         {provide: BlobUploadsViewStateService, useValue: null},
         {provide: BlobSharedViewStateService, useValue: null},
+        {provide: BlobDownloadsViewStateService, useValue: null}
       ]
     });
     service = TestBed.inject(StudentService);

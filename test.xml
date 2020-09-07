@@ -1,30 +1,30 @@
 <?xml version="1.0"?>
-<testsuite name="Chrome Headless 85.0.4182.0 (Windows 10)" package="" timestamp="2020-09-04T09:24:52" id="0" hostname="LAPTOP-0C7ET7QS" tests="22" errors="0" failures="0" time="1.49">
+<testsuite name="Chrome Headless 85.0.4182.0 (Windows 10)" package="" timestamp="2020-09-07T09:49:39" id="0" hostname="LAPTOP-0C7ET7QS" tests="22" errors="0" failures="0" time="1.35">
   <properties>
     <property name="browser.fullName" value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/85.0.4182.0 Safari/537.36"/>
   </properties>
-  <testcase name="UserProfilePage should create user profile page" time="0.305" classname="UserProfilePage"/>
-  <testcase name="ResetPasswordComponent should create reset password component" time="0.044" classname="ResetPasswordComponent"/>
-  <testcase name="TeacherAddPage should create teacher add page" time="0.166" classname="TeacherAddPage"/>
-  <testcase name="SigninComponent should create signin component" time="0.053" classname="SigninComponent"/>
-  <testcase name="ClassRoomService should be created class room service" time="0.005" classname="ClassRoomService"/>
-  <testcase name="ActionPopoverPage should create action popover page" time="0.016" classname="ActionPopoverPage"/>
-  <testcase name="ClassRoomAddPage should create class room add page" time="0.066" classname="ClassRoomAddPage"/>
-  <testcase name="OfflineService should be created offline service" time="0.004" classname="OfflineService"/>
-  <testcase name="CoursesPage should create courses page" time="0.099" classname="CoursesPage"/>
-  <testcase name="StudentAddPage should create student add page" time="0.104" classname="StudentAddPage"/>
-  <testcase name="SignupComponent should create signup component" time="0.035" classname="SignupComponent"/>
-  <testcase name="SchoolService should be created school service" time="0.003" classname="SchoolService"/>
-  <testcase name="CourseAddPage should create course add page" time="0.017" classname="CourseAddPage"/>
-  <testcase name="StudentService should be created student service" time="0.003" classname="StudentService"/>
-  <testcase name="ClassRoomsPage should create class rooms page" time="0.244" classname="ClassRoomsPage"/>
-  <testcase name="SchoolAddPage should create school add page" time="0.244" classname="SchoolAddPage"/>
-  <testcase name="HomePage should create home page" time="0.024" classname="HomePage"/>
+  <testcase name="HomePage should create home page" time="0.088" classname="HomePage"/>
   <testcase name="AttendanceService should be created attendance service" time="0.005" classname="AttendanceService"/>
-  <testcase name="AuthenticationService should be created authentication service" time="0.004" classname="AuthenticationService"/>
-  <testcase name="StudentPhotoUploadPage should create student photo upload page" time="0.043" classname="StudentPhotoUploadPage"/>
-  <testcase name="TeacherService should be created teacher service" time="0.003" classname="TeacherService"/>
+  <testcase name="ResetPasswordComponent should create reset password component" time="0.05" classname="ResetPasswordComponent"/>
+  <testcase name="ClassRoomService should be created class room service" time="0.004" classname="ClassRoomService"/>
+  <testcase name="SignupComponent should create signup component" time="0.046" classname="SignupComponent"/>
+  <testcase name="OfflineService should be created offline service" time="0.003" classname="OfflineService"/>
+  <testcase name="CoursesPage should create courses page" time="0.104" classname="CoursesPage"/>
+  <testcase name="SchoolService should be created school service" time="0.003" classname="SchoolService"/>
+  <testcase name="ClassRoomAddPage should create class room add page" time="0.093" classname="ClassRoomAddPage"/>
+  <testcase name="TeacherAddPage should create teacher add page" time="0.087" classname="TeacherAddPage"/>
+  <testcase name="StudentPhotoUploadPage should create student photo upload page" time="0.034" classname="StudentPhotoUploadPage"/>
+  <testcase name="SigninComponent should create signin component" time="0.033" classname="SigninComponent"/>
+  <testcase name="CourseAddPage should create course add page" time="0.01" classname="CourseAddPage"/>
   <testcase name="UserProfileService should be created user profile service" time="0.003" classname="UserProfileService"/>
+  <testcase name="ActionPopoverPage should create action popover page" time="0.011" classname="ActionPopoverPage"/>
+  <testcase name="UserProfilePage should create user profile page" time="0.226" classname="UserProfilePage"/>
+  <testcase name="AuthenticationService should be created authentication service" time="0.005" classname="AuthenticationService"/>
+  <testcase name="ClassRoomsPage should create class rooms page" time="0.226" classname="ClassRoomsPage"/>
+  <testcase name="StudentService should be created student service" time="0.005" classname="StudentService"/>
+  <testcase name="StudentAddPage should create student add page" time="0.08" classname="StudentAddPage"/>
+  <testcase name="TeacherService should be created teacher service" time="0.005" classname="TeacherService"/>
+  <testcase name="SchoolAddPage should create school add page" time="0.229" classname="SchoolAddPage"/>
   <system-out>
     <![CDATA[
 ]]>
