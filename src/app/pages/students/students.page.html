@@ -29,7 +29,8 @@
                             </div>
                             <div class="name-center">{{ student.email }}</div>
                         </div>
-                        <img src="assets/images/avatar.svg" class="user-img" alt="">
+
+                        <img defaultImage="assets/images/avatar.svg"  class="user-img" [lazyLoad]="student.profileStoragePath" />
                         <p> {{student.address1}} {{student.address2}} , {{student.city}} </p>
                         <br /> {{student.state}}, {{student.country}} - {{student.zip}}
 

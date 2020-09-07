@@ -69,6 +69,7 @@
     "morris.js": "^0.5.0",
     "ng-click-outside": "^6.0.0",
     "ng-http-loader": "^8.0.0",
+    "ng-lazyload-image": "^9.0.1",
     "ng2-dragula": "^2.1.1",
     "ngx-color-picker": "^9.1.0",
     "ngx-custom-validators": "^9.1.0",

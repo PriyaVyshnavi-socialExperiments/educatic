@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './teachers.page.html',
   styleUrls: ['./teachers.page.scss'],
 })
-export class TeachersPage implements OnInit {
+export class TeachersPage implements OnInit, AfterViewInit {
   @ViewChild('schoolList') schoolSelectRef: IonSelect;
 
   teachers: ITeacher[] = [];
@@ -29,13 +29,13 @@ export class TeachersPage implements OnInit {
 
   ) { }
 
-  // ngAfterViewInit(): void {
-  //   if (this.currentUser.defaultSchool.id) {
-  //     this.refresh();
-  //   } else {
-  //     this.schoolSelectRef.open();
-  //   }
-  // }
+  ngAfterViewInit(): void {
+    if (this.currentUser.defaultSchool.id) {
+      this.refresh();
+    } else {
+      this.schoolSelectRef.open();
+    }
+  }
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {

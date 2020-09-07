@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { BlobDownloadResponseModel } from '@azure/storage-blob';
 import { from, OperatorFunction, Subject } from 'rxjs';
-import { map, mergeMap, startWith, switchMap } from 'rxjs/operators';
+import { map, mergeMap, startWith, switchMap, take } from 'rxjs/operators';
 import { BlobContainerRequest, BlobItemDownload } from './azure-storage';
 import { BlobSharedViewStateService } from './blob-shared-view-state.service';
 import { BlobStorageService } from './blob-storage.service';
@@ -32,8 +32,9 @@ export class BlobDownloadsViewStateService {
     this.downloadQueueInner$.next(filename);
   }
 
-  private downloadFile = (filename: string) =>
+  public downloadFile = (filename: string) =>
     this.blobState.getStorageOptionsWithContainer().pipe(
+      take(1),
       switchMap(options =>
         this.blobStorage
           .downloadBlobItem({
@@ -57,11 +58,11 @@ export class BlobDownloadsViewStateService {
         containerName: options.containerName,
         url
       })),
-      startWith({
-        filename,
-        containerName: options.containerName,
-        url: ''
-      })
+      // startWith({
+      //   filename,
+      //   containerName: options.containerName,
+      //   url: ''
+      // })
     );
 
   private getDownloadUrlFromResponse = (): OperatorFunction<
@@ -72,7 +73,7 @@ export class BlobDownloadsViewStateService {
       switchMap(res =>
         from(res.blobBody).pipe(
           map(body => window.URL.createObjectURL(body)),
-          map(url => this.sanitizer.bypassSecurityTrustUrl(url) as string)
+          map(url => url)
         )
       )
     );

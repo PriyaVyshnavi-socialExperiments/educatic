@@ -7,6 +7,7 @@ import { AuthenticationService } from '../../_services';
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
 import { DataShareService } from '../../_services/data-share.service';
 import { StudentService } from '../../_services/student/student.service';
+import { LazyLoadImageHooks } from 'src/app/_helpers/lazy-load-image-hook';
 
 @Component({
   selector: 'app-students',
@@ -17,10 +18,14 @@ export class StudentsPage implements OnInit, AfterViewInit {
   @ViewChild('classList') classSelectRef: IonSelect;
   students: IStudent[] = [];
   schools: ISchool[] = [];
-  classRooms: any;
+  classRooms: IClassRoom[] = [];
   schoolId: string;
   classRoomId: string;
   currentUser: IUser;
+  errorImage = 'https://i.imgur.com/XkU4Ajf.png';
+  defaultImage = 'https://www.placecage.com/300/300';
+  
+  promiseImage = Promise.resolve('https://picsum.photos/id/236/300/300');
 
   constructor(
     private studentService: StudentService,
@@ -29,8 +34,12 @@ export class StudentsPage implements OnInit, AfterViewInit {
     private dataShare: DataShareService,
     public router: Router,
     private activatedRoute: ActivatedRoute,
-
+    private lazyloadImage: LazyLoadImageHooks,
   ) { }
+
+  loadImage$(img) {
+    return Promise.resolve(this.lazyloadImage.loadImage(img).subscribe((res) => res));
+  };
 
   ngOnInit() {
     this.classRoomId = this.activatedRoute.snapshot.paramMap.get('id');
@@ -43,6 +52,7 @@ export class StudentsPage implements OnInit, AfterViewInit {
       this.schools = user.schools;
       this.classRooms = user.defaultSchool.classRooms;
     });
+    
   }
 
   ngAfterViewInit(): void {
@@ -51,9 +61,8 @@ export class StudentsPage implements OnInit, AfterViewInit {
 
   async refresh() {
     if (this.classRoomId) {
-      this.studentService.GetStudents(this.currentUser.defaultSchool.id, this.classRoomId).subscribe((data) => {
-        this.students = [...data]
-      });
+      const classRoom = this.classRooms.find(c => c.classId === this.classRoomId);
+      this.students = [...classRoom.students]
     } else {
       this.classSelectRef.open();
     }
@@ -106,6 +115,8 @@ export class StudentsPage implements OnInit, AfterViewInit {
   }
 
   UploadPhoto(studentId: string) {
+    const currentStudent = this.students.find(student => student.id === studentId);
+    this.dataShare.setData(currentStudent);
     this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${studentId}/photos`);
   }
 }

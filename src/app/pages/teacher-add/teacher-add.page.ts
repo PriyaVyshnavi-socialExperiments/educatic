@@ -8,6 +8,7 @@ import { DataShareService } from '../../_services/data-share.service';
 import { SchoolService } from '../../_services/school/school.service';
 import { TeacherService } from '../../_services/teacher/teacher.service';
 import { CustomEmailValidator } from '../../_helpers/custom-email-validator';
+import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
 
 @Component({
   selector: 'app-teacher-add',
@@ -36,14 +37,22 @@ export class TeacherAddPage implements OnInit, OnDestroy {
     private schoolService: SchoolService,
     private dataShare: DataShareService,
     private activatedRoute: ActivatedRoute,
-    private emailValidator: CustomEmailValidator
+    private emailValidator: CustomEmailValidator,
+    private authenticationService: AuthenticationService,
   ) { }
 
   ngOnDestroy(): void {
   }
 
   ngOnInit() {
-    // this.isEditTeacher = this.activatedRoute.snapshot.paramMap.has('teacherId');
+    this.isEditTeacher = this.activatedRoute.snapshot.paramMap.has('teacherId');
+
+    this.authenticationService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.schoolInfo = user.schools;
+    });
 
     // this.getSchools();
     this.teacherForm = this.formBuilder.group({
@@ -60,12 +69,11 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
-      email: new FormControl('',Validators.compose( [
+      email: new FormControl('', [
         Validators.required,
         Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
         Validators.maxLength(200)
       ]),
-      Validators.composeAsync([this.emailValidator.existingEmailValidator()])),
       address1: new FormControl('', [
         Validators.required,
         Validators.maxLength(100),
@@ -88,33 +96,37 @@ export class TeacherAddPage implements OnInit, OnDestroy {
       ]),
     });
 
-    // if (this.isEditTeacher) {
-    //   this.dataShare.getData().subscribe((data) => {
-    //     this.teacher = data;
-    //     this.countryHelper.getSelectedCountryWiseStatsCities(this.teacher.country, this.teacher.state).then((country) => {
-    //       this.countryInfo = country.Countries;
-    //       this.stateInfo = country.States;
-    //       this.cityInfo = country.Cities;
-    //     });
-    //     if (this.teacher) {
-    //       this.teacherForm.setValue({
-    //         schoolId: this.teacher.schoolId,
-    //         firstname: this.teacher.firstName,
-    //         lastname: this.teacher.lastName,
-    //         email: this.teacher.email,
+    if (this.isEditTeacher) {
+      this.dataShare.getData().subscribe((data) => {
+        this.teacher = data;
+        this.countryHelper.getSelectedCountryWiseStatsCities(this.teacher.country, this.teacher.state).then((country) => {
+          this.countryInfo = country.Countries;
+          this.stateInfo = country.States;
+          this.cityInfo = country.Cities;
+        });
+        if (this.teacher) {
+          this.teacherForm.setValue({
+            schoolId: this.teacher.schoolId,
+            firstname: this.teacher.firstName,
+            lastname: this.teacher.lastName,
+            email: this.teacher.email,
 
-    //         address1: this.teacher.address1,
-    //         address2: this.teacher.address2,
-    //         country: this.teacher.country,
-    //         state: this.teacher.state,
-    //         city: this.teacher.city,
-    //         zip: this.teacher.zip
-    //       });
-    //     }
-    //   });
-    // } else {
-    //   //this.getCountries();
-    // }
+            address1: this.teacher.address1,
+            address2: this.teacher.address2,
+            country: this.teacher.country,
+            state: this.teacher.state,
+            city: this.teacher.city,
+            zip: this.teacher.zip
+          });
+        }
+      });
+      this.teacherForm.controls['email'].setAsyncValidators(
+        this.emailValidator.existingEmailValidator(this.teacher.email));
+    } else {
+      this.teacherForm.controls['email'].setAsyncValidators(
+        this.emailValidator.existingEmailValidator());
+      this.getCountries();
+    }
   }
 
   get f() {
@@ -153,7 +165,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
       this.schoolInfo = schools;
     });
   }
- 
+
   getCountries() {
     this.countryHelper.AllCountries().toPromise().then(
       data => {

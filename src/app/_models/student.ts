@@ -16,5 +16,6 @@ export interface IStudent {
     latitude: string;
     longitude: string;
     syncDateTime?: Date;
+    profileStoragePath: string;
     createdBy: string;
 }

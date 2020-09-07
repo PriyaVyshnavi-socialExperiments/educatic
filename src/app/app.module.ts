@@ -18,7 +18,7 @@ import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/materi
 import { MenuPageModule } from './components/menu/menu.module';
 import { AuthenticationModule } from './components/authentication/authentication.module';
 import { BLOB_STORAGE_TOKEN, azureBlobStorageFactory } from './_services/azure-blob/token';
-
+import { LazyLoadImageHooks } from './_helpers/lazy-load-image-hook';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -43,7 +43,8 @@ import { BLOB_STORAGE_TOKEN, azureBlobStorageFactory } from './_services/azure-b
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher }
+    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
+   
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

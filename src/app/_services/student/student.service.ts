@@ -11,6 +11,7 @@ import { IStudentPhoto } from '../../_models/student-photos';
 import { BlobUploadsViewStateService } from '../../_services/azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../../_services/azure-blob/blob-shared-view-state.service';
 import { IQueueMessage } from 'src/app/_models/queue-message';
+import { BlobDownloadsViewStateService } from '../azure-blob/blob-downloads-view-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,7 @@ export class StudentService extends OfflineService {
     private network: NetworkService,
     private blobUpload: BlobUploadsViewStateService,
     private blobShared: BlobSharedViewStateService,
+    private blobDownload: BlobDownloadsViewStateService,
   ) {
     super(injector);
   }
@@ -103,6 +105,12 @@ export class StudentService extends OfflineService {
         }
       })
     );
+  }
+
+  public GetStudentPhoto(imageURL) {
+    this.blobShared.setContainer$ = 'students';
+    this.blobShared.resetSasToken$ = true;
+    return this.blobDownload.downloadFile(imageURL);
   }
 
   public UploadImageFile(studentBlobData) {

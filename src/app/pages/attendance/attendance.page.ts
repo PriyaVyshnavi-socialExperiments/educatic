@@ -93,7 +93,7 @@ export class AttendancePage implements OnInit, AfterViewInit {
       resultType: CameraResultType.Base64,
       source: CameraSource.Prompt
     });
-    this.blobDataURL = `${this.school.name.replace(/\s/g, '')}_${this.school.id}/${this.classRoomId}`;
+    this.blobDataURL = `${this.school.name.replace(/\s/g, '')}_${this.school.id}/${this.classRoomName.replace(/\s/g, '')}_${this.classRoomId}`;
     this.blobDataURL = `${this.blobDataURL}/${dateFormat(new Date())}.${image.format}`;
     const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
     this.uploadAttendancePhoto = ImageHelper.blobToFile(blobData, this.blobDataURL);
