@@ -19,6 +19,8 @@ import { MenuPageModule } from './components/menu/menu.module';
 import { AuthenticationModule } from './components/authentication/authentication.module';
 import { BLOB_STORAGE_TOKEN, azureBlobStorageFactory } from './_services/azure-blob/token';
 import { LazyLoadImageHooks } from './_helpers/lazy-load-image-hook';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -30,7 +32,8 @@ import { LazyLoadImageHooks } from './_helpers/lazy-load-image-hook';
     BrowserAnimationsModule,
     NgHttpLoaderModule.forRoot(),
     AuthenticationModule,
-    MenuPageModule
+    MenuPageModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     AppCenterAnalytics,

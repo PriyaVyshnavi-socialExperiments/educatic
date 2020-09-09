@@ -12,7 +12,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "ios": "ionic build --prod && npx cap sync ios && npx cap open ios",
-    "android": "ionic build --prod && npx cap sync android && npx cap open android"
+    "android": "ionic build --prod && npx cap sync android && npx cap open android",
+    "firebase": "ionic build --prod && firebase deploy"
   },
   "private": true,
   "dependencies": {
@@ -29,6 +30,7 @@
     "@angular/platform-browser": "~10.1.0",
     "@angular/platform-browser-dynamic": "~10.1.0",
     "@angular/router": "~10.1.0",
+    "@angular/service-worker": "~10.1.0",
     "@azure/storage-blob": "^12.2.0-preview.1",
     "@capacitor/android": "^2.3.0",
     "@capacitor/core": "^2.4.0",
