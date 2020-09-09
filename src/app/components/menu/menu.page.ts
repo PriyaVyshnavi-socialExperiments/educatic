@@ -48,7 +48,6 @@ export class MenuPage implements OnInit, OnDestroy {
       this.currentUser = user;
       if (this.currentUser) {
         this.menuList = this.currentUser.menuItems.filter((menu) => menu !== undefined && menu !== null);
-        console.log("MenuList: ", this.menuList );
         this.currentUser.menuItems = this.menuList;
       }
     });

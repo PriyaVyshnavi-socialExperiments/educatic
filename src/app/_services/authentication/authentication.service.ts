@@ -79,8 +79,10 @@ export class AuthenticationService extends OfflineService {
 
     public ResetDefaultSchool(schoolId: string) {
         this.currentUser.subscribe((currentUser) => {
-            currentUser.defaultSchool = currentUser.schools?.find((s) => s.id === schoolId);
-            this.SetOfflineData('User', 'current-user', currentUser);
+            if (currentUser) {
+                currentUser.defaultSchool = currentUser.schools?.find((s) => s.id === schoolId);
+                this.SetOfflineData('User', 'current-user', currentUser);
+            }
         });
     }
 }

@@ -16,7 +16,7 @@ const routes: Routes = [
       {
         path: '',
         loadChildren: '../home/home.module#HomePageModule',
-        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin] }
       },
       {
         path: 'profile',

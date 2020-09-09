@@ -4,7 +4,6 @@ import { isMobileDevice } from '../../_helpers';
 import { PopoverController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Role } from 'src/app/_models';
-import { IPowerBIConfig } from 'src/app/_models/power-bi-config';
 import { SchoolService } from 'src/app/_services/school/school.service';
 @Component({
   selector: 'app-home',
@@ -33,9 +32,7 @@ export class HomePage implements OnInit, OnDestroy {
         return;
       }
       this.currentUser = user;
-      this.RedirectToRoleSpecificURL(user.role)
     });
-    this.refreshDashboard();
   }
 
   refreshDashboard() {
@@ -45,20 +42,28 @@ export class HomePage implements OnInit, OnDestroy {
     })
   }
 
+  ionViewWillEnter() {
+    setTimeout(() => {
+      this.RedirectToRoleSpecificURL();
+    });
+  }
+
   onEmbedded(data) {
 
   }
 
-  private RedirectToRoleSpecificURL(userRole) {
-    switch (userRole) {
+  private RedirectToRoleSpecificURL() {
+    switch (this.currentUser.role) {
       case Role.SuperAdmin:
+        this.refreshDashboard();
         this.router.navigate(['/']);
         break;
       case Role.SchoolSuperAdmin:
+        this.refreshDashboard();
         this.router.navigate(['/']);
         break;
       case Role.Teacher:
-        this.router.navigate(['/']);
+        this.router.navigate(['/class-rooms']);
         break;
       case Role.Student:
         this.router.navigate(['/courses']);
