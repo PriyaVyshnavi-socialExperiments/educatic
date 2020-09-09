@@ -62,7 +62,21 @@ export class StudentsPage implements OnInit {
     if (this.classRoomId) {
       const classRoom = this.classRooms.find(c => c.classId === this.classRoomId);
       this.classRoom = classRoom;
-      this.students = [...classRoom.students]
+      this.students = new Array();
+      classRoom.students.forEach(student => {
+        student.myProfile = new Array();
+        try {
+          if (student.profileStoragePath) {
+            const photos = JSON.parse(student.profileStoragePath)?.Photos;
+            if (photos) {
+              student.myProfile = [...photos];
+            }
+          }
+        } catch (error) {
+          student.myProfile.push(student.profileStoragePath);
+        }
+        this.students.push(student);
+      });
     } else {
       this.classSelectRef.open();
     }
@@ -99,7 +113,8 @@ export class StudentsPage implements OnInit {
           this.StudentEdit(actionData.currentId);
           break;
         case 'upload-photo':
-          this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${actionData.currentId}/photos`);
+          this.UploadPhoto(actionData.currentId);
+          // this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${actionData.currentId}/photos`);
           break;
         default:
           break;

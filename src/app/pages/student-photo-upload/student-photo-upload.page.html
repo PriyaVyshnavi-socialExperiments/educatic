@@ -2,10 +2,10 @@
   <ion-toolbar>
     <ion-title>Student photos</ion-title>
     <ion-buttons slot="start">
-      <ion-menu-button autoHide="true"></ion-menu-button>
+      <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-        <ion-button ion-button block (click)='uploadPhotoAlertConfirm()'>Process Profile</ion-button>
+      <ion-button ion-button block (click)='uploadPhotoAlertConfirm()'>Process Profile</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -15,11 +15,14 @@
     <ion-row class="ion-justify-content-center">
       <ion-card class="item-card" *ngFor="let photo of studentPhotos">
         <ion-card-content>
-          <div class="contact-grid"  (click)="selectImageSource(photo.id)">
-            <ion-icon class="header-dropdown m-r--5" (click)="selectImageSource(photo.id)"
-              name="camera" slot="end"></ion-icon>
-            <img *ngIf="!photo.image" src="assets/images/avatar.svg" alt="">
-            <img *ngIf="photo.image" [src]="photo.image" alt="">
+          <div class="contact-grid" (click)="selectImageSource(photo.id)">
+            <ion-icon class="header-dropdown m-r--5" (click)="selectImageSource(photo.id)" name="camera" slot="end">
+            </ion-icon>
+            <!-- <img *ngIf="!photo.image" src="assets/images/avatar.svg" alt="">
+            <img *ngIf="photo.image" [src]="photo.image" alt=""> -->
+
+            <img defaultImage="assets/images/avatar.svg" errorImage="assets/images/avatar.svg" [lazyLoad]="photo.image" />
+
           </div>
         </ion-card-content>
       </ion-card>

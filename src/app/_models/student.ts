@@ -18,4 +18,5 @@ export interface IStudent {
     syncDateTime?: Date;
     profileStoragePath: string;
     createdBy: string;
+    myProfile: string[];
 }

@@ -47,7 +47,8 @@ export class StudentPhotoUploadPage implements OnInit {
       this.student = stud;
     });
     for (let i = 0; i < 5; i++) {
-      this.studentPhotos.push({ id: i, image: '' });
+      const img = this.student.myProfile[i] ;
+      this.studentPhotos.push({ id: i, image: `${img? img : ''}` });
     }
     this.authenticationService.currentUser?.subscribe((user) => {
       if (!user) {
@@ -55,7 +56,6 @@ export class StudentPhotoUploadPage implements OnInit {
       }
       this.currentUser = user;
       this.school = user.defaultSchool;
-      this.DisplayStudentPhotos();
     });
   }
 
