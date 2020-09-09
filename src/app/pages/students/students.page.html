@@ -17,6 +17,10 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
+
+    <ion-item  lines="none">
+        <ion-title>{{schoolName}} - {{classRoom?.classRoomName}}</ion-title>
+    </ion-item>
     <ion-grid class="grid" *ngIf="students.length">
         <ion-row class="ion-justify-content-center">
             <ion-card class="item-card" *ngFor="let student of students">
@@ -30,10 +34,10 @@
                             <div class="name-center">{{ student.email }}</div>
                         </div>
 
-                        <img defaultImage="assets/images/avatar.svg"  class="user-img" [lazyLoad]="student.profileStoragePath" />
+                        <img defaultImage="assets/images/avatar.svg" errorImage="assets/images/avatar.svg"
+                            class="user-img" [lazyLoad]="student.profileStoragePath" />
                         <p> {{student.address1}} {{student.address2}} , {{student.city}} </p>
                         <br /> {{student.state}}, {{student.country}} - {{student.zip}}
-
                         <div>
                             <span class="phone">
                                 <i class="material-icons">phone</i>264-625-2583</span>

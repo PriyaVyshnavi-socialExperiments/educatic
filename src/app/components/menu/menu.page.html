@@ -38,8 +38,8 @@
             </ion-list>
           </ion-menu-toggle>
 
-          <ion-item *ngIf="menu && menu.children?.length>0" (click)="menu.open = !menu.open" [class.active-parent]="menu.open"
-            details="false" lines="none">
+          <ion-item *ngIf="menu && menu.children?.length>0" (click)="menu.open = !menu.open"
+            [class.active-parent]="menu.open" details="false" lines="none">
             <ion-icon [name]="menu.icon" slot="start"></ion-icon>
             <ion-icon name="chevron-forward-circle" slot="end" *ngIf="!menu.open"></ion-icon>
             <ion-icon name="chevron-down-circle" slot="end" *ngIf="menu.open"></ion-icon>
@@ -76,7 +76,10 @@
       </ion-header>
       <ion-content *ngIf="schoolDetails">
         <img src="../../../assets/images/school-image.jpg" alt="ion">
-        <h5 padding-left padding-right text-center>{{ schoolDetails.name | uppercase }}</h5>
+        <ion-item lines="none">
+          <h5 padding-left padding-right text-center>{{ schoolDetails.name | uppercase }}</h5>
+        </ion-item>
+
         <ion-grid text-center>
           <ion-row>
             <ion-col class="bold">Address</ion-col>

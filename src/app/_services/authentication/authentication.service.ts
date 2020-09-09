@@ -52,7 +52,6 @@ export class AuthenticationService extends OfflineService {
                         this.ready.next(response);
                         this.appInsightsService.setUserId(response.id)
                         this.ResetDefaultSchool(response.schools[0].id)
-                        //this.SetOfflineData('User', 'current-user', response);
                     }
                     return response;
                 }));

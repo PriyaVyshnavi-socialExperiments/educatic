@@ -14,7 +14,7 @@ import { LazyLoadImageHooks } from 'src/app/_helpers/lazy-load-image-hook';
   templateUrl: './students.page.html',
   styleUrls: ['./students.page.scss'],
 })
-export class StudentsPage implements OnInit, AfterViewInit {
+export class StudentsPage implements OnInit {
   @ViewChild('classList') classSelectRef: IonSelect;
   students: IStudent[] = [];
   schools: ISchool[] = [];
@@ -22,10 +22,8 @@ export class StudentsPage implements OnInit, AfterViewInit {
   schoolId: string;
   classRoomId: string;
   currentUser: IUser;
-  errorImage = 'https://i.imgur.com/XkU4Ajf.png';
-  defaultImage = 'https://www.placecage.com/300/300';
-  
-  promiseImage = Promise.resolve('https://picsum.photos/id/236/300/300');
+  schoolName: string;
+  classRoom: IClassRoom;
 
   constructor(
     private studentService: StudentService,
@@ -43,29 +41,32 @@ export class StudentsPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.classRoomId = this.activatedRoute.snapshot.paramMap.get('id');
-    this.authenticationService.currentUser.subscribe(async (user) => {
+    this.authenticationService.currentUser?.subscribe(async (user) => {
       if (!user) {
         return;
       }
       this.currentUser = user;
       this.schoolId = user.defaultSchool.id;
       this.schools = user.schools;
-      this.classRooms = user.defaultSchool.classRooms;
+      this.classRooms = [...user.defaultSchool.classRooms];
     });
-    
   }
 
-  ngAfterViewInit(): void {
-    this.refresh();
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.refresh();
+    });
   }
 
   async refresh() {
     if (this.classRoomId) {
       const classRoom = this.classRooms.find(c => c.classId === this.classRoomId);
+      this.classRoom = classRoom;
       this.students = [...classRoom.students]
     } else {
       this.classSelectRef.open();
     }
+    this.schoolName = this.currentUser.defaultSchool.name;
   }
 
   async selectClass() {

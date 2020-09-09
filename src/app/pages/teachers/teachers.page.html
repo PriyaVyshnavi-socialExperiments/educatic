@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Teachers</ion-title>
+    <ion-title>{{schoolName}}-Teachers</ion-title>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
@@ -17,7 +17,19 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid class="grid">
+
+  <ion-grid style="height: 100%" *ngIf="!teachers.length">
+    <ion-row justify-content-center align-items-center class="justify-center">
+      <div text-center>
+        <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+        <h4>No teacher(s) configured for this school(<strong>{{ schoolName }}</strong>)</h4>
+        <p>Looks like there are no teacher(s) available at this moment.
+        </p>
+      </div>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid class="grid" *ngIf="teachers.length">
     <ion-row class="ion-justify-content-center">
       <ion-card class="item-card" *ngFor="let teacher of teachers">
         <ion-card-content>

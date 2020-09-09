@@ -1,11 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { CountryHelper } from '../../_helpers/countries';
-import { ActivatedRoute } from '@angular/router';
-import { Geolocation } from '@capacitor/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { SchoolService } from '../../_services/school/school.service';
-import { DataShareService } from '../../_services/data-share.service';
 import { ISchool } from '../../_models/school';
 import { AuthenticationService } from '../../_services/authentication/authentication.service';
 
@@ -14,7 +12,7 @@ import { AuthenticationService } from '../../_services/authentication/authentica
   templateUrl: './school-add.page.html',
   styleUrls: ['./school-add.page.scss'],
 })
-export class SchoolAddPage implements OnInit, OnDestroy {
+export class SchoolAddPage implements OnInit {
 
   public schoolForm: FormGroup;
   public school: any = {};
@@ -30,10 +28,9 @@ export class SchoolAddPage implements OnInit, OnDestroy {
     private countryHelper: CountryHelper,
     private toastController: ToastController,
     private schoolService: SchoolService,
-    private dataShare: DataShareService,
     private activatedRoute: ActivatedRoute,
     private authenticationService: AuthenticationService,
-
+    public router: Router,
   ) {
   }
 
@@ -118,12 +115,12 @@ export class SchoolAddPage implements OnInit, OnDestroy {
         country: this.f.country.value,
         state: this.f.state.value,
         city: this.f.city.value,
-        latitude: '19.9894', //this.latitude.toString(),
-        longitude: '73.7276',//this.longitude.toString(),
         zip: this.f.zip.value
       } as ISchool;
       this.schoolService.SubmitSchool(schoolInfo).subscribe(() => {
-        this.presentToast();
+        this.presentToast().then(() => {
+          this.router.navigateByUrl(`/schools`);
+        });
       });
     }
   }
@@ -144,15 +141,9 @@ export class SchoolAddPage implements OnInit, OnDestroy {
     this.cityInfo = this.stateInfo.find((s) => s.name === stateName.value).cities;
   }
 
-  async getLocation() {
-    const position = await Geolocation.getCurrentPosition();
-    this.latitude = position.coords.latitude;
-    this.longitude = position.coords.longitude;
-  }
-
   private async presentToast() {
     const toast = await this.toastController.create({
-      message: 'Profile changed successfully..',
+      message: 'School create/update successfully..',
       position: 'bottom',
       duration: 5000,
       color: 'success',
@@ -163,8 +154,5 @@ export class SchoolAddPage implements OnInit, OnDestroy {
       ]
     });
     toast.present();
-  }
-
-  ngOnDestroy() {
   }
 }

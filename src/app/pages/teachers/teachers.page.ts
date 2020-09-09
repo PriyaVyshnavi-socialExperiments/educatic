@@ -19,6 +19,7 @@ export class TeachersPage implements OnInit, AfterViewInit {
   schools: ISchool[] = [];
   schoolId: string;
   currentUser: IUser;
+  schoolName: string;
 
   constructor(
     private teacherService: TeacherService,
@@ -59,6 +60,7 @@ export class TeachersPage implements OnInit, AfterViewInit {
   refresh() {
     this.schoolId = this.currentUser.defaultSchool.id;
     this.teachers = [...this.currentUser.defaultSchool.teachers]
+    this.schoolName = this.currentUser.defaultSchool.name;
   }
 
   public async actionPopover(ev: any, schoolId: string) {

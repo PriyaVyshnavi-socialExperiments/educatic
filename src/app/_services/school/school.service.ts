@@ -2,11 +2,12 @@ import { Injectable, Injector, EventEmitter } from '@angular/core';
 import { HttpService } from '../http-client/http.client';
 import { OfflineService } from '../offline/offline.service';
 import { tap, finalize, map, catchError } from 'rxjs/operators';
-import { ISchool, OfflineSyncURL } from '../../_models';
+import { ISchool, OfflineSyncURL, IUser } from '../../_models';
 import { from, of } from 'rxjs';
 import { NetworkService } from '../../_services/network/network.service';
 import { Guid } from 'guid-typescript';
 import { IPowerBIConfig } from 'src/app/_models/power-bi-config';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class SchoolService extends OfflineService {
     private http: HttpService,
     public injector: Injector,
     private network: NetworkService,
+    private auth: AuthenticationService
   ) {
     super(injector);
   }
@@ -26,15 +28,13 @@ export class SchoolService extends OfflineService {
     if (!schoolInfo.id) {
       schoolInfo.id = Guid.create().toString();
     }
-    return this.http.Post<Response>(OfflineSyncURL.School, schoolInfo)
+    return this.http.Post<any>(OfflineSyncURL.School, schoolInfo)
       .pipe(
         map(response => {
-          if (response) {
-          }
           return response;
         }),
-        finalize(() => {
-          this.UpdateSchoolOfflineList(schoolInfo);
+        finalize(async () => {
+          await this.UpdateSchoolOfflineList(schoolInfo);
         })
       );
   }
@@ -62,12 +62,12 @@ export class SchoolService extends OfflineService {
   }
 
   public GetPowerBIConfig() {
-      return this.http.Get<IPowerBIConfig[]>('/powerbi/token')
-        .pipe(
-          tap(response => {
-            return response;
-          })
-        );
+    return this.http.Get<IPowerBIConfig[]>('/powerbi/token')
+      .pipe(
+        tap(response => {
+          return response;
+        })
+      );
   }
 
   private getOfflineSchools() {
@@ -92,15 +92,31 @@ export class SchoolService extends OfflineService {
     return this.detailsSchool;
   }
 
-  private UpdateSchoolOfflineList(school: ISchool) {
-    this.GetOfflineData('School', 'school-list').then((data) => {
-      let schoolList = data as ISchool[];
-      schoolList = schoolList.filter((obj) => {
-        return obj.id !== school.id;
-      });
-      schoolList.push(school);
-      this.SetOfflineData('School', 'school-list', schoolList);
-    });
+  public DeleteSchool(schoolId: string) {
+    return this.http.Get<Response>(`/school/${schoolId}/delete`)
+      .pipe(
+        map(response => {
+          return response;
+        }),
+        finalize(() => {
+          this.UpdateSchoolOfflineList(undefined, schoolId);
+        })
+      );
   }
 
+  private UpdateSchoolOfflineList(school: ISchool, schoolId?: string) {
+    return this.GetOfflineData('User', 'current-user').then((data) => {
+      const user = data as IUser;
+      const schoolList = user.schools.filter((obj) => {
+        return obj.id !== (school ? school.id : schoolId);
+      });
+      if (school) {
+        schoolList.push(school);
+      }
+      this.auth.currentUser.subscribe((currentUser) => {
+        currentUser.schools = schoolList;
+        this.SetOfflineData('User', 'current-user', currentUser);
+      });
+    });
+  }
 }
