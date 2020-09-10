@@ -67,12 +67,10 @@ export class StudentAddPage implements OnInit, OnDestroy {
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
-      email: new FormControl('', Validators.compose([
+      enrolmentNo: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
-        Validators.maxLength(200)
+        Validators.maxLength(50)
       ]),
-        //Validators.composeAsync([this.emailValidator.existingEmailValidator()])
         ),
       address1: new FormControl('', [
         Validators.required,
@@ -109,7 +107,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
             classId: this.student.classId,
             firstname: this.student.firstName,
             lastname: this.student.lastName,
-            email: this.student.email,
+            enrolmentNo: this.student.enrolmentNo,
 
             address1: this.student.address1,
             address2: this.student.address2,
@@ -120,11 +118,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
           });
         }
       });
-      this.studentForm.controls['email'].setAsyncValidators(
-        this.emailValidator.existingEmailValidator(this.student.email));
     } else {
-      this.studentForm.controls['email'].setAsyncValidators(
-        this.emailValidator.existingEmailValidator());
       this.getCountries();
     }
   }
@@ -146,7 +140,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
         schoolId: this.schoolInfo.id,
         firstName: this.f.firstname.value,
         lastName: this.f.lastname.value,
-        email: this.f.email.value,
+        enrolmentNo: this.f.enrolmentNo.value,
         address1: this.f.address1.value,
         address2: this.f.address2.value,
         country: this.f.country.value,
@@ -163,8 +157,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
         this.presentToast();
         this.dataShare.setData(this.student);
         this.router.navigateByUrl(`/student/${this.currentUser.defaultSchool.id}/${this.student.classId}/edit/${this.student.id}`);
-        //this.studentForm.reset(this.studentForm.value);
-      });
+        });
     }
   }
 

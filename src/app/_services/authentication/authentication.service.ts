@@ -2,7 +2,7 @@
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { IUser, LoginRequest } from '../../_models';
+import { IUser, LoginRequest, StudentLoginRequest } from '../../_models';
 import { ApplicationInsightsService } from '../../_helpers/application-insights';
 import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
@@ -41,6 +41,24 @@ export class AuthenticationService extends OfflineService {
 
     public Login(loginRequest: LoginRequest) {
         return this.http.Post<any>(`/login`, loginRequest)
+            .pipe(
+                map(response => {
+                    // login successful if there's a jwt token in the response
+                    if (response && response.token) {
+                        // store user details and jwt token in local storage to keep user logged in between page refreshes
+                        response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
+                        response.schools = [...response.schools];
+                        this.currentUserSubject.next(response);
+                        this.ready.next(response);
+                        this.appInsightsService.setUserId(response.id)
+                        this.ResetDefaultSchool(response.schools[0].id)
+                    }
+                    return response;
+                }));
+    }
+
+    public StudentLogin(loginRequest: StudentLoginRequest) {
+        return this.http.Post<any>(`/login/student`, loginRequest)
             .pipe(
                 map(response => {
                     // login successful if there's a jwt token in the response

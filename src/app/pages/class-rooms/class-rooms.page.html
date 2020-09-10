@@ -4,7 +4,7 @@
     <ion-buttons slot="start">
       <ion-menu-button autoHide="true"></ion-menu-button>
     </ion-buttons>
-    <ion-buttons slot="end">
+    <ion-buttons *ngIf="schools.length>1" slot="end">
       <ion-button ion-button block (click)='selectSchool()'>Choose School</ion-button>
     </ion-buttons>
     <ion-item [hidden]='true'>

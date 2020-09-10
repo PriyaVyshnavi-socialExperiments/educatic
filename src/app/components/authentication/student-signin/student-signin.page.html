@@ -1,0 +1,40 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title>Student login</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <div class="limiter">
+    <div class="container-login100">
+      <div class="wrap-login100">
+        <form class="login100-form validate-form" [formGroup]="studentLoginForm" (ngSubmit)="onSubmit()">
+          <span class="login100-form-title pb-5">
+            Student login
+          </span>
+          <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Student Enrolment No</mat-label>
+                <input matInput formControlName="studentEnrolmentNumber" />
+                <mat-icon matSuffix>
+                  <ion-icon name="person-circle-outline"></ion-icon>
+                </mat-icon>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="container-login100-form-btn">
+            <button mat-flat-button color="primary" class="login100-form-btn" type="submit">
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>

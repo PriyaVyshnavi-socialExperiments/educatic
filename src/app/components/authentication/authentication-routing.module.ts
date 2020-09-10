@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { SigninComponent } from './signin/signin.component';
 import { SignupComponent } from './signup/signup.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { StudentSigninPage } from './student-signin/student-signin.page';
 const routes: Routes = [
   {
     path: '',
@@ -21,9 +22,13 @@ const routes: Routes = [
     path: 'reset/password',
     component: ResetPasswordComponent,
   },
+  {
+    path: 'student/signin',
+    component: StudentSigninPage,
+  },
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class AuthenticationRoutingModule {}
+export class AuthenticationRoutingModule { }
