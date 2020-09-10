@@ -18,7 +18,11 @@ const routes: Routes = [
   {
     path: 'action-popover',
     loadChildren: () => import('./components/action-popover/action-popover.module').then( m => m.ActionPopoverPageModule)
+  },  {
+    path: 'student-signin',
+    loadChildren: () => import('./components/student-signin/student-signin.module').then( m => m.StudentSigninPageModule)
   },
+
 
 ];
 

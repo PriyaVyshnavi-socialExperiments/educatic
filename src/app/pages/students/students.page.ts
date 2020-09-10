@@ -114,7 +114,6 @@ export class StudentsPage implements OnInit {
           break;
         case 'upload-photo':
           this.UploadPhoto(actionData.currentId);
-          // this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${actionData.currentId}/photos`);
           break;
         default:
           break;
