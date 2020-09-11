@@ -3,7 +3,7 @@ import { Router, RouterEvent } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { AuthenticationService } from '../../_services';
 import { NavMenuHelper } from '../../_helpers/nav-menus';
-import { ISchool, IUser } from '../../_models';
+import { ISchool, IUser, Role } from '../../_models';
 import { SchoolService } from '../../_services/school/school.service';
 
 @Component({
@@ -19,6 +19,7 @@ export class MenuPage implements OnInit, OnDestroy {
   dark = false;
   menuList: any;
   schoolDetails: ISchool;
+  isProfileShow= true;
 
   constructor(
     private router: Router,
@@ -49,6 +50,7 @@ export class MenuPage implements OnInit, OnDestroy {
       if (this.currentUser) {
         this.menuList = this.currentUser.menuItems.filter((menu) => menu !== undefined && menu !== null);
         this.currentUser.menuItems = this.menuList;
+        this.isProfileShow = this.currentUser.role !== Role.Student;
       }
     });
 

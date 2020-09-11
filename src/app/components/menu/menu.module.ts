@@ -29,6 +29,10 @@ const routes: Routes = [
         data: { roles: [Role.SuperAdmin] }
       },
       {
+        path: 'offline-websites',
+        loadChildren: () => import('../../components/offline-websites/offline-websites.module').then( m => m.OfflineWebsitesPageModule)
+      },
+      {
         path: 'school/add',
         loadChildren: () => import('../../pages/school-add/school-add.module').then(m => m.SchoolAddPageModule)
       },
