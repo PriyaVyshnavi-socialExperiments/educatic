@@ -110,13 +110,7 @@ export class SchoolService extends OfflineService {
       const schoolList = user.schools.filter((obj) => {
         return obj.id !== (school ? school.id : schoolId);
       });
-      if (school) {
-        schoolList.push(school);
-      }
-      this.auth.currentUser.subscribe((currentUser) => {
-        currentUser.schools = schoolList;
-        this.SetOfflineData('User', 'current-user', currentUser);
-      });
+      this.auth.RefreshSchools(schoolList, school);
     });
   }
 }

@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{schoolName}}-Teachers</ion-title>
+    <ion-title>Teachers</ion-title>
     <ion-buttons slot="start">
       <ion-menu-button autoHide="true"></ion-menu-button>
     </ion-buttons>
@@ -17,7 +17,9 @@
 </ion-header>
 
 <ion-content>
-
+  <ion-item lines="none">
+    <ion-title class="content-title">School - {{schoolName}}</ion-title>
+</ion-item>
   <ion-grid style="height: 100%" *ngIf="!teachers.length">
     <ion-row justify-content-center align-items-center class="justify-center">
       <div text-center>
@@ -41,7 +43,7 @@
               <div class="name-center">{{ teacher.email }}</div>
             </div>
             <img src="assets/images/avatar.svg" class="user-img" alt="">
-            <p> {{teacher.address1}} {{teacher.address1}} , {{teacher.city}} </p>
+            <p> {{teacher.address1}} {{teacher.address2}} , {{teacher.city}} </p>
             <br /> {{teacher.state}}, {{teacher.country}} - {{teacher.zip}}
 
             <div>

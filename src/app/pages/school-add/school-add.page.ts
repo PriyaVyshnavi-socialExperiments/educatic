@@ -115,7 +115,8 @@ export class SchoolAddPage implements OnInit {
         country: this.f.country.value,
         state: this.f.state.value,
         city: this.f.city.value,
-        zip: this.f.zip.value
+        zip: this.f.zip.value,
+        syncDateTime: new Date()
       } as ISchool;
       this.schoolService.SubmitSchool(schoolInfo).subscribe(() => {
         this.presentToast().then(() => {

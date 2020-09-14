@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { ITeacher, Role } from '../../_models';
-import { DataShareService } from '../../_services/data-share.service';
 import { SchoolService } from '../../_services/school/school.service';
 import { TeacherService } from '../../_services/teacher/teacher.service';
 import { CustomEmailValidator } from '../../_helpers/custom-email-validator';
@@ -25,7 +24,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
   schoolInfo: any[] = [];
   latitude: number;
   longitude: number;
-  isEditTeacher = false;
+  teacherId: string;
   hide = true;
   chide = true;
 
@@ -35,26 +34,18 @@ export class TeacherAddPage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private teacherService: TeacherService,
     private schoolService: SchoolService,
-    private dataShare: DataShareService,
     private activatedRoute: ActivatedRoute,
     private emailValidator: CustomEmailValidator,
     private authenticationService: AuthenticationService,
+    public router: Router,
+
   ) { }
 
   ngOnDestroy(): void {
   }
 
   ngOnInit() {
-    this.isEditTeacher = this.activatedRoute.snapshot.paramMap.has('teacherId');
-
-    this.authenticationService.currentUser?.subscribe((user) => {
-      if (!user) {
-        return;
-      }
-      this.schoolInfo = user.schools;
-    });
-
-    // this.getSchools();
+    this.teacherId = this.activatedRoute.snapshot.paramMap.get('teacherId');
     this.teacherForm = this.formBuilder.group({
       schoolId: new FormControl('', [
         Validators.required
@@ -96,37 +87,40 @@ export class TeacherAddPage implements OnInit, OnDestroy {
       ]),
     });
 
-    if (this.isEditTeacher) {
-      this.dataShare.getData().subscribe((data) => {
-        this.teacher = data;
+    this.authenticationService.currentUser?.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.schoolInfo = user.schools;
+      if (this.teacherId) {
+        const schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
+        const school = user.schools.find((s) => s.id === schoolId);
+        this.teacher = school.teachers.find((s) => s.id === this.teacherId);
         this.countryService.GetCountryWiseStatsCities(this.teacher.country, this.teacher.state).then((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
         });
-        if (this.teacher) {
-          this.teacherForm.setValue({
-            schoolId: this.teacher.schoolId,
-            firstname: this.teacher.firstName,
-            lastname: this.teacher.lastName,
-            email: this.teacher.email,
-
-            address1: this.teacher.address1,
-            address2: this.teacher.address2,
-            country: this.teacher.country,
-            state: this.teacher.state,
-            city: this.teacher.city,
-            zip: this.teacher.zip
-          });
-        }
-      });
-      this.teacherForm.controls['email'].setAsyncValidators(
-        this.emailValidator.existingEmailValidator(this.teacher.email));
-    } else {
-      this.teacherForm.controls['email'].setAsyncValidators(
-        this.emailValidator.existingEmailValidator());
-      this.getCountries();
-    }
+        this.teacherForm.setValue({
+          schoolId: this.teacher.schoolId,
+          firstname: this.teacher.firstName,
+          lastname: this.teacher.lastName,
+          email: this.teacher.email,
+          address1: this.teacher.address1,
+          address2: this.teacher.address2,
+          country: this.teacher.country,
+          state: this.teacher.state,
+          city: this.teacher.city,
+          zip: this.teacher.zip
+        });
+        this.teacherForm.controls['email'].setAsyncValidators(
+          this.emailValidator.existingEmailValidator(this.teacher.email));
+      } else {
+        this.teacherForm.controls['email'].setAsyncValidators(
+          this.emailValidator.existingEmailValidator());
+        this.getCountries();
+      }
+    });
   }
 
   get f() {
@@ -148,14 +142,12 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         country: this.f.country.value,
         state: this.f.state.value,
         city: this.f.city.value,
-        latitude: '19.9894', //this.latitude.toString(),
-        longitude: '73.7276',//this.longitude.toString(),
         zip: this.f.zip.value,
         role: Role.Teacher
       } as ITeacher;
       this.teacherService.SubmitTeacher(teacherInfo).subscribe(() => {
         this.presentToast();
-        this.teacherForm.reset(this.teacherForm.value);
+        this.router.navigateByUrl(`/teachers/${teacherInfo.schoolId}`);
       });
     }
   }
@@ -167,10 +159,9 @@ export class TeacherAddPage implements OnInit, OnDestroy {
   }
 
   getCountries() {
-    this.countryService.AllCountries().then( (data) => {
-        this.countryInfo = data;
-      }
-    )
+    this.countryService.AllCountries().then((data) => {
+      this.countryInfo = data;
+    });
   }
 
   onChangeCountry(countryName) {
@@ -185,7 +176,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
     const toast = await this.toastController.create({
       message: 'Teacher updated successfully..',
       position: 'bottom',
-      duration: 5000,
+      duration: 3000,
       color: 'success',
       buttons: [{
         text: 'Close',

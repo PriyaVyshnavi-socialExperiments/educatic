@@ -2,12 +2,13 @@
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { IUser, LoginRequest, StudentLoginRequest } from '../../_models';
+import { IUser, LoginRequest, StudentLoginRequest, ISchool } from '../../_models';
 import { ApplicationInsightsService } from '../../_helpers/application-insights';
 import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
 import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
 import { IResetPassword } from 'src/app/_models/reset-password';
+import { async } from '@angular/core/testing';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends OfflineService {
@@ -103,4 +104,17 @@ export class AuthenticationService extends OfflineService {
             }
         });
     }
+
+    public RefreshSchools(schools: ISchool[], school: ISchool) {
+        const schoolList = schools.filter((obj) => {
+            return obj.id !==  school.id;
+        });
+        if (school) {
+            schoolList.push(school);
+        }
+        this.currentUser.subscribe(async(currentUser) => {
+            currentUser.schools = schoolList;
+            await this.SetOfflineData('User', 'current-user', currentUser);
+        });
+      }
 }
