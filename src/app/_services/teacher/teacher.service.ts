@@ -82,7 +82,7 @@ export class TeacherService extends OfflineService {
         return ts.id !== (teacher ? teacher.id : teacherId);
       });
       if (teacher) {
-        teacherList.push(teacher);
+        teacherList.unshift(teacher);
       }
       school.teachers = teacherList;
       this.auth.RefreshSchools(user.schools, school);

@@ -13,21 +13,6 @@
       <div class="wrap-login100">
         <form class="login100-form validate-form" [formGroup]="studentForm" (ngSubmit)="SubmitStudent()">
           <div class="row">
-            <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
-              <mat-form-field class="example-full-width" appearance="outline">
-                <mat-label>School</mat-label>
-                <mat-select formControlName="schoolId" [(value)]="currentUser.schoolId" (selectionChange)="onChangeSchool($event)">
-                  <mat-option *ngFor="let school of schoolInfo; let i = index" value="{{school.id}}">
-                    {{school.name}}
-                  </mat-option>
-                </mat-select>
-                <mat-icon matSuffix>
-                </mat-icon>
-                <mat-error *ngIf="studentForm.get('schoolId').hasError('required')">
-                  A school is required to proceed.
-                </mat-error>
-              </mat-form-field>
-            </div> -->
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Class Division</mat-label>

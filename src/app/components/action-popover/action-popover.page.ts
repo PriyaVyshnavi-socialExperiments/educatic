@@ -113,11 +113,6 @@ export class ActionPopoverPage implements OnInit {
       case 'student':
         this.showMoreOptions = [
           {
-            icon: 'camera',
-            id: 'upload-photo',
-            name: 'Upload Photo',
-          },
-          {
             icon: 'create',
             id: 'edit',
             name: 'Update',

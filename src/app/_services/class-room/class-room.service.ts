@@ -81,7 +81,7 @@ export class ClassRoomService extends OfflineService {
       });
 
       if (classRoom) {
-        classRoomList.push(classRoom);
+        classRoomList.unshift(classRoom);
       }
 
       school.classRooms = classRoomList;

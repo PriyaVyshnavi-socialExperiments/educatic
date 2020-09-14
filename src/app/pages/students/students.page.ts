@@ -6,8 +6,7 @@ import { IStudent, IUser, ISchool, IClassRoom } from '../../_models';
 import { AuthenticationService } from '../../_services';
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
 import { DataShareService } from '../../_services/data-share.service';
-import { StudentService } from '../../_services/student/student.service';
-import { LazyLoadImageHooks } from 'src/app/_helpers/lazy-load-image-hook';
+import { LazyLoadImageHooks } from '../../_helpers/lazy-load-image-hook';
 
 @Component({
   selector: 'app-students',
@@ -26,7 +25,6 @@ export class StudentsPage implements OnInit {
   classRoom: IClassRoom;
 
   constructor(
-    private studentService: StudentService,
     private authenticationService: AuthenticationService,
     private popoverController: PopoverController,
     private dataShare: DataShareService,
@@ -40,21 +38,31 @@ export class StudentsPage implements OnInit {
   };
 
   ngOnInit() {
-    this.classRoomId = this.activatedRoute.snapshot.paramMap.get('id');
+    // this.authenticationService.currentUser?.subscribe(async (user) => {
+    //   if (!user) {
+    //     return;
+    //   }
+    //   this.currentUser = user;
+    //   this.schoolId = user.defaultSchool.id;
+    //   this.schools = user.schools;
+    //   this.classRooms = [...user.defaultSchool.classRooms];
+    // });
+  }
+
+  ionViewDidEnter() {
     this.authenticationService.currentUser?.subscribe(async (user) => {
       if (!user) {
         return;
       }
+      console.table(user.defaultSchool.classRooms);
       this.currentUser = user;
       this.schoolId = user.defaultSchool.id;
       this.schools = user.schools;
       this.classRooms = [...user.defaultSchool.classRooms];
-    });
-  }
-
-  ionViewDidEnter() {
-    setTimeout(() => {
-      this.refresh();
+      this.classRoomId = this.activatedRoute.snapshot.paramMap.get('classId');
+      setTimeout(() => {
+        this.refresh();
+      });
     });
   }
 
@@ -112,9 +120,6 @@ export class StudentsPage implements OnInit {
         case 'delete':
           this.StudentEdit(actionData.currentId);
           break;
-        case 'upload-photo':
-          this.UploadPhoto(actionData.currentId);
-          break;
         default:
           break;
       }
@@ -124,8 +129,6 @@ export class StudentsPage implements OnInit {
   }
 
   StudentEdit(studentId: string) {
-    const currentStudent = this.students.find(student => student.id === studentId);
-    this.dataShare.setData(currentStudent);
     this.router.navigateByUrl(`/student/${this.currentUser.defaultSchool.id}/${this.classRoomId}/edit/${studentId}`);
   }
 

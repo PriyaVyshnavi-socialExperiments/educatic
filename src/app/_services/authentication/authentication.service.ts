@@ -110,10 +110,11 @@ export class AuthenticationService extends OfflineService {
             return obj.id !==  school.id;
         });
         if (school) {
-            schoolList.push(school);
+            schoolList.unshift(school);
         }
         this.currentUser.subscribe(async(currentUser) => {
             currentUser.schools = schoolList;
+            currentUser.defaultSchool = school;
             await this.SetOfflineData('User', 'current-user', currentUser);
         });
       }

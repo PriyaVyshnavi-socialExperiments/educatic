@@ -2,10 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { IStudent, Role, IUser, ISchool } from 'src/app/_models';
+import { IStudent, Role, IUser, ISchool, IClassRoom } from 'src/app/_models';
 import { DataShareService } from 'src/app/_services/data-share.service';
 import { StudentService } from 'src/app/_services/student/student.service';
-import { SchoolService } from 'src/app/_services/school/school.service';
 import { ClassRoomService } from 'src/app/_services/class-room/class-room.service';
 import { AuthenticationService } from '../../_services';
 import { CustomEmailValidator } from 'src/app/_helpers/custom-email-validator';
@@ -23,11 +22,10 @@ export class StudentAddPage implements OnInit, OnDestroy {
   stateInfo: any[] = [];
   countryInfo: any[] = [];
   cityInfo: any[] = [];
-  schoolInfo: ISchool;
-  classInfo: any[] = [];
+  classRoomInfo: IClassRoom;
+  classInfo: IClassRoom[] = [];
   latitude: number;
   longitude: number;
-  isEdit = false;
   currentUser: IUser;
 
   constructor(
@@ -39,20 +37,10 @@ export class StudentAddPage implements OnInit, OnDestroy {
     private dataShare: DataShareService,
     private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
-    private emailValidator: CustomEmailValidator,
     public router: Router,
   ) { }
 
   ngOnInit() {
-    this.authService.currentUser?.subscribe((user) => {
-      if (!user) {
-        return;
-      }
-      this.currentUser = user;
-      this.schoolInfo = user.defaultSchool;
-      this.classInfo = user.defaultSchool.classRooms;
-    });
-    this.isEdit = this.activatedRoute.snapshot.paramMap.has('studentId');
     this.studentForm = this.formBuilder.group({
       classId: new FormControl('', [
         Validators.required
@@ -71,7 +59,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
         Validators.required,
         Validators.maxLength(50)
       ]),
-        ),
+      ),
       address1: new FormControl('', [
         Validators.required,
         Validators.maxLength(100),
@@ -94,33 +82,41 @@ export class StudentAddPage implements OnInit, OnDestroy {
       ]),
     });
 
-    if (this.isEdit) {
-      this.dataShare.getData().subscribe((data) => {
-        this.student = data;
+    const studentId = this.activatedRoute.snapshot.paramMap.get('studentId');
+    const classId = this.activatedRoute.snapshot.paramMap.get('classId');
+
+    this.authService.currentUser?.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.classInfo = user.defaultSchool.classRooms;
+      this.classRoomInfo = this.classInfo.find((c) => c.classId === classId)
+
+      if (studentId) {
+        this.student = this.classRoomInfo.students.find((s) => s.id === studentId)
         this.countryHelper.GetCountryWiseStatsCities(this.student.country, this.student.state).then((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
         });
-        if (this.student) {
-          this.studentForm.setValue({
-            classId: this.student.classId,
-            firstname: this.student.firstName,
-            lastname: this.student.lastName,
-            enrolmentNo: this.student.enrolmentNo,
+        this.studentForm.setValue({
+          classId: this.student.classId,
+          firstname: this.student.firstName,
+          lastname: this.student.lastName,
+          enrolmentNo: this.student.enrolmentNo,
 
-            address1: this.student.address1,
-            address2: this.student.address2,
-            country: this.student.country,
-            state: this.student.state,
-            city: this.student.city,
-            zip: this.student.zip
-          });
-        }
-      });
-    } else {
-      this.getCountries();
-    }
+          address1: this.student.address1,
+          address2: this.student.address2,
+          country: this.student.country,
+          state: this.student.state,
+          city: this.student.city,
+          zip: this.student.zip
+        });
+      } else {
+        this.getCountries();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -137,7 +133,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
       const studentInfo = {
         id: this.student?.id,
         classId: this.f.classId.value,
-        schoolId: this.schoolInfo.id,
+        schoolId: this.currentUser.defaultSchool.id,
         firstName: this.f.firstname.value,
         lastName: this.f.lastname.value,
         enrolmentNo: this.f.enrolmentNo.value,
@@ -146,8 +142,6 @@ export class StudentAddPage implements OnInit, OnDestroy {
         country: this.f.country.value,
         state: this.f.state.value,
         city: this.f.city.value,
-        latitude: '19.9894', //this.latitude.toString(),
-        longitude: '73.7276',//this.longitude.toString(),
         zip: this.f.zip.value,
         role: Role.Student
       } as IStudent;
@@ -155,9 +149,8 @@ export class StudentAddPage implements OnInit, OnDestroy {
         this.student = studentInfo;
         this.student.id = res.studentId;
         this.presentToast();
-        this.dataShare.setData(this.student);
-        this.router.navigateByUrl(`/student/${this.currentUser.defaultSchool.id}/${this.student.classId}/edit/${this.student.id}`);
-        });
+        this.router.navigateByUrl(`/students/${this.currentUser.defaultSchool.id}/${this.student.classId}`);
+      });
     }
   }
 
