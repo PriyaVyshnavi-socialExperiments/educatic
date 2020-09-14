@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ClassRoomService } from '../../_services/class-room/class-room.service';
-import { DataShareService } from '../../_services/data-share.service';
 import { IClassRoom, IUser } from '../../_models';
 import { SchoolService } from '../../_services/school/school.service';
 import { ToastController } from '@ionic/angular';
@@ -18,7 +17,6 @@ export class ClassRoomAddPage implements OnInit {
   public classRoomForm: FormGroup;
   public classRoom: IClassRoom;
   schoolInfo: any[] = [];
-  isEditClassRoom = false;
   currentUser: IUser;
 
 
@@ -26,22 +24,13 @@ export class ClassRoomAddPage implements OnInit {
     private formBuilder: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private classService: ClassRoomService,
-    private dataShare: DataShareService,
-    private schoolService: SchoolService,
     private toastController: ToastController,
     private authenticationService: AuthenticationService,
+    public router: Router,
 
   ) { }
 
   ngOnInit() {
-    this.isEditClassRoom= this.activatedRoute.snapshot.paramMap.has('classId');
-
-    this.authenticationService.currentUser?.subscribe((user) => {
-      if( !user) {
-        return;
-      }
-      this.currentUser = user;
-    });
 
     this.classRoomForm = this.formBuilder.group({
       classDivision: new FormControl('', [
@@ -59,19 +48,25 @@ export class ClassRoomAddPage implements OnInit {
       ])
     });
 
-    if (this.isEditClassRoom) {
-      this.dataShare.getData().subscribe((data) => {
-        this.classRoom = data;
-        if (this.classRoom) {
-          this.classRoomForm.setValue({
-            classDivision: this.classRoom.classDivision,
-            classRoomName: this.classRoom.classRoomName,
-            schoolId: this.classRoom.schoolId,
-          });
-        }
-      });
-    }
-    this.getSchools();
+    this.authenticationService.currentUser?.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.schoolInfo = user.schools;
+      const classId = this.activatedRoute.snapshot.paramMap.get('classId');
+      if (classId) {
+        const schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
+        const school = user.schools.find((s) => s.id === schoolId);
+        this.classRoom = school.classRooms.find((s) => s.classId === classId);
+
+        this.classRoomForm.setValue({
+          classDivision: this.classRoom.classDivision,
+          classRoomName: this.classRoom.classRoomName,
+          schoolId: this.classRoom.schoolId,
+        });
+      }
+    });
   }
 
   get f() {
@@ -92,22 +87,16 @@ export class ClassRoomAddPage implements OnInit {
       } as IClassRoom;
       this.classService.SubmitClassRoom(classRoomInfo).subscribe(() => {
         this.presentToast();
-        this.classRoomForm.reset(this.classRoomForm.value);
+        this.router.navigateByUrl(`/class-rooms/${classRoomInfo.schoolId}`);
       });
     }
-  }
-
-  getSchools() {
-    this.schoolService.GetSchools().toPromise().then((schools) => {
-      this.schoolInfo = schools;
-    });
   }
 
   private async presentToast() {
     const toast = await this.toastController.create({
       message: 'Class room updated successfully..',
       position: 'bottom',
-      duration: 5000,
+      duration: 3000,
       color: 'success',
       buttons: [{
         text: 'Close',

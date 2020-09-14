@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ schoolName }} - Class Rooms</ion-title>
+    <ion-title>Class Rooms</ion-title>
     <ion-buttons slot="start">
       <ion-menu-button autoHide="true"></ion-menu-button>
     </ion-buttons>
@@ -17,6 +17,9 @@
 </ion-header>
 
 <ion-content>
+  <ion-item lines="none">
+    <ion-title class="content-title">School - {{schoolName}}</ion-title>
+</ion-item>
   <ion-grid style="height: 100%" *ngIf="!classRooms.length">
     <ion-row justify-content-center align-items-center class="justify-center">
       <div text-center>
