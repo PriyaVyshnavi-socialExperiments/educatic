@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { IStudent, Role, IUser, ISchool, IClassRoom } from 'src/app/_models';
-import { DataShareService } from 'src/app/_services/data-share.service';
 import { StudentService } from 'src/app/_services/student/student.service';
 import { ClassRoomService } from 'src/app/_services/class-room/class-room.service';
 import { AuthenticationService } from '../../_services';
@@ -34,7 +33,6 @@ export class StudentAddPage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private studentService: StudentService,
     private classRoomService: ClassRoomService,
-    private dataShare: DataShareService,
     private activatedRoute: ActivatedRoute,
     private authService: AuthenticationService,
     public router: Router,
