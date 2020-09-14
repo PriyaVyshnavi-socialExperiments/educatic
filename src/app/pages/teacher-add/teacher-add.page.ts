@@ -2,13 +2,13 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { CountryHelper } from '../../_helpers/countries';
 import { ITeacher, Role } from '../../_models';
 import { DataShareService } from '../../_services/data-share.service';
 import { SchoolService } from '../../_services/school/school.service';
 import { TeacherService } from '../../_services/teacher/teacher.service';
 import { CustomEmailValidator } from '../../_helpers/custom-email-validator';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
+import { CountryStateCityService } from 'src/app/_services/country-state-city/country-state-city.service';
 
 @Component({
   selector: 'app-teacher-add',
@@ -31,7 +31,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private countryHelper: CountryHelper,
+    private countryService: CountryStateCityService,
     private toastController: ToastController,
     private teacherService: TeacherService,
     private schoolService: SchoolService,
@@ -99,7 +99,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
     if (this.isEditTeacher) {
       this.dataShare.getData().subscribe((data) => {
         this.teacher = data;
-        this.countryHelper.getSelectedCountryWiseStatsCities(this.teacher.country, this.teacher.state).then((country) => {
+        this.countryService.GetCountryWiseStatsCities(this.teacher.country, this.teacher.state).then((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
@@ -167,8 +167,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
   }
 
   getCountries() {
-    this.countryHelper.AllCountries().toPromise().then(
-      data => {
+    this.countryService.AllCountries().then( (data) => {
         this.countryInfo = data;
       }
     )

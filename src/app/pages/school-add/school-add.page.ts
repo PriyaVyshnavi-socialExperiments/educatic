@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { CountryHelper } from '../../_helpers/countries';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { SchoolService } from '../../_services/school/school.service';
 import { ISchool } from '../../_models/school';
 import { AuthenticationService } from '../../_services/authentication/authentication.service';
+import { CountryStateCityService } from 'src/app/_services/country-state-city/country-state-city.service';
 
 @Component({
   selector: 'app-school-add',
@@ -25,7 +25,7 @@ export class SchoolAddPage implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private countryHelper: CountryHelper,
+    private countryHelper: CountryStateCityService,
     private toastController: ToastController,
     private schoolService: SchoolService,
     private activatedRoute: ActivatedRoute,
@@ -76,7 +76,7 @@ export class SchoolAddPage implements OnInit {
           return;
         }
         this.school = user.schools.find((s) => s.id === schoolId);
-        this.countryHelper.getSelectedCountryWiseStatsCities(this.school.country, this.school.state).then((country) => {
+        this.countryHelper.GetCountryWiseStatsCities(this.school.country, this.school.state).then((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
@@ -126,7 +126,7 @@ export class SchoolAddPage implements OnInit {
   }
 
   getCountries() {
-    this.countryHelper.AllCountries().toPromise().then(
+    this.countryHelper.AllCountries().then(
       data => {
         this.countryInfo = data;
       }

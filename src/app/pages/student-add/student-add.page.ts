@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { CountryHelper } from 'src/app/_helpers/countries';
 import { IStudent, Role, IUser, ISchool } from 'src/app/_models';
 import { DataShareService } from 'src/app/_services/data-share.service';
 import { StudentService } from 'src/app/_services/student/student.service';
@@ -10,6 +9,7 @@ import { SchoolService } from 'src/app/_services/school/school.service';
 import { ClassRoomService } from 'src/app/_services/class-room/class-room.service';
 import { AuthenticationService } from '../../_services';
 import { CustomEmailValidator } from 'src/app/_helpers/custom-email-validator';
+import { CountryStateCityService } from 'src/app/_services/country-state-city/country-state-city.service';
 
 @Component({
   selector: 'app-student-add',
@@ -32,7 +32,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private countryHelper: CountryHelper,
+    private countryHelper: CountryStateCityService,
     private toastController: ToastController,
     private studentService: StudentService,
     private classRoomService: ClassRoomService,
@@ -97,7 +97,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
     if (this.isEdit) {
       this.dataShare.getData().subscribe((data) => {
         this.student = data;
-        this.countryHelper.getSelectedCountryWiseStatsCities(this.student.country, this.student.state).then((country) => {
+        this.countryHelper.GetCountryWiseStatsCities(this.student.country, this.student.state).then((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
@@ -162,7 +162,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
   }
 
   getCountries() {
-    this.countryHelper.AllCountries().toPromise().then(
+    this.countryHelper.AllCountries().then(
       data => {
         this.countryInfo = data;
       }
