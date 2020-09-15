@@ -93,7 +93,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
 
       if (studentId) {
         this.student = this.classRoomInfo.students.find((s) => s.id === studentId)
-        this.countryHelper.GetCountryWiseStatsCities(this.student.country, this.student.state).then((country) => {
+        this.countryHelper.GetCountryWiseStatsCities(this.student.country, this.student.state).subscribe((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
@@ -154,8 +154,8 @@ export class StudentAddPage implements OnInit, OnDestroy {
   }
 
   getCountries() {
-    this.countryHelper.AllCountries().then(
-      data => {
+    this.countryHelper.AllCountries().subscribe(
+      (data: any) => {
         this.countryInfo = data;
       }
     )

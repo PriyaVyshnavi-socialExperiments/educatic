@@ -76,7 +76,7 @@ export class SchoolAddPage implements OnInit {
           return;
         }
         this.school = user.schools.find((s) => s.id === schoolId);
-        this.countryHelper.GetCountryWiseStatsCities(this.school.country, this.school.state).then((country) => {
+        this.countryHelper.GetCountryWiseStatsCities(this.school.country, this.school.state).subscribe((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
@@ -127,8 +127,8 @@ export class SchoolAddPage implements OnInit {
   }
 
   getCountries() {
-    this.countryHelper.AllCountries().then(
-      data => {
+    this.countryHelper.AllCountries().subscribe(
+      (data: any) => {
         this.countryInfo = data;
       }
     )

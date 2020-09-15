@@ -96,7 +96,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         const schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
         const school = user.schools.find((s) => s.id === schoolId);
         this.teacher = school.teachers.find((s) => s.id === this.teacherId);
-        this.countryService.GetCountryWiseStatsCities(this.teacher.country, this.teacher.state).then((country) => {
+        this.countryService.GetCountryWiseStatsCities(this.teacher.country, this.teacher.state).subscribe((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
@@ -159,9 +159,11 @@ export class TeacherAddPage implements OnInit, OnDestroy {
   }
 
   getCountries() {
-    this.countryService.AllCountries().then((data) => {
-      this.countryInfo = data;
-    });
+    this.countryService.AllCountries().subscribe(
+      (data: any) => {
+        this.countryInfo = data;
+      }
+    )
   }
 
   onChangeCountry(countryName) {
