@@ -97,7 +97,8 @@ export class StudentsPage implements OnInit {
 
   setClassRoom(selectedValue) {
     this.classRoomId = selectedValue.detail.value;
-    this.refresh();
+    this.router.navigateByUrl(`/students/${this.currentUser.defaultSchool.id}/${this.classRoomId}`);
+    //this.refresh();
   }
 
   public async actionPopover(ev: any, studentId: string) {

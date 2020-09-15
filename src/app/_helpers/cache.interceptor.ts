@@ -13,11 +13,11 @@ export class CacheInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
         // pass along non-cache requests and invalidate cache
-        if (req.method !== 'GET') {
-            console.log(`Invalidating cache: ${req.method} ${req.url}`);
-            this.cacheService.invalidateCache();
-            return next.handle(req);
-        }
+        // if (req.method !== 'GET') {
+        //     console.log(`Invalidating cache: ${req.method} ${req.url}`);
+        //     this.cacheService.invalidateCache();
+        //     return next.handle(req);
+        // }
 
         // attempt to retrieve a cached response
         const cachedResponse: HttpResponse<any> = this.cacheService.get(req.url);

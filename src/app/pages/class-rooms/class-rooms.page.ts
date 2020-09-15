@@ -68,7 +68,8 @@ export class ClassRoomsPage implements OnInit {
 
   setSchool(selectedValue) {
     this.authenticationService.ResetDefaultSchool(selectedValue.detail.value);
-    this.refresh(this.currentUser.defaultSchool.id);
+    this.router.navigateByUrl(`/class-rooms/${selectedValue.detail.value}`);
+    //this.refresh(this.currentUser.defaultSchool.id);
   }
 
   public async actionPopover(ev: any, classId: string) {

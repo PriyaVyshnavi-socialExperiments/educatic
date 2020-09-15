@@ -54,7 +54,8 @@ export class TeachersPage implements OnInit {
 
   setSchool(selectedValue) {
     this.authenticationService.ResetDefaultSchool(selectedValue.detail.value);
-    this.refresh(this.currentUser.defaultSchool.id);
+    this.router.navigateByUrl(`/teachers/${selectedValue.detail.value}`);
+    //this.refresh(this.currentUser.defaultSchool.id);
   }
 
   refresh(schoolId: string) {
