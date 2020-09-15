@@ -2,12 +2,13 @@
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { IUser, LoginRequest } from '../../_models';
+import { IUser, LoginRequest, StudentLoginRequest, ISchool } from '../../_models';
 import { ApplicationInsightsService } from '../../_helpers/application-insights';
 import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
 import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
 import { IResetPassword } from 'src/app/_models/reset-password';
+import { async } from '@angular/core/testing';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends OfflineService {
@@ -52,7 +53,24 @@ export class AuthenticationService extends OfflineService {
                         this.ready.next(response);
                         this.appInsightsService.setUserId(response.id)
                         this.ResetDefaultSchool(response.schools[0].id)
-                        //this.SetOfflineData('User', 'current-user', response);
+                    }
+                    return response;
+                }));
+    }
+
+    public StudentLogin(loginRequest: StudentLoginRequest) {
+        return this.http.Post<any>(`/login/student`, loginRequest)
+            .pipe(
+                map(response => {
+                    // login successful if there's a jwt token in the response
+                    if (response && response.token) {
+                        // store user details and jwt token in local storage to keep user logged in between page refreshes
+                        response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
+                        response.schools = [...response.schools];
+                        this.currentUserSubject.next(response);
+                        this.ready.next(response);
+                        this.appInsightsService.setUserId(response.id)
+                        this.ResetDefaultSchool(response.schools[0].id)
                     }
                     return response;
                 }));
@@ -80,8 +98,24 @@ export class AuthenticationService extends OfflineService {
 
     public ResetDefaultSchool(schoolId: string) {
         this.currentUser.subscribe((currentUser) => {
-            currentUser.defaultSchool = currentUser.schools?.find((s) => s.id === schoolId);
-            this.SetOfflineData('User', 'current-user', currentUser);
+            if (currentUser) {
+                currentUser.defaultSchool = currentUser.schools?.find((s) => s.id === schoolId);
+                this.SetOfflineData('User', 'current-user', currentUser);
+            }
         });
     }
+
+    public RefreshSchools(schools: ISchool[], school: ISchool) {
+        const schoolList = schools.filter((obj) => {
+            return obj.id !==  school.id;
+        });
+        if (school) {
+            schoolList.unshift(school);
+        }
+        this.currentUser.subscribe(async(currentUser) => {
+            currentUser.schools = schoolList;
+            currentUser.defaultSchool = school;
+            await this.SetOfflineData('User', 'current-user', currentUser);
+        });
+      }
 }

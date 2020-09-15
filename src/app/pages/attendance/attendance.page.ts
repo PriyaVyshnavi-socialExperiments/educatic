@@ -8,7 +8,7 @@ import { AuthenticationService } from '../../_services';
 import { AttendanceService } from '../../_services/attendance/attendance.service';
 import { IQueueMessage } from 'src/app/_models/queue-message';
 import { dateFormat } from 'src/app/_helpers';
-import { GeolocationHelper } from 'src/app/_helpers/geolocation';
+import { LocationService } from 'src/app/_services/location/location.service';
 
 @Component({
   selector: 'app-attendance',
@@ -31,7 +31,8 @@ export class AttendancePage implements OnInit, AfterViewInit {
     private sanitizer: DomSanitizer,
     private authenticationService: AuthenticationService,
     private attendanceService: AttendanceService,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public locationService: LocationService
   ) { }
 
   ngOnInit() {
@@ -62,7 +63,7 @@ export class AttendancePage implements OnInit, AfterViewInit {
   }
 
   async uploadPhoto() {
-    const position = await GeolocationHelper.GetGeolocation();
+    const location = await this.locationService.GetGeolocation();
     const queueMessage = {
       schoolId: this.currentUser.defaultSchool.id,
       classId: this.classRoomId,
@@ -70,8 +71,8 @@ export class AttendancePage implements OnInit, AfterViewInit {
       teacherId: this.currentUser.id,
       pictureURLs: [this.blobDataURL],
       pictureTimestamp: new Date(),
-      latitude: position.coords.latitude.toString(),
-      longitude: position.coords.longitude.toString(),
+      latitude: location.lat,
+      longitude: location.lng,
     } as IQueueMessage
     this.attendanceService.QueueBlobMessage(queueMessage)
       .subscribe((res) => { });
@@ -92,7 +93,7 @@ export class AttendancePage implements OnInit, AfterViewInit {
       resultType: CameraResultType.Base64,
       source: CameraSource.Prompt
     });
-    this.blobDataURL = `${this.school.name.replace(/\s/g, '')}_${this.school.id}/${this.classRoomId}`;
+    this.blobDataURL = `${this.school.name.replace(/\s/g, '')}_${this.school.id}/${this.classRoomName.replace(/\s/g, '')}_${this.classRoomId}`;
     this.blobDataURL = `${this.blobDataURL}/${dateFormat(new Date())}.${image.format}`;
     const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
     this.uploadAttendancePhoto = ImageHelper.blobToFile(blobData, this.blobDataURL);

@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { IonSelect, PopoverController } from '@ionic/angular';
-import { ClassRoomService } from 'src/app/_services/class-room/class-room.service';
 import { AuthenticationService } from 'src/app/_services';
 import { DataShareService } from 'src/app/_services/data-share.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { IClassRoom, ISchool, IUser } from 'src/app/_models';
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
 
@@ -20,27 +19,47 @@ export class ClassRoomsPage implements OnInit {
   schoolName: string;
   currentUser: IUser;
 
-  constructor(private classRoomService: ClassRoomService,
+  constructor(
     private authenticationService: AuthenticationService,
     private popoverController: PopoverController,
-    private dataShare: DataShareService,
-    public router: Router,) { }
+    public router: Router,
+    private activatedRoute: ActivatedRoute,
+  ) { }
 
   ngOnInit() {
+    // this.authenticationService.currentUser?.subscribe((user) => {
+    //   if (!user) {
+    //     return;
+    //   }
+    //   this.currentUser = user;
+    //   this.schools = user.schools;
+    //   this.refresh();
+    // });
+  }
+
+  ionViewDidEnter() {
     this.authenticationService.currentUser.subscribe((user) => {
       if (!user) {
         return;
       }
       this.currentUser = user;
       this.schools = user.schools;
-      this.refresh();
+
+      const schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
+      if (schoolId) {
+        this.refresh(schoolId);
+      } else {
+        this.refresh(this.currentUser.defaultSchool.id);
+      }
     });
   }
 
-  refresh() {
-    this.schoolId = this.currentUser.defaultSchool.id;
-    this.schoolName = this.currentUser.defaultSchool.name;
-    this.classRooms = [...this.currentUser.defaultSchool.classRooms]
+  refresh(schoolId: string) {
+    setTimeout(() => {
+      const school = this.currentUser.schools.find((s) => s.id === schoolId);
+      this.classRooms = [...school.classRooms];
+      this.schoolName = school.name;
+    }, 10);
   }
 
   public selectSchool() {
@@ -49,7 +68,8 @@ export class ClassRoomsPage implements OnInit {
 
   setSchool(selectedValue) {
     this.authenticationService.ResetDefaultSchool(selectedValue.detail.value);
-    this.refresh();
+    this.router.navigateByUrl(`/class-rooms/${selectedValue.detail.value}`);
+    //this.refresh(this.currentUser.defaultSchool.id);
   }
 
   public async actionPopover(ev: any, classId: string) {
@@ -83,8 +103,6 @@ export class ClassRoomsPage implements OnInit {
   }
 
   public ClassRoomEdit(classId: string) {
-    const currentClassRoom = this.classRooms.find(classRoom => classRoom.classId === classId);
-    this.dataShare.setData(currentClassRoom);
     this.router.navigateByUrl(`/class-room/edit/${this.currentUser.defaultSchool.id}/${classId}`);
   }
 

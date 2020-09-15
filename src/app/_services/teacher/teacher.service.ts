@@ -3,9 +3,10 @@ import { HttpService } from '../http-client/http.client';
 import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
 import { Guid } from 'guid-typescript';
-import { ITeacher, OfflineSyncURL } from '../../_models';
+import { ITeacher, OfflineSyncURL, IUser } from '../../_models';
 import { map, finalize, tap, catchError } from 'rxjs/operators';
 import { from, of } from 'rxjs';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class TeacherService extends OfflineService {
     private http: HttpService,
     public injector: Injector,
     private network: NetworkService,
+    private auth: AuthenticationService
   ) {
     super(injector);
   }
@@ -72,14 +74,18 @@ export class TeacherService extends OfflineService {
     );
   }
 
-  private UpdateTeacherOfflineList(teacher: ITeacher) {
-    this.GetOfflineData('Teacher', 'teacher-list').then((data) => {
-      let teacherList = data as ITeacher[];
-      teacherList = teacherList.filter((obj) => {
-        return obj.id !== teacher.id;
+  private UpdateTeacherOfflineList(teacher: ITeacher, teacherId?: string) {
+    return this.GetOfflineData('User', 'current-user').then((data) => {
+      const user = data as IUser;
+      const school = user.schools.find((s) => s.id === teacher.schoolId);
+      const teacherList = school.teachers.filter((ts) => {
+        return ts.id !== (teacher ? teacher.id : teacherId);
       });
-      teacherList.push(teacher);
-      this.SetOfflineData('Teacher', 'teacher-list', teacherList);
+      if (teacher) {
+        teacherList.unshift(teacher);
+      }
+      school.teachers = teacherList;
+      this.auth.RefreshSchools(user.schools, school);
     });
   }
 }

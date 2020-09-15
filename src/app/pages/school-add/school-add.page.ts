@@ -1,19 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { CountryHelper } from '../../_helpers/countries';
-import { ActivatedRoute } from '@angular/router';
-import { Geolocation } from '@capacitor/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { SchoolService } from '../../_services/school/school.service';
-import { DataShareService } from '../../_services/data-share.service';
 import { ISchool } from '../../_models/school';
+import { AuthenticationService } from '../../_services/authentication/authentication.service';
+import { CountryStateCityService } from 'src/app/_services/country-state-city/country-state-city.service';
 
 @Component({
   selector: 'app-school-add',
   templateUrl: './school-add.page.html',
   styleUrls: ['./school-add.page.scss'],
 })
-export class SchoolAddPage implements OnInit, OnDestroy {
+export class SchoolAddPage implements OnInit {
 
   public schoolForm: FormGroup;
   public school: any = {};
@@ -26,15 +25,13 @@ export class SchoolAddPage implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private countryHelper: CountryHelper,
+    private countryHelper: CountryStateCityService,
     private toastController: ToastController,
     private schoolService: SchoolService,
-    private dataShare: DataShareService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private authenticationService: AuthenticationService,
+    public router: Router,
   ) {
-
-    //this.getLocation();
-
   }
 
   ngOnInit() {
@@ -71,16 +68,20 @@ export class SchoolAddPage implements OnInit, OnDestroy {
       ]),
     });
 
-    //this.getCountries();
-
     if (this.isEditSchool) {
-      this.dataShare.getData().subscribe((data) => {
-        this.school = data;
-        this.countryHelper.getSelectedCountryWiseStatsCities(this.school.country, this.school.state).then((country) => {
+      const schoolId = this.activatedRoute.snapshot.paramMap.get('id');
+
+      this.authenticationService.currentUser?.subscribe((user) => {
+        if (!user) {
+          return;
+        }
+        this.school = user.schools.find((s) => s.id === schoolId);
+        this.countryHelper.GetCountryWiseStatsCities(this.school.country, this.school.state).then((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
           this.cityInfo = country.Cities;
         });
+
         if (this.school) {
           this.schoolForm.setValue({
             name: this.school.name,
@@ -114,18 +115,19 @@ export class SchoolAddPage implements OnInit, OnDestroy {
         country: this.f.country.value,
         state: this.f.state.value,
         city: this.f.city.value,
-        latitude: '19.9894', //this.latitude.toString(),
-        longitude: '73.7276',//this.longitude.toString(),
-        zip: this.f.zip.value
+        zip: this.f.zip.value,
+        syncDateTime: new Date()
       } as ISchool;
       this.schoolService.SubmitSchool(schoolInfo).subscribe(() => {
-        this.presentToast();
+        this.presentToast().then(() => {
+          this.router.navigateByUrl(`/schools`);
+        });
       });
     }
   }
 
   getCountries() {
-    this.countryHelper.AllCountries().toPromise().then(
+    this.countryHelper.AllCountries().then(
       data => {
         this.countryInfo = data;
       }
@@ -140,15 +142,9 @@ export class SchoolAddPage implements OnInit, OnDestroy {
     this.cityInfo = this.stateInfo.find((s) => s.name === stateName.value).cities;
   }
 
-  async getLocation() {
-    const position = await Geolocation.getCurrentPosition();
-    this.latitude = position.coords.latitude;
-    this.longitude = position.coords.longitude;
-  }
-
   private async presentToast() {
     const toast = await this.toastController.create({
-      message: 'Profile changed successfully..',
+      message: 'School create/update successfully..',
       position: 'bottom',
       duration: 5000,
       color: 'success',
@@ -159,8 +155,5 @@ export class SchoolAddPage implements OnInit, OnDestroy {
       ]
     });
     toast.present();
-  }
-
-  ngOnDestroy() {
   }
 }

@@ -8,7 +8,6 @@ export * from './user-profile';
 export * from './offline-storage-request';
 export * from './offline-sync-urls';
 export * from './school';
-export * from './country-state-city';
 export * from './teacher';
 export * from './class-room';
 export * from './student';

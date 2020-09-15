@@ -4,13 +4,15 @@ import { HttpService } from '../http-client/http.client';
 import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
 import { Guid } from 'guid-typescript';
-import { IStudent, OfflineSyncURL } from '../../_models';
+import { IStudent, OfflineSyncURL, IUser } from '../../_models';
 import { map, finalize, tap, catchError} from 'rxjs/operators';
 import { from, of } from 'rxjs';
 import { IStudentPhoto } from '../../_models/student-photos';
 import { BlobUploadsViewStateService } from '../../_services/azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../../_services/azure-blob/blob-shared-view-state.service';
 import { IQueueMessage } from 'src/app/_models/queue-message';
+import { BlobDownloadsViewStateService } from '../azure-blob/blob-downloads-view-state.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +26,9 @@ export class StudentService extends OfflineService {
     private network: NetworkService,
     private blobUpload: BlobUploadsViewStateService,
     private blobShared: BlobSharedViewStateService,
+    private blobDownload: BlobDownloadsViewStateService,
+    private auth: AuthenticationService,
+
   ) {
     super(injector);
   }
@@ -39,7 +44,7 @@ export class StudentService extends OfflineService {
           return response;
         }),
         finalize(() => {
-          this.UpdateStudentOfflineList(studentInfo);
+          this.UpdateStudentOffline(studentInfo);
         })
       );
   }
@@ -105,6 +110,12 @@ export class StudentService extends OfflineService {
     );
   }
 
+  public GetStudentPhoto(imageURL) {
+    this.blobShared.setContainer$ = 'students';
+    this.blobShared.resetSasToken$ = true;
+    return this.blobDownload.downloadFile(imageURL);
+  }
+
   public UploadImageFile(studentBlobData) {
     this.blobShared.setContainer$ = 'students';
     this.blobShared.resetSasToken$ = true;
@@ -119,14 +130,29 @@ export class StudentService extends OfflineService {
     return of();
   }
 
-  private UpdateStudentOfflineList(student: IStudent) {
-    this.GetOfflineData('Student', 'student-list').then((data) => {
-      let studentList = data as IStudent[];
-      studentList = studentList.filter((obj) => {
-        return obj.id !== student.id;
+  private UpdateStudentOffline(student: IStudent, studentId?: string) {
+    return this.GetOfflineData('User', 'current-user').then((data) => {
+      const user = data as IUser;
+      const school = user.schools.find((s) => s.id === student.schoolId);
+      const classRoom = school.classRooms.find((s) => s.classId === student.classId);
+
+      const classRoomList = school.classRooms.filter((cr) => {
+        return cr.classId !== classRoom.classId;
       });
-      studentList.push(student);
-      this.SetOfflineData('Student', 'student-list', studentList);
+
+      const studentList = classRoom.students.filter((st) => {
+        return st.id !== (student ? student.id : studentId);
+      });
+
+      if (student) {
+        studentList.unshift(student);
+
+      }
+      classRoom.students = studentList;
+      classRoomList.unshift(classRoom);
+
+      school.classRooms = classRoomList;
+      this.auth.RefreshSchools(user.schools, school);
     });
   }
 }

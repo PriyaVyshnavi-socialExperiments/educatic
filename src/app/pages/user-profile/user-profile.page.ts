@@ -32,7 +32,7 @@ export class UserProfilePage implements OnInit {
 
   ) { }
   ngOnInit() {
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.currentUser?.subscribe((user) => {
       if( !user) {
         return;
       }
@@ -40,18 +40,18 @@ export class UserProfilePage implements OnInit {
     });
 
     this.profileForm = this.formBuilder.group({
-      firstname: new FormControl(this.currentUser.firstName, [
+      firstname: new FormControl(this.currentUser?.firstName, [
         Validators.required,
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
-      lastname: new FormControl(this.currentUser.lastName, [
+      lastname: new FormControl(this.currentUser?.lastName, [
         Validators.required,
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
       email: new FormControl(
-        this.currentUser.email,
+        this.currentUser?.email,
         [
           Validators.required,
           Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
@@ -101,7 +101,7 @@ export class UserProfilePage implements OnInit {
   }
 
   public GetInitials() {
-    return getInitials(`${this.currentUser.firstName}  ${this.currentUser.lastName}`)
+    return getInitials(`${this.currentUser?.firstName}  ${this.currentUser?.lastName}`)
   }
 
   public selectAvatar(event) {

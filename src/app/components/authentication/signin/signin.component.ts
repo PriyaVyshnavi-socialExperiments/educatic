@@ -3,9 +3,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { AuthenticationService } from '../../../_services';
 import { LoginRequest, Role } from '../../../_models';
-import { ToastController } from '@ionic/angular';
+import { ToastController, ModalController } from '@ionic/angular';
 import { ErrorStateMatcherHelper } from '../../../_helpers/error-state-matcher';
 import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
+import { StudentSigninPage } from '../student-signin/student-signin.page';
 
 @Component({
   selector: 'app-signin',
@@ -29,6 +30,7 @@ export class SigninComponent implements OnInit, OnDestroy {
     private authenticationService: AuthenticationService,
     public toastController: ToastController,
     private menuHelper: NavMenuHelper,
+    private modalController: ModalController,
   ) { }
   ngOnDestroy(): void {
   }
@@ -78,9 +80,20 @@ export class SigninComponent implements OnInit, OnDestroy {
     }
   }
 
+  async openStudentSignInModal() {
+    const modal: HTMLIonModalElement =
+      await this.modalController.create({
+        component: StudentSigninPage,
+        //mode: 'ios',
+        componentProps: {
+        }
+      });
+    await modal.present();
+  }
+
   private async presentToast() {
     const toast = await this.toastController.create({
-      message: 'The email address or password are incorrect, or no account exists for this email. Sign up for an account below.',
+      message: 'The email address or password are incorrect, or no account exists for this email.',
       position: 'top',
       duration: 10000,
       color: 'danger',

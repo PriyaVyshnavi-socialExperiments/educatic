@@ -27,7 +27,7 @@ export class ResetPasswordComponent implements OnInit {
   ) { }
 
   public ngOnInit() {
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.currentUser?.subscribe((user) => {
       if( !user) {
         return;
       }

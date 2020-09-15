@@ -10,8 +10,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { StudentSigninPage } from './student-signin/student-signin.page';
 @NgModule({
-  declarations: [SigninComponent, SignupComponent, ResetPasswordComponent],
+  declarations: [
+    SigninComponent,
+    SignupComponent,
+    ResetPasswordComponent,
+    StudentSigninPage],
   imports: [
     CommonModule,
     FormsModule,
@@ -24,4 +29,4 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class AuthenticationModule {}
+export class AuthenticationModule { }

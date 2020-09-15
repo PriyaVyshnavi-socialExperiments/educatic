@@ -4,6 +4,7 @@ import { PopoverController, AlertController, MenuController } from '@ionic/angul
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../_services/authentication/authentication.service';
+import { SchoolService } from 'src/app/_services/school/school.service';
 
 @Component({
   selector: 'app-schools',
@@ -20,10 +21,18 @@ export class SchoolsPage implements OnInit {
     public alertController: AlertController,
     private menuCtrl: MenuController,
     private authenticationService: AuthenticationService,
+    private schoolService: SchoolService
 
   ) { }
 
+  ionViewWillEnter() {
+    this.refresh();
+  }
   ngOnInit() {
+    //this.refresh();
+  }
+
+  refresh() {
     this.authenticationService.currentUser.subscribe((user) => {
       if (!user) {
         return;
@@ -33,8 +42,10 @@ export class SchoolsPage implements OnInit {
     });
   }
 
-  edit() {
-
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.refresh();
+    });
   }
 
   public async actionPopover(ev: any, schoolId: string) {
@@ -60,7 +71,7 @@ export class SchoolsPage implements OnInit {
           this.SchoolDelete(actionData.currentId);
           break;
         case 'details':
-          this.SchoolDetails();
+          this.SchoolDetails(actionData.currentId);
           break;
         case 'teachers':
           this.router.navigateByUrl(`/teachers/${actionData.currentId}`);
@@ -93,8 +104,10 @@ export class SchoolsPage implements OnInit {
         }, {
           text: 'Okay',
           handler: () => {
-            this.schools = this.schools.filter((school) => {
-              return school.id !== schoolId;
+            this.schoolService.DeleteSchool(schoolId).toPromise().finally(() => {
+              setTimeout(() => {
+                this.refresh();
+              }, 500);
             });
           }
         }
@@ -103,7 +116,11 @@ export class SchoolsPage implements OnInit {
     await alert.present();
   }
 
-  public SchoolDetails() {
+  public SchoolDetails(schoolId) {
+    setTimeout(() => {
+      this.authenticationService.ResetDefaultSchool(schoolId);
+    });
+    this.schoolService.setSchoolDetails(this.currentUser.defaultSchool);
     this.menuCtrl.open('end');
   }
 

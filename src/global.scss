@@ -37,3 +37,13 @@
 ion-label {
    white-space: normal !important;
 }
+
+ion-content {
+  --background: #f5f5f5;
+}
+
+.dark {
+  ion-content {
+    --background: #1a202e;
+  }
+}

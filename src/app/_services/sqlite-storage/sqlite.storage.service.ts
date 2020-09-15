@@ -77,7 +77,6 @@ export class SqliteStorageService {
     async getItem(key: string): Promise<string> {
         if (this.isService && key.length > 0) {
             const { value } = await this.store.get({ key });
-            console.log('in getItem value ', value)
             return value;
         } else {
             return null;

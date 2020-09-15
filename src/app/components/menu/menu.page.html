@@ -16,7 +16,7 @@
               </ion-label>
             </ion-item>
             <ion-item slot="end" lines="none" detail="false">
-              <ion-button color="secondary" shape="round" (click)="Profile()" fill="outline">
+              <ion-button *ngIf="isProfileShow" color="primary" shape="round" (click)="Profile()" fill="outline">
                 Profile
               </ion-button>
               <ion-button color="secondary" slot="end" (click)="Logout()" shape="round" fill="outline">
@@ -27,7 +27,7 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-content>
+      <ion-content class="left-menu">
         <div *ngFor="let menu of currentUser.menuItems; let i = index">
           <ion-menu-toggle *ngIf="menu && menu.path" auto-hide="false">
             <ion-list lines="none">
@@ -38,8 +38,8 @@
             </ion-list>
           </ion-menu-toggle>
 
-          <ion-item *ngIf="menu && menu.children?.length>0" (click)="menu.open = !menu.open" [class.active-parent]="menu.open"
-            details="false" lines="none">
+          <ion-item *ngIf="menu && menu.children?.length>0" (click)="menu.open = !menu.open"
+            [class.active-parent]="menu.open" details="false" lines="none">
             <ion-icon [name]="menu.icon" slot="start"></ion-icon>
             <ion-icon name="chevron-forward-circle" slot="end" *ngIf="!menu.open"></ion-icon>
             <ion-icon name="chevron-down-circle" slot="end" *ngIf="menu.open"></ion-icon>
@@ -76,7 +76,10 @@
       </ion-header>
       <ion-content *ngIf="schoolDetails">
         <img src="../../../assets/images/school-image.jpg" alt="ion">
-        <h5 padding-left padding-right text-center>{{ schoolDetails.name | uppercase }}</h5>
+        <ion-item lines="none">
+          <h5 padding-left padding-right text-center>{{ schoolDetails.name | uppercase }}</h5>
+        </ion-item>
+
         <ion-grid text-center>
           <ion-row>
             <ion-col class="bold">Address</ion-col>

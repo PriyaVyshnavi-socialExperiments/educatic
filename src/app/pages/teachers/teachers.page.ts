@@ -1,11 +1,10 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ITeacher, IUser, ISchool } from '../../_models';
-import { TeacherService } from '../../_services/teacher/teacher.service';
 import { AuthenticationService } from '../../_services';
 import { IonSelect, PopoverController } from '@ionic/angular';
 import { ActionPopoverPage } from 'src/app/components/action-popover/action-popover.page';
 import { DataShareService } from 'src/app/_services/data-share.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-teachers',
@@ -17,33 +16,35 @@ export class TeachersPage implements OnInit {
 
   teachers: ITeacher[] = [];
   schools: ISchool[] = [];
-  schoolId: string;
   currentUser: IUser;
+  schoolName: string;
 
   constructor(
-    private teacherService: TeacherService,
     private authenticationService: AuthenticationService,
     private popoverController: PopoverController,
     private dataShare: DataShareService,
     public router: Router,
-
+    private activatedRoute: ActivatedRoute,
   ) { }
 
-  // ngAfterViewInit(): void {
-  //   if (this.currentUser.defaultSchool.id) {
-  //     this.refresh();
-  //   } else {
-  //     this.schoolSelectRef.open();
-  //   }
-  // }
-
   ngOnInit() {
+
+  }
+
+  ionViewDidEnter() {
     this.authenticationService.currentUser.subscribe((user) => {
-      if( !user) {
+      if (!user) {
         return;
       }
       this.currentUser = user;
       this.schools = user.schools;
+
+      const schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
+      if (schoolId) {
+        this.refresh(schoolId);
+      } else {
+        this.refresh(this.currentUser.defaultSchool.id);
+      }
     });
   }
 
@@ -53,26 +54,29 @@ export class TeachersPage implements OnInit {
 
   setSchool(selectedValue) {
     this.authenticationService.ResetDefaultSchool(selectedValue.detail.value);
-    this.refresh();
+    this.router.navigateByUrl(`/teachers/${selectedValue.detail.value}`);
+    //this.refresh(this.currentUser.defaultSchool.id);
   }
 
-  refresh() {
-    this.schoolId = this.currentUser.defaultSchool.id;
-    this.teachers = [...this.currentUser.defaultSchool.teachers]
+  refresh(schoolId: string) {
+    setTimeout(() => {
+      this.teachers = this.currentUser.schools.find((s) => s.id === schoolId).teachers;
+      this.schoolName = this.currentUser.defaultSchool.name;
+    }, 10);
   }
 
-  public async actionPopover(ev: any, schoolId: string) {
+  public async actionPopover(ev: any, teacherId: string) {
 
     const popover = await this.popoverController.create({
       component: ActionPopoverPage,
       mode: 'ios',
       event: ev,
-      componentProps: { id: schoolId, type: 'teacher' },
+      componentProps: { id: teacherId, type: 'teacher' },
       cssClass: 'pop-over-style',
     });
 
     popover.onDidDismiss().then((data) => {
-      if(!data.data) {
+      if (!data.data) {
         return;
       }
       const actionData = data?.data;

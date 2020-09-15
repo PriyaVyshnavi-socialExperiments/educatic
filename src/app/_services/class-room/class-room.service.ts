@@ -2,10 +2,11 @@ import { Injectable, Injector } from '@angular/core';
 import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
 import { NetworkService } from '../network/network.service';
-import { IClassRoom, OfflineSyncURL } from '../../_models';
+import { IClassRoom, OfflineSyncURL, IUser } from '../../_models';
 import { Guid } from 'guid-typescript';
 import { map, finalize, tap, catchError } from 'rxjs/operators';
 import { from, of } from 'rxjs';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class ClassRoomService extends OfflineService {
     private http: HttpService,
     public injector: Injector,
     private network: NetworkService,
+    private auth: AuthenticationService,
   ) {
     super(injector);
   }
@@ -70,14 +72,21 @@ export class ClassRoomService extends OfflineService {
     );
   }
 
-  private UpdateClassRoomOfflineList(classRoom: IClassRoom) {
-    this.GetOfflineData('ClassRoom', 'class-room-list').then((data) => {
-      let classRoomList = data as IClassRoom[];
-      classRoomList = classRoomList? classRoomList.filter((obj) => {
-        return obj.classId !== classRoom.classId;
-      }) : [];
-      classRoomList.push(classRoom);
-      this.SetOfflineData('ClassRoom', 'class-room-list', classRoomList);
+  private UpdateClassRoomOfflineList(classRoom: IClassRoom, classRoomId?: string) {
+    return this.GetOfflineData('User', 'current-user').then((data) => {
+      const user = data as IUser;
+      const school = user.schools.find((s) => s.id === classRoom.schoolId);
+      const classRoomList = school.classRooms.filter((cs) => {
+        return cs.classId !== (classRoom ? classRoom.classId : classRoomId);
+      });
+
+      if (classRoom) {
+        classRoomList.unshift(classRoom);
+      }
+
+      school.classRooms = classRoomList;
+      this.auth.RefreshSchools(user.schools, school);
     });
   }
+
 }

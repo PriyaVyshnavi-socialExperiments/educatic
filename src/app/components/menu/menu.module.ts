@@ -16,7 +16,7 @@ const routes: Routes = [
       {
         path: '',
         loadChildren: '../home/home.module#HomePageModule',
-        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin] }
       },
       {
         path: 'profile',
@@ -27,6 +27,10 @@ const routes: Routes = [
         path: 'schools',
         loadChildren: '../../pages/schools/schools.module#SchoolsPageModule',
         data: { roles: [Role.SuperAdmin] }
+      },
+      {
+        path: 'offline-websites',
+        loadChildren: () => import('../../components/offline-websites/offline-websites.module').then( m => m.OfflineWebsitesPageModule)
       },
       {
         path: 'school/add',

@@ -4,7 +4,7 @@ export interface IStudent {
     id: string;
     firstName: string;
     lastName: string;
-    email: string;
+    enrolmentNo: string;
     role: string;
     acceptTerms: boolean;
     address1: string;
@@ -16,5 +16,7 @@ export interface IStudent {
     latitude: string;
     longitude: string;
     syncDateTime?: Date;
+    profileStoragePath: string;
     createdBy: string;
+    myProfile: string[];
 }

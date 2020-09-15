@@ -1,17 +1,17 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AlertController } from '@ionic/angular';
-import { ActionSheetController, Platform } from '@ionic/angular';
 import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
-
 import { DomSanitizer } from '@angular/platform-browser';
 import { StudentService } from '../../_services/student/student.service';
 import { IStudentPhoto } from '../../_models/student-photos';
 import { ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '../../_services';
-import { IUser, ISchool } from '../../_models';
+import { IUser, ISchool, IStudent } from '../../_models';
 import { ImageHelper } from 'src/app/_helpers/image-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
-import { GeolocationHelper } from 'src/app/_helpers/geolocation';
+import { LocationService } from 'src/app/_services/location/location.service';
+import { DataShareService } from 'src/app/_services/data-share.service';
+
 const { Camera } = Plugins;
 
 @Component({
@@ -27,33 +27,35 @@ export class StudentPhotoUploadPage implements OnInit {
   classId: string;
   studentBlobData: File[] = [];
   studentBlobDataURLs: string[] = [];
+  student: IStudent;
   school: ISchool;
 
   constructor(
-    private actionSheetCtrl: ActionSheetController,
-    private platform: Platform,
     private studentService: StudentService,
     private sanitizer: DomSanitizer,
     private activatedRoute: ActivatedRoute,
     private authenticationService: AuthenticationService,
-    public alertController: AlertController
-
+    public alertController: AlertController,
+    public locationService: LocationService,
+    private dataShare: DataShareService,
   ) { }
 
   ngOnInit() {
     this.studentId = this.activatedRoute.snapshot.paramMap.get('studentId');
     this.classId = this.activatedRoute.snapshot.paramMap.get('classId');
-
+    this.dataShare.getData().subscribe((stud) => {
+      this.student = stud;
+    });
     for (let i = 0; i < 5; i++) {
-      this.studentPhotos.push({ id: i, image: '' });
+      const img = this.student.myProfile[i] ;
+      this.studentPhotos.push({ id: i, image: `${img? img : ''}` });
     }
-    this.authenticationService.currentUser.subscribe((user) => {
+    this.authenticationService.currentUser?.subscribe((user) => {
       if (!user) {
         return;
       }
       this.currentUser = user;
       this.school = user.defaultSchool;
-      this.DisplayStudentPhotos();
     });
   }
 
@@ -62,7 +64,7 @@ export class StudentPhotoUploadPage implements OnInit {
   }
 
   async uploadPhotos() {
-    const position = await GeolocationHelper.GetGeolocation();
+    const location = await this.locationService.GetGeolocation();
     const queueMessage = {
       schoolId: this.currentUser.defaultSchool.id,
       classId: this.classId,
@@ -70,8 +72,8 @@ export class StudentPhotoUploadPage implements OnInit {
       teacherId: this.currentUser.id,
       pictureURLs: this.studentBlobDataURLs,
       pictureTimestamp: new Date(),
-      latitude: position.coords.latitude.toString(),
-      longitude: position.coords.longitude.toString(),
+      latitude: location.lat,
+      longitude: location.lng,
     } as IQueueMessage
 
     this.studentService.QueueBlobMessage(queueMessage).subscribe((res) => { });
@@ -100,7 +102,8 @@ export class StudentPhotoUploadPage implements OnInit {
 
     const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
     const schoolName = this.school.name.replace(/\s/g, '');
-    const blobURL = `${schoolName}_${this.school.id}/${this.classId}/${this.studentId}/${id}_photo.${image.format}`;
+    const studentName = `${this.student.firstName + this.student.lastName}_${this.studentId}`;
+    const blobURL = `${schoolName}_${this.school.id}/${this.classId}/${studentName.replace(/\s/g, '')}/${id}_photo.${image.format}`;
 
     const imageFile = ImageHelper.blobToFile(blobData, blobURL);
     this.studentService.UploadImageFile(imageFile).subscribe((res) => {

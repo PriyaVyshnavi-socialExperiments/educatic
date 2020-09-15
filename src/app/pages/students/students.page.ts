@@ -6,57 +6,89 @@ import { IStudent, IUser, ISchool, IClassRoom } from '../../_models';
 import { AuthenticationService } from '../../_services';
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
 import { DataShareService } from '../../_services/data-share.service';
-import { StudentService } from '../../_services/student/student.service';
+import { LazyLoadImageHooks } from '../../_helpers/lazy-load-image-hook';
 
 @Component({
   selector: 'app-students',
   templateUrl: './students.page.html',
   styleUrls: ['./students.page.scss'],
 })
-export class StudentsPage implements OnInit, AfterViewInit {
+export class StudentsPage implements OnInit {
   @ViewChild('classList') classSelectRef: IonSelect;
   students: IStudent[] = [];
   schools: ISchool[] = [];
-  classRooms: any;
+  classRooms: IClassRoom[] = [];
   schoolId: string;
   classRoomId: string;
   currentUser: IUser;
+  schoolName: string;
+  classRoom: IClassRoom;
 
   constructor(
-    private studentService: StudentService,
     private authenticationService: AuthenticationService,
     private popoverController: PopoverController,
     private dataShare: DataShareService,
     public router: Router,
     private activatedRoute: ActivatedRoute,
-
+    private lazyloadImage: LazyLoadImageHooks,
   ) { }
 
+  loadImage$(img) {
+    return Promise.resolve(this.lazyloadImage.loadImage(img).subscribe((res) => res));
+  };
+
   ngOnInit() {
-    this.classRoomId = this.activatedRoute.snapshot.paramMap.get('id');
-    this.authenticationService.currentUser.subscribe(async (user) => {
+    // this.authenticationService.currentUser?.subscribe(async (user) => {
+    //   if (!user) {
+    //     return;
+    //   }
+    //   this.currentUser = user;
+    //   this.schoolId = user.defaultSchool.id;
+    //   this.schools = user.schools;
+    //   this.classRooms = [...user.defaultSchool.classRooms];
+    // });
+  }
+
+  ionViewDidEnter() {
+    this.authenticationService.currentUser?.subscribe(async (user) => {
       if (!user) {
         return;
       }
+      console.table(user.defaultSchool.classRooms);
       this.currentUser = user;
       this.schoolId = user.defaultSchool.id;
       this.schools = user.schools;
-      this.classRooms = user.defaultSchool.classRooms;
+      this.classRooms = [...user.defaultSchool.classRooms];
+      this.classRoomId = this.activatedRoute.snapshot.paramMap.get('classId');
+      setTimeout(() => {
+        this.refresh();
+      });
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.refresh();
   }
 
   async refresh() {
     if (this.classRoomId) {
-      this.studentService.GetStudents(this.currentUser.defaultSchool.id, this.classRoomId).subscribe((data) => {
-        this.students = [...data]
+      const classRoom = this.classRooms.find(c => c.classId === this.classRoomId);
+      this.classRoom = classRoom;
+      this.students = new Array();
+      classRoom.students.forEach(student => {
+        student.myProfile = new Array();
+        try {
+          if (student.profileStoragePath) {
+            const photos = JSON.parse(student.profileStoragePath)?.Photos;
+            if (photos) {
+              student.myProfile = [...photos];
+            }
+          }
+        } catch (error) {
+          student.myProfile.push(student.profileStoragePath);
+        }
+        this.students.push(student);
       });
     } else {
       this.classSelectRef.open();
     }
+    this.schoolName = this.currentUser.defaultSchool.name;
   }
 
   async selectClass() {
@@ -65,7 +97,8 @@ export class StudentsPage implements OnInit, AfterViewInit {
 
   setClassRoom(selectedValue) {
     this.classRoomId = selectedValue.detail.value;
-    this.refresh();
+    this.router.navigateByUrl(`/students/${this.currentUser.defaultSchool.id}/${this.classRoomId}`);
+    //this.refresh();
   }
 
   public async actionPopover(ev: any, studentId: string) {
@@ -88,9 +121,6 @@ export class StudentsPage implements OnInit, AfterViewInit {
         case 'delete':
           this.StudentEdit(actionData.currentId);
           break;
-        case 'upload-photo':
-          this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${actionData.currentId}/photos`);
-          break;
         default:
           break;
       }
@@ -100,12 +130,12 @@ export class StudentsPage implements OnInit, AfterViewInit {
   }
 
   StudentEdit(studentId: string) {
-    const currentStudent = this.students.find(student => student.id === studentId);
-    this.dataShare.setData(currentStudent);
     this.router.navigateByUrl(`/student/${this.currentUser.defaultSchool.id}/${this.classRoomId}/edit/${studentId}`);
   }
 
   UploadPhoto(studentId: string) {
+    const currentStudent = this.students.find(student => student.id === studentId);
+    this.dataShare.setData(currentStudent);
     this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${studentId}/photos`);
   }
 }

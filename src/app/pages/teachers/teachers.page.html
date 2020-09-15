@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>Teachers</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-menu-button autoHide="true"></ion-menu-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button ion-button block (click)='selectSchool()'>Choose School</ion-button>
@@ -17,7 +17,21 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid class="grid">
+  <ion-item lines="none">
+    <ion-title class="content-title">School - {{schoolName}}</ion-title>
+</ion-item>
+  <ion-grid style="height: 100%" *ngIf="!teachers.length">
+    <ion-row justify-content-center align-items-center class="justify-center">
+      <div text-center>
+        <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+        <h4>No teacher(s) configured for this school(<strong>{{ schoolName }}</strong>)</h4>
+        <p>Looks like there are no teacher(s) available at this moment.
+        </p>
+      </div>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid class="grid" *ngIf="teachers.length">
     <ion-row class="ion-justify-content-center">
       <ion-card class="item-card" *ngFor="let teacher of teachers">
         <ion-card-content>
@@ -29,7 +43,7 @@
               <div class="name-center">{{ teacher.email }}</div>
             </div>
             <img src="assets/images/avatar.svg" class="user-img" alt="">
-            <p> {{teacher.address1}} {{teacher.address1}} , {{teacher.city}} </p>
+            <p> {{teacher.address1}} {{teacher.address2}} , {{teacher.city}} </p>
             <br /> {{teacher.state}}, {{teacher.country}} - {{teacher.zip}}
 
             <div>

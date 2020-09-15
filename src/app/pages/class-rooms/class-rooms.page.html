@@ -1,10 +1,10 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ schoolName }}</ion-title>
+    <ion-title>Class Rooms</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-menu-button autoHide="true"></ion-menu-button>
     </ion-buttons>
-    <ion-buttons slot="end">
+    <ion-buttons *ngIf="schools.length>1" slot="end">
       <ion-button ion-button block (click)='selectSchool()'>Choose School</ion-button>
     </ion-buttons>
     <ion-item [hidden]='true'>
@@ -17,6 +17,9 @@
 </ion-header>
 
 <ion-content>
+  <ion-item lines="none">
+    <ion-title class="content-title">School - {{schoolName}}</ion-title>
+</ion-item>
   <ion-grid style="height: 100%" *ngIf="!classRooms.length">
     <ion-row justify-content-center align-items-center class="justify-center">
       <div text-center>

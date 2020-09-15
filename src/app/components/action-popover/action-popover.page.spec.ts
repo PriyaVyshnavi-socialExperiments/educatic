@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, NavParams } from '@ionic/angular';
+import { NavParamsMock } from 'ionic-mocks';
 
 import { ActionPopoverPage } from './action-popover.page';
 
@@ -10,7 +11,10 @@ describe('ActionPopoverPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ ActionPopoverPage ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule],
+      providers: [
+        { provide: NavParams, useFactory: () => NavParamsMock.instance() },
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ActionPopoverPage);
@@ -18,7 +22,7 @@ describe('ActionPopoverPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create action popover page', () => {
     expect(component).toBeTruthy();
   });
 });

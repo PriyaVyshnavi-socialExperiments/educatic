@@ -2,7 +2,7 @@
     <ion-toolbar>
         <ion-title>Students</ion-title>
         <ion-buttons slot="start">
-            <ion-back-button defaultHref="/"></ion-back-button>
+            <ion-menu-button autoHide="true"></ion-menu-button>
         </ion-buttons>
         <ion-buttons slot="end">
             <ion-button ion-button block (click)='selectClass()'>Choose Class</ion-button>
@@ -17,6 +17,10 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
+
+    <ion-item lines="none">
+        <ion-title class="content-title">{{schoolName}} - {{classRoom?.classRoomName}}</ion-title>
+    </ion-item>
     <ion-grid class="grid" *ngIf="students.length">
         <ion-row class="ion-justify-content-center">
             <ion-card class="item-card" *ngFor="let student of students">
@@ -27,12 +31,13 @@
                                 name="ellipsis-vertical-outline" slot="end"></ion-icon>
                             <div class="user-name">{{ student.firstName | titlecase }} {{student.lastName | titlecase}}
                             </div>
-                            <div class="name-center">{{ student.email }}</div>
+                            <div class="name-center">{{ student.enrolmentNo }}</div>
                         </div>
-                        <img src="assets/images/avatar.svg" class="user-img" alt="">
+
+                        <img defaultImage="assets/images/avatar.svg" errorImage="assets/images/avatar.svg"
+                            class="user-img" [lazyLoad]="student.myProfile? student.myProfile[0] : ''" />
                         <p> {{student.address1}} {{student.address2}} , {{student.city}} </p>
                         <br /> {{student.state}}, {{student.country}} - {{student.zip}}
-
                         <div>
                             <span class="phone">
                                 <i class="material-icons">phone</i>264-625-2583</span>

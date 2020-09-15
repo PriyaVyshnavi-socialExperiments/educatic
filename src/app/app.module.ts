@@ -18,7 +18,9 @@ import { ErrorStateMatcher, ShowOnDirtyErrorStateMatcher } from '@angular/materi
 import { MenuPageModule } from './components/menu/menu.module';
 import { AuthenticationModule } from './components/authentication/authentication.module';
 import { BLOB_STORAGE_TOKEN, azureBlobStorageFactory } from './_services/azure-blob/token';
-
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+import { CacheInterceptor } from './_helpers/cache.interceptor';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -30,7 +32,8 @@ import { BLOB_STORAGE_TOKEN, azureBlobStorageFactory } from './_services/azure-b
     BrowserAnimationsModule,
     NgHttpLoaderModule.forRoot(),
     AuthenticationModule,
-    MenuPageModule
+    MenuPageModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     AppCenterAnalytics,
@@ -43,7 +46,8 @@ import { BLOB_STORAGE_TOKEN, azureBlobStorageFactory } from './_services/azure-b
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher }
+    // { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
+    { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

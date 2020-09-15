@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<testsuite name="Chrome Headless 85.0.4182.0 (Windows 10)" package="" timestamp="2020-09-10T15:26:10" id="0" hostname="LAPTOP-0C7ET7QS" tests="23" errors="0" failures="3" time="2.011">
+  <properties>
+    <property name="browser.fullName" value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/85.0.4182.0 Safari/537.36"/>
+  </properties>
+  <testcase name="AttendanceService should be created attendance service" time="0.028" classname="AttendanceService"/>
+  <testcase name="ResetPasswordComponent should create reset password component" time="0.122" classname="ResetPasswordComponent"/>
+  <testcase name="AuthenticationService should be created authentication service" time="0.009" classname="AuthenticationService"/>
+  <testcase name="ClassRoomService should be created class room service" time="0.008" classname="ClassRoomService"/>
+  <testcase name="OfflineService should be created offline service" time="0.006" classname="OfflineService"/>
+  <testcase name="SchoolService should be created school service" time="0.25" classname="SchoolService">
+    <failure type="">NullInjectorError: R3InjectorError(DynamicTestModule)[SchoolService -&gt; AuthenticationService -&gt; ApplicationInsightsService -&gt; Router -&gt; Router]: 
+  NullInjectorError: No provider for Router!
+error properties: Object({ ngTempTokenPath: null, ngTokenPath: [ 'SchoolService', 'AuthenticationService', 'ApplicationInsightsService', 'Router', 'Router' ] })
+    at &lt;Jasmine&gt;
+    at NullInjector.get (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:915:1)
+    at R3Injector.get (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:11083:1)
+    at R3Injector.get (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:11083:1)
+    at injectInjectorOnly (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:801:1)
+    at ɵɵinject (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:805:1)
+    at Object.ApplicationInsightsService_Factory [as factory] (ng:///ApplicationInsightsService/ɵfac.js:5:54)
+    at R3Injector.hydrate (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:11250:1)
+    at R3Injector.get (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:11072:1)
+    at injectInjectorOnly (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:801:1)
+    at ɵɵinject (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:805:1)
+</failure>
+    <failure type="">Error: Expected undefined to be truthy.
+    at &lt;Jasmine&gt;
+    at UserContext.&lt;anonymous&gt; (http://localhost:9876/_karma_webpack_/src/app/_services/school/school.service.spec.ts:18:21)
+    at ZoneDelegate.invoke (http://localhost:9876/_karma_webpack_/node_modules/zone.js/dist/zone-evergreen.js:364:1)
+    at ProxyZoneSpec.push../node_modules/zone.js/dist/zone-testing.js.ProxyZoneSpec.onInvoke (http://localhost:9876/_karma_webpack_/node_modules/zone.js/dist/zone-testing.js:292:1)
+</failure>
+  </testcase>
+  <testcase name="StudentService should be created student service" time="0.009" classname="StudentService"/>
+  <testcase name="StudentPhotoUploadPage should create student photo upload page" time="0.086" classname="StudentPhotoUploadPage">
+    <failure type="">TypeError: Cannot read property 'myProfile' of null
+    at &lt;Jasmine&gt;
+    at StudentPhotoUploadPage.ngOnInit (http://localhost:9876/_karma_webpack_/src/app/pages/student-photo-upload/student-photo-upload.page.ts:50:32)
+    at callHook (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:3038:1)
+    at callHooks (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:3008:1)
+    at executeInitAndCheckHooks (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:2960:1)
+    at refreshView (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:7187:1)
+    at renderComponentOrTemplate (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:7286:1)
+    at tickRootContext (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:8499:1)
+    at detectChangesInRootView (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:8524:1)
+    at RootViewRef.detectChanges (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:9900:1)
+    at ComponentFixture._tick (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/testing.js:243:1)
+</failure>
+  </testcase>
+  <testcase name="CourseAddPage should create course add page" time="0.023" classname="CourseAddPage"/>
+  <testcase name="TeacherService should be created teacher service" time="0.008" classname="TeacherService"/>
+  <testcase name="ClassRoomsPage should create class rooms page" time="0.247" classname="ClassRoomsPage"/>
+  <testcase name="StudentAddPage should create student add page" time="0.323" classname="StudentAddPage"/>
+  <testcase name="UserProfileService should be created user profile service" time="0.01" classname="UserProfileService"/>
+  <testcase name="ClassRoomAddPage should create class room add page" time="0.07" classname="ClassRoomAddPage"/>
+  <testcase name="SchoolAddPage should create school add page" time="0.245" classname="SchoolAddPage"/>
+  <testcase name="ActionPopoverPage should create action popover page" time="0.027" classname="ActionPopoverPage"/>
+  <testcase name="CoursesPage should create courses page" time="0.085" classname="CoursesPage"/>
+  <testcase name="SignupComponent should create signup component" time="0.026" classname="SignupComponent"/>
+  <testcase name="SigninComponent should create signin component" time="0.057" classname="SigninComponent"/>
+  <testcase name="UserProfilePage should create user profile page" time="0.237" classname="UserProfilePage"/>
+  <testcase name="TeacherAddPage should create teacher add page" time="0.09" classname="TeacherAddPage"/>
+  <testcase name="HomePage should create home page" time="0.025" classname="HomePage"/>
+  <testcase name="StudentSigninPage should create" time="0.02" classname="StudentSigninPage">
+    <failure type="">Failed: R3InjectorError(DynamicTestModule)[FormBuilder -&gt; FormBuilder]: 
+  NullInjectorError: No provider for FormBuilder!
+error properties: Object({ ngTempTokenPath: null, ngTokenPath: [ 'FormBuilder', 'FormBuilder' ] })
+    at &lt;Jasmine&gt;
+    at NullInjector.get (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:915:1)
+    at R3Injector.get (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:11083:1)
+    at R3Injector.get (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:11083:1)
+    at NgModuleRef$1.get (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:24202:1)
+    at Object.get (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:22103:1)
+    at getOrCreateInjectable (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:3921:1)
+    at ɵɵdirectiveInject (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:13754:1)
+    at NodeInjectorFactory.StudentSigninPage_Factory [as factory] (ng:///StudentSigninPage/ɵfac.js:5:45)
+    at getNodeInjectable (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:4029:1)
+    at instantiateRootComponent (http://localhost:9876/_karma_webpack_/node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js:7827:1)
+</failure>
+    <failure type="">Error: Expected undefined to be truthy.
+    at &lt;Jasmine&gt;
+    at UserContext.&lt;anonymous&gt; (http://localhost:9876/_karma_webpack_/src/app/components/authentication/student-signin/student-signin.page.spec.ts:22:23)
+    at ZoneDelegate.invoke (http://localhost:9876/_karma_webpack_/node_modules/zone.js/dist/zone-evergreen.js:364:1)
+    at ProxyZoneSpec.push../node_modules/zone.js/dist/zone-testing.js.ProxyZoneSpec.onInvoke (http://localhost:9876/_karma_webpack_/node_modules/zone.js/dist/zone-testing.js:292:1)
+</failure>
+  </testcase>
+  <system-out>
+    <![CDATA[Chrome Headless 85.0.4182.0 (Windows 10) ERROR
+  DisconnectedClient disconnected from CONNECTED state (transport close)
+,Chrome Headless 85.0.4182.0 (Windows 10) WARN: 'Ionic Angular was already initialized. Make sure IonicModule.forRoot() is just called once.'
+
+]]>
+  </system-out>
+  <system-err/>
+</testsuite>

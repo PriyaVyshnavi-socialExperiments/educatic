@@ -1,5 +1,5 @@
 {
-  "appId": "com.goOfflineE.app",
+  "appId": "goOfflineE",
   "appName": "goOfflineE",
   "bundledWebRuntime": false,
   "npmClient": "npm",

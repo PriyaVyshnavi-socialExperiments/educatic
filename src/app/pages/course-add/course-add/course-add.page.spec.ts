@@ -10,7 +10,7 @@ describe('CourseAddPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ CourseAddPage ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CourseAddPage);
@@ -18,7 +18,7 @@ describe('CourseAddPage', () => {
     fixture.detectChanges();
   }));
 
-  it('should create', () => {
+  it('should create course add page', () => {
     expect(component).toBeTruthy();
   });
 });
