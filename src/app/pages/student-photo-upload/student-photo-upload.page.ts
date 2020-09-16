@@ -122,9 +122,7 @@ export class StudentPhotoUploadPage implements OnInit {
     } as IStudentPhoto
 
     await this.studentService.UploadStudentPhoto(studentPhoto).then(() => {
-      const unsafeImageUrl = URL.createObjectURL(blobData);
-      const imageUrl = this.sanitizer.bypassSecurityTrustUrl(unsafeImageUrl);
-      this.studentPhotos[id].image = imageUrl;// this.sanitizer.bypassSecurityTrustResourceUrl(image && (image.dataUrl));
+      this.studentPhotos[id].image = blobData;
     });
   }
 

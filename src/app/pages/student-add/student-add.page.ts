@@ -142,7 +142,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
         city: this.f.city.value,
         zip: this.f.zip.value,
         role: Role.Student,
-        profileStoragePath: this.student.profileStoragePath
+        profileStoragePath: this.student?.profileStoragePath
       } as IStudent;
       this.studentService.SubmitStudent(studentInfo).subscribe((res) => {
         this.student = studentInfo;
