@@ -14,22 +14,22 @@
         <form class="login100-form validate-form" [formGroup]="teacherForm" (ngSubmit)="SubmitTeacher()">
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
-            <mat-form-field class="example-full-width" appearance="outline">
-              <mat-label>School</mat-label>
-              <mat-select formControlName="schoolId">
-                <mat-option *ngFor="let school of schoolInfo; let i = index" value="{{school.id}}">
-                  {{school.name}}
-                </mat-option>
-              </mat-select>
-              <mat-icon matSuffix>
-              </mat-icon>
-              <mat-error *ngIf="teacherForm.get('schoolId').hasError('required')">
-                A school is required to proceed.
-              </mat-error>
-            </mat-form-field>
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>School</mat-label>
+                <mat-select formControlName="schoolId">
+                  <mat-option *ngFor="let school of schoolInfo; let i = index" value="{{school.id}}">
+                    {{school.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="teacherForm.get('schoolId').hasError('required')">
+                  A school is required to proceed.
+                </mat-error>
+              </mat-form-field>
             </div>
           </div>
-            <div class="row">
+          <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>First Name</mat-label>
@@ -55,6 +55,25 @@
           </div>
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width mb-3" appearance="outline">
+                <mat-label>Gender</mat-label>
+                <mat-select formControlName="gender" required>
+                  <mat-option [value]="'male'">
+                    Male
+                  </mat-option>
+                  <mat-option [value]="'female'">
+                    Female
+                  </mat-option>
+                  <mat-option [value]="'other'">
+                    Other
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="teacherForm.get('gender').hasError('required')">
+                  Gender is required
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Email</mat-label>
                 <input matInput formControlName="email" required autocomplete="off">
@@ -71,6 +90,9 @@
                 </mat-error>
               </mat-form-field>
             </div>
+
+          </div>
+          <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Address 1</mat-label>
@@ -81,9 +103,7 @@
                   A address is required to proceed.
                 </mat-error>
               </mat-form-field>
-          </div>
-          </div>
-          <div class="row">
+            </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Address 2</mat-label>
@@ -91,6 +111,9 @@
               </mat-form-field>
             </div>
 
+
+          </div>
+          <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Country</mat-label>
@@ -106,8 +129,6 @@
                 </mat-error>
               </mat-form-field>
             </div>
-          </div>
-          <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>State</mat-label>
@@ -123,11 +144,15 @@
                 </mat-error>
               </mat-form-field>
             </div>
+
+          </div>
+          <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>City </mat-label>
                 <mat-select formControlName="city">
-                  <mat-option *ngFor="let city of cityInfo; let k = index" value="{{city.name}}">{{city.name}}</mat-option>
+                  <mat-option *ngFor="let city of cityInfo; let k = index" value="{{city.name}}">{{city.name}}
+                  </mat-option>
                 </mat-select>
                 <mat-icon matSuffix>
                 </mat-icon>
@@ -136,8 +161,6 @@
                 </mat-error>
               </mat-form-field>
             </div>
-          </div>
-          <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Zip </mat-label>

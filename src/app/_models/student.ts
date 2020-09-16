@@ -6,6 +6,7 @@ export interface IStudent {
     lastName: string;
     enrolmentNo: string;
     role: string;
+    gender: string;
     acceptTerms: boolean;
     address1: string;
     address2: string;

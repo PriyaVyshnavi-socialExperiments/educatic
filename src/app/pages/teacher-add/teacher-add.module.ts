@@ -17,6 +17,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatRadioModule } from '@angular/material/radio';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -46,6 +47,7 @@ import { TeacherAddPage } from './teacher-add.page';
     MatCheckboxModule,
     MatTabsModule,
     MatMenuModule,
+    MatRadioModule,
     MaterialFileInputModule,
   ],
   declarations: [TeacherAddPage]

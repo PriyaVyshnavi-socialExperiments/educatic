@@ -53,6 +53,9 @@ export class StudentAddPage implements OnInit, OnDestroy {
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
+      gender: new FormControl('', [
+        Validators.required
+      ]),
       enrolmentNo: new FormControl('', Validators.compose([
         Validators.required,
         Validators.maxLength(50)
@@ -103,7 +106,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
           firstname: this.student.firstName,
           lastname: this.student.lastName,
           enrolmentNo: this.student.enrolmentNo,
-
+          gender: this.student.gender,
           address1: this.student.address1,
           address2: this.student.address2,
           country: this.student.country,
@@ -135,6 +138,7 @@ export class StudentAddPage implements OnInit, OnDestroy {
         firstName: this.f.firstname.value,
         lastName: this.f.lastname.value,
         enrolmentNo: this.f.enrolmentNo.value,
+        gender: this.f.gender.value,
         address1: this.f.address1.value,
         address2: this.f.address2.value,
         country: this.f.country.value,
@@ -148,7 +152,9 @@ export class StudentAddPage implements OnInit, OnDestroy {
         this.student = studentInfo;
         this.student.id = res.studentId;
         this.presentToast();
-        this.router.navigateByUrl(`/students/${this.currentUser.defaultSchool.id}/${this.student.classId}`);
+        if (this.student.profileStoragePath) {
+          this.router.navigateByUrl(`/students/${this.currentUser.defaultSchool.id}/${this.student.classId}`);
+        }
       });
     }
   }

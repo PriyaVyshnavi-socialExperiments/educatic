@@ -60,6 +60,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         Validators.pattern(/.*\S.*/),
         Validators.maxLength(50),
       ]),
+      gender: ['', [Validators.required]],
       email: new FormControl('', [
         Validators.required,
         Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/),
@@ -96,6 +97,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         const schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
         const school = user.schools.find((s) => s.id === schoolId);
         this.teacher = school.teachers.find((s) => s.id === this.teacherId);
+        console.log("this.teacher: ", this.teacher);
         this.countryService.GetCountryWiseStatsCities(this.teacher.country, this.teacher.state).subscribe((country) => {
           this.countryInfo = country.Countries;
           this.stateInfo = country.States;
@@ -109,6 +111,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
           address1: this.teacher.address1,
           address2: this.teacher.address2,
           country: this.teacher.country,
+          gender: this.teacher.gender,
           state: this.teacher.state,
           city: this.teacher.city,
           zip: this.teacher.zip
@@ -143,6 +146,7 @@ export class TeacherAddPage implements OnInit, OnDestroy {
         state: this.f.state.value,
         city: this.f.city.value,
         zip: this.f.zip.value,
+        gender: this.f.gender.value,
         role: Role.Teacher
       } as ITeacher;
       this.teacherService.SubmitTeacher(teacherInfo).subscribe(() => {
