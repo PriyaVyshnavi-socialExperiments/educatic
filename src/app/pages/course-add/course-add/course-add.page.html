@@ -1,9 +1,69 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>course-add</ion-title>
+    <ion-title> Add course</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/courses"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <div class="limiter">
+    <div class="container-login100">
+      <div class="wrap-login100">
+        <form class="login100-form validate-form" [formGroup]="courseForm" (ngSubmit)="SubmitCourse()">
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Course Name</mat-label>
+                <input matInput formControlName="courseName" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="courseForm.get('courseName').hasError('required')">
+                  A course name is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Course Description</mat-label>
+                <textarea matInput formControlName="courseDescription" required autocomplete="off" rows="5"></textarea>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="courseForm.get('courseDescription').hasError('required')">
+                  A course description is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <ngx-file-picker [adapter]="filepicker" (uploadSuccess)="uploadSuccess($event)"
+                (uploadFail)="uploadFail($event)">
+              </ngx-file-picker>
+            </div>
+            <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn mr-3"
+                [disabled]="!courseForm.valid " type="submit">
+                Submit
+              </button>
+              <button mat-flat-button type="button" class="login100-form-btn container-login100-form-btn"
+                [routerLink]="['/courses']">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="limiter">
+    <div class="container-login100">
+      <div class="wrap-login100">
+        <ngx-file-picker [adapter]="filepicker" (uploadSuccess)="uploadSuccess($event)" (uploadFail)="uploadFail($event)">
+        </ngx-file-picker>
+      </div>
+    </div>
+  </div> -->
 
 </ion-content>

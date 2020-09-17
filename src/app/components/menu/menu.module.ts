@@ -130,7 +130,7 @@ const routes: Routes = [
       },
       {
         path: 'course/add',
-        loadChildren: () => import('../../pages/course-add/course-add/course-add-routing.module').then( m => m.CourseAddPageRoutingModule),
+        loadChildren: '../../pages/course-add/course-add/course-add.module#CourseAddPageModule',
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
       },
       {

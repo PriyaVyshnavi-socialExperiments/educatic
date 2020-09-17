@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { CoursesPageRoutingModule } from './courses-routing.module';
 
 import { CoursesPage } from './courses.page';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CoursesPageRoutingModule
+    CoursesPageRoutingModule,
+    MatSelectModule 
   ],
   declarations: [CoursesPage]
 })
