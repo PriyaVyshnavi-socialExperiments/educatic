@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
+import { IClassRoom, ISchool } from '../../_models';
+import { AuthenticationService } from '../../_services/authentication/authentication.service';
 
 @Component({
   selector: 'app-course-share',
@@ -10,7 +11,8 @@ import { AuthenticationService } from 'src/app/_services/authentication/authenti
 })
 export class CourseSharePage implements OnInit {
   courseShareForm: FormGroup;
-  schoolInfo: any[] = [];
+  schoolInfo: ISchool[] = [];
+  classInfo: IClassRoom[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -35,7 +37,6 @@ export class CourseSharePage implements OnInit {
         return;
       }
       this.schoolInfo = user.schools;
-
     });
   }
 
@@ -46,4 +47,9 @@ export class CourseSharePage implements OnInit {
   SubmitCourseShare() {
 
   }
+
+  onChangeSchool(schoolId) {
+    this.classInfo = this.schoolInfo.find((c) => c.id === schoolId.value).classRooms;
+  }
+
 }

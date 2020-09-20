@@ -13,46 +13,60 @@
       <div class="wrap-login100">
         <form class="login100-form validate-form" [formGroup]="courseForm" (ngSubmit)="SubmitCourse()">
           <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
               <mat-form-field class="example-full-width" appearance="outline">
-                <mat-label>Course Name</mat-label>
+                <mat-label>Category(Subject)</mat-label>
+                <mat-select formControlName="categoryId">
+                  <mat-option>
+                    <a class="txt1" (click)="AddNewCategory()">Click her to add new category</a>
+                  </mat-option>
+                  <mat-option *ngFor="let category of courseCategory; let i = index" value="{{category.id}}">
+                    {{category.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="courseForm.get('categoryId').hasError('required')">
+                  A category is required to proceed.
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label> Name</mat-label>
                 <input matInput formControlName="courseName" required autocomplete="off">
                 <mat-icon matSuffix>
                 </mat-icon>
                 <mat-error *ngIf="courseForm.get('courseName').hasError('required')">
-                  A course name is required to proceed.
+                  A  name is required to proceed.
                 </mat-error>
               </mat-form-field>
-            </div>
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
-                <mat-label>Course Description</mat-label>
-                <textarea matInput formControlName="courseDescription" required autocomplete="off" rows="5"></textarea>
+                <mat-label> Description</mat-label>
+                <textarea matInput formControlName="courseDescription" required autocomplete="off" rows="4"></textarea>
                 <mat-icon matSuffix>
                 </mat-icon>
                 <mat-error *ngIf="courseForm.get('courseDescription').hasError('required')">
-                  A course description is required to proceed.
+                  A  description is required to proceed.
                 </mat-error>
               </mat-form-field>
+
             </div>
-          </div>
-          <div class="row">
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
               <ngx-file-picker [adapter]="filepicker" (uploadSuccess)="uploadSuccess($event)"
                 (uploadFail)="uploadFail($event)">
               </ngx-file-picker>
             </div>
-            <div class="col-xl-3 col-lg-6 col-md-12 col-sm-12 mb-2">
-              <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn mr-3"
-                [disabled]="!courseForm.valid " type="submit">
-                Submit
-              </button>
-              <button mat-flat-button type="button" class="login100-form-btn container-login100-form-btn"
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+              <button mat-flat-button type="button" class="login100-form-btn container-login100-form-btn  float-left"
                 [routerLink]="['/courses']">
                 Cancel
               </button>
+              <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn float-right"
+                [disabled]="!courseForm.valid " type="submit">
+                Submit
+              </button>
             </div>
           </div>
+
         </form>
       </div>
     </div>

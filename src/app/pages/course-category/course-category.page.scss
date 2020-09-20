@@ -9,16 +9,25 @@
 }
 
 .wrap-login100 {
-    display: contents !important;
+    display       : contents !important;
     flex-direction: row !important;
 }
 
 .login100-form {
-    width: 100% !important;
+    width  : 100% !important;
     padding: 30px !important;
 }
 
 .login100-form-btn {
-    width: 46% !important;
+    width : 46% !important;
     
+}
+
+.course-category {
+    ion-item {
+        border-radius: 5px;
+        border-width: 1px;
+        border-style: var(--border-style);
+        border-color: var(--border-color);
+    }
 }

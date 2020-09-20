@@ -1,0 +1,40 @@
+.container-login100 {
+    min-height: 0 !important;
+}
+
+.mat-form-field-appearance-outline {
+    .mat-form-field-wrapper {
+        margin: .55em 0;
+    }
+}
+
+.wrap-login100 {
+    display       : contents !important;
+    flex-direction: row !important;
+}
+
+.login100-form {
+    width  : 100% !important;
+    padding: 30px !important;
+}
+
+.login100-form-btn {
+    width: 46% !important;
+
+}
+
+ngx-file-picker {
+    .file-drop-wrapper {
+        background : unset !important;
+        padding-top: 0px !important;
+    }
+
+    .files-preview-wrapper {
+        width: 93% !important;
+    }
+
+    .custom-drag{
+        padding: 28px 0 !important;
+    }
+
+}

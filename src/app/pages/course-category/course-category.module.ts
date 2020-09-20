@@ -1,7 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {FilePickerModule} from 'ngx-awesome-uploader';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,20 +17,19 @@ import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
 
+
 import { IonicModule } from '@ionic/angular';
 
-import { CourseAddPageRoutingModule } from './course-add-routing.module';
+import { CourseCategoryPageRoutingModule } from './course-category-routing.module';
 
-import { CourseAddPage } from './course-add.page';
-import { CourseSharePageModule } from '../../course-share/course-share.module';
+import { CourseCategoryPage } from './course-category.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    FilePickerModule,
-    CourseAddPageRoutingModule,
+    CourseCategoryPageRoutingModule,
     ReactiveFormsModule,
     MatTableModule,
     MatPaginatorModule,
@@ -48,10 +46,8 @@ import { CourseSharePageModule } from '../../course-share/course-share.module';
     MatTabsModule,
     MatMenuModule,
     MaterialFileInputModule,
-    CourseSharePageModule,
-    
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  declarations: [CourseAddPage]
+  schemas:[CUSTOM_ELEMENTS_SCHEMA],
+  declarations: [CourseCategoryPage]
 })
-export class CourseAddPageModule {}
+export class CourseCategoryPageModule {}

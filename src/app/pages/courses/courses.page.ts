@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ICourse } from 'src/app/_models/course';
-import { CourseSharePage } from '../../course-share/course-share.page';
+import { CourseSharePage } from '../course-share/course-share.page';
 
 @Component({
   selector: 'app-courses',

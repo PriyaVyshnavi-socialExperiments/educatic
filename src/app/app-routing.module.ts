@@ -18,10 +18,15 @@ const routes: Routes = [
   {
     path: 'action-popover',
     loadChildren: () => import('./components/action-popover/action-popover.module').then( m => m.ActionPopoverPageModule)
-  },  {
-    path: 'course-share',
-    loadChildren: () => import('./pages/course-share/course-share.module').then( m => m.CourseSharePageModule)
   },
+  // {
+  //   path: 'course-share',
+  //   loadChildren: () => import('./pages/course-share/course-share.module').then( m => m.CourseSharePageModule)
+  // },
+  // {
+  //   path: 'course-category',
+  //   loadChildren: () => import('./pages/course-category/course-category.module').then( m => m.CourseCategoryPageModule)
+  // },
 
 ];
 
