@@ -11,22 +11,22 @@
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100">
-        <form class="login100-form validate-form" [formGroup]="courseForm" (ngSubmit)="SubmitCourse()">
+        <form class="login100-form validate-form" [formGroup]="courseForm" #documentEditForm="ngForm" (ngSubmit)="SubmitCourse()">
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Category(Subject)</mat-label>
-                <mat-select formControlName="categoryId">
+                <mat-select formControlName="categoryName"  (selectionChange)="onChangeCategory($event)">
                   <mat-option>
                     <a class="txt1" (click)="AddNewCategory()">Click her to add new category</a>
                   </mat-option>
-                  <mat-option *ngFor="let category of courseCategory; let i = index" value="{{category.id}}">
+                  <mat-option *ngFor="let category of courseCategory; let i = index" value="{{category.name}}">
                     {{category.name}}
                   </mat-option>
                 </mat-select>
                 <mat-icon matSuffix>
                 </mat-icon>
-                <mat-error *ngIf="courseForm.get('categoryId').hasError('required')">
+                <mat-error *ngIf="courseForm.get('categoryName').hasError('required')">
                   A category is required to proceed.
                 </mat-error>
               </mat-form-field>
@@ -36,7 +36,7 @@
                 <mat-icon matSuffix>
                 </mat-icon>
                 <mat-error *ngIf="courseForm.get('courseName').hasError('required')">
-                  A  name is required to proceed.
+                  A name is required to proceed.
                 </mat-error>
               </mat-form-field>
               <mat-form-field class="example-full-width" appearance="outline">
@@ -45,14 +45,14 @@
                 <mat-icon matSuffix>
                 </mat-icon>
                 <mat-error *ngIf="courseForm.get('courseDescription').hasError('required')">
-                  A  description is required to proceed.
+                  A description is required to proceed.
                 </mat-error>
               </mat-form-field>
 
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
-              <ngx-file-picker [adapter]="filepicker" (uploadSuccess)="uploadSuccess($event)"
-                (uploadFail)="uploadFail($event)">
+              <ngx-file-picker [fileMaxCount]="1" *ngIf="courseForm.valid" [adapter]="filepicker"
+                (uploadSuccess)="uploadSuccess($event)" (uploadFail)="uploadFail($event)">
               </ngx-file-picker>
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
@@ -61,7 +61,7 @@
                 Cancel
               </button>
               <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn float-right"
-                [disabled]="!courseForm.valid " type="submit">
+                [disabled]="!courseForm.valid" type="submit">
                 Submit
               </button>
             </div>

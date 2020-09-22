@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { ICourse } from 'src/app/_models/course';
+import { ICourseContent } from 'src/app/_models/course-content';
 import { CourseSharePage } from '../course-share/course-share.page';
 
 @Component({
@@ -10,14 +10,14 @@ import { CourseSharePage } from '../course-share/course-share.page';
 })
 export class CoursesPage implements OnInit {
 
-  courses: ICourse[] = [];
+  courses: ICourseContent[] = [];
   tmp: number[] = [1,2,3,4,5];
   constructor( private modalController: ModalController,) { }
 
   ngOnInit() {
   }
 
-  public async ShareCourse(evnt) {
+  public async ShareCourse(event) {
     const modal: HTMLIonModalElement =
     await this.modalController.create({
       component: CourseSharePage,

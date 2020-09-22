@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { ICourseCategory } from 'src/app/_models/course-category';
+import { ICourseContentCategory } from 'src/app/_models/course-content-category';
 
 @Component({
   selector: 'app-course-category',
@@ -9,7 +9,7 @@ import { ICourseCategory } from 'src/app/_models/course-category';
   styleUrls: ['./course-category.page.scss'],
 })
 export class CourseCategoryPage implements OnInit {
-  categoryList: ICourseCategory[] = [];
+  categoryList: ICourseContentCategory[] = [];
   categoryForm: FormGroup;
 
   constructor(
@@ -33,7 +33,7 @@ export class CourseCategoryPage implements OnInit {
 
     const categoryName: string = this.f.categoryName.value;
     if (categoryName) {
-      const category = { id: this.categoryList.length.toString(), name: categoryName, } as ICourseCategory;
+      const category = { id: this.categoryList.length.toString(), name: categoryName, } as ICourseContentCategory;
 
       if (!this.categoryList.some((item) => item.name.trim().toLowerCase() === categoryName.trim().toLowerCase())) {
         this.categoryList.push(category);

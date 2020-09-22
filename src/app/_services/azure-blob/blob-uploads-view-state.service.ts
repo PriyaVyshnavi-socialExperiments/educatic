@@ -26,20 +26,19 @@ export class BlobUploadsViewStateService {
     mergeMap(file => this.uploadFile(file)),
     this.blobState.scanEntries()
   );
-  
 
   uploadItems(files: FileList): void {
     this.uploadQueueInner$.next(files);
   }
 
-  public uploadFile = (file: File) =>
+  public uploadFile = (file: File, fileName?: string) =>
     this.blobState.getStorageOptionsWithContainer().pipe(
       take(1),
       switchMap(options =>
         this.blobStorage
           .uploadToBlobStorage(file, {
             ...options,
-            filename: file.name
+            filename: fileName? fileName : file.name
           })
           .pipe(
             this.mapUploadResponse(file, options),

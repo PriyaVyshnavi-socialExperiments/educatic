@@ -1,4 +1,5 @@
 ﻿import { Role, IMenuItems, ISchool } from '.';
+import { ICourseContent } from './course-content';
 
 export interface IUser {
     id: string;
@@ -11,4 +12,5 @@ export interface IUser {
     menuItems: IMenuItems[];
     schools: ISchool[];
     defaultSchool: ISchool;
+    courseContent: ICourseContent[];
 }

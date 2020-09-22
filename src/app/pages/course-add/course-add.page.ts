@@ -1,8 +1,11 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { ICourseCategory } from 'src/app/_models/course-category';
-import { FilePicker } from 'src/app/_services/azure-blob/file-picker.service';
+import { FilePreviewModel } from 'ngx-awesome-uploader';
+import { ICourseContent } from '../../_models/course-content';
+import { ICourseContentCategory } from '../../_models/course-content-category';
+import { FilePicker } from '../../_services/azure-blob/file-picker.service';
+import { CourseContentService } from '../../_services/course-content/course-content.service';
 import { CourseCategoryPage } from '../course-category/course-category.page';
 
 @Component({
@@ -12,7 +15,11 @@ import { CourseCategoryPage } from '../course-category/course-category.page';
   encapsulation: ViewEncapsulation.None,
 })
 export class CourseAddPage implements OnInit {
-  courseCategory: ICourseCategory[] = [];
+
+  @ViewChild('documentEditForm') documentEditForm: FormGroupDirective;
+
+  courseCategory: ICourseContentCategory[] = [];
+  fileName: string;
   progress = 0;
   public courseForm: FormGroup;
 
@@ -20,7 +27,8 @@ export class CourseAddPage implements OnInit {
     public filepicker: FilePicker,
     private formBuilder: FormBuilder,
     private modalController: ModalController,
-    ) { }
+    private courseContent: CourseContentService,
+  ) { }
 
   ngOnInit() {
     this.courseForm = this.formBuilder.group({
@@ -32,7 +40,7 @@ export class CourseAddPage implements OnInit {
         Validators.required,
         Validators.maxLength(1000),
       ]),
-      categoryId: new FormControl('', [
+      categoryName: new FormControl('', [
         Validators.required,
       ])
     });
@@ -44,32 +52,45 @@ export class CourseAddPage implements OnInit {
 
   public async AddNewCategory() {
     const modal: HTMLIonModalElement =
-    await this.modalController.create({
-      component: CourseCategoryPage,
-      componentProps: {
-      }
-    });
+      await this.modalController.create({
+        component: CourseCategoryPage,
+        componentProps: {
+        }
+      });
     modal.onDidDismiss()
       .then((data: any) => {
         console.log(data);
-        this.courseCategory =[...data.data];
-    });
-  await modal.present();
+        this.courseCategory = [...data.data];
+      });
+    await modal.present();
   }
 
   SubmitCourse() {
+    if (this.courseForm.invalid) {
+      return;
+    }
 
+    const courseContent = {
+      categoryName: this.f.categoryName.value,
+      courseName: this.f.courseName.value,
+      courseDescription: this.f.courseDescription.value,
+      courseURL: this.filepicker.blobFileName + '/' + this.fileName,
+    } as ICourseContent;
+
+    this.courseContent.SubmitCourseContent(courseContent).subscribe((res)=> {
+      console.log("SubmitCourse SuccessFully");
+    });
+   
   }
 
-  setPercentBar(i) {
-    setTimeout(() => {
-      const apc = (i / 100)
-      this.progress = apc;
-    }, 100 * i);
+  onChangeCategory(category) {
+    this.filepicker.blobFileName = category.value;
   }
 
-  uploadSuccess(item) {
-    console.log("uploadSuccess: ", item);
+  uploadSuccess(uploadedFile) {
+    console.log("uploadSuccess: ", uploadedFile);
+    this.fileName = uploadedFile.fileName;
+    this.documentEditForm.ngSubmit.emit();
   }
 
   uploadFail(item) {
