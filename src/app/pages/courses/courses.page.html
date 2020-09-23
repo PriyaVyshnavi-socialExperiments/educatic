@@ -1,48 +1,61 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-title>Courses</ion-title>
-        <ion-buttons slot="start">
-            <ion-menu-button autoHide="true"></ion-menu-button>
-        </ion-buttons>
-        <ion-buttons slot="end">
-            <ion-button ion-button block [routerLink]="['/course/add']">Add Course</ion-button>
-        </ion-buttons>
-    </ion-toolbar>
+  <ion-toolbar>
+    <ion-title>{{!courseContentDisplay? 'Course - category(subject)' : 'Course - content'}} </ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="true"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="!courseContentDisplay" ion-button block (click)=courseAdd()>Add Course</ion-button>
+      <ion-button *ngIf="courseContentDisplay" ion-button block  (click)="dismissModal()"> Switch Category</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content>
-    <ion-grid class="grid">
-        <ion-row class="ion-justify-content-center">
-            <ion-card class="item-card" *ngFor="let item of tmp">
-                <img src="../../../assets/images/course-default.jpg" alt="ion">
-                <ion-card-header>
-                    <ion-card-subtitle>Computer</ion-card-subtitle>
-                    <ion-card-title>PHP Development Course</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                    In this course, you'll explore the basic structure of a web application, and
-                    how a web
-                    browser interacts with a web server,as well as the basic syntax and data
-                    structures of the
-                    PHP language
-                </ion-card-content>
-                <ion-footer>
-                    <ion-grid>
-                      <ion-row justify-content-around>
-                        <ion-col>
-                          <ion-button expand="block" fill="clear" (click)="ShareCourse($event)">
-                             Share
-                          </ion-button>
-                        </ion-col>
-                        <ion-col>
-                          <ion-button expand="block"  [routerLink]="['/course/add']" fill="clear">
-                            Update
-                          </ion-button>
-                        </ion-col>
-                      </ion-row>
-                    </ion-grid>
-                  </ion-footer>
-            </ion-card>
-        </ion-row>
-    </ion-grid>
+<ion-content *ngIf="!courseContentDisplay">
+  <ion-grid class="grid">
+    <ion-row class="ion-justify-content-center">
+      <ion-card class="item-card" *ngFor="let category of categoryWiseContent" (click)="ViewContent(category.content)">
+        <ion-card-header>
+          <ion-card-subtitle>Path</ion-card-subtitle>
+          <ion-card-title>{{category.key}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{category.length}} Courses
+        </ion-card-content>
+        <ion-footer>
+          <ion-button class="float-right" expand="block" fill="clear" (click)="ViewContent(category.content)">
+            Take a look >>
+          </ion-button>
+        </ion-footer>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-content *ngIf="courseContentDisplay">
+  <ion-grid class="grid">
+    <ion-row class="ion-justify-content-center">
+      <ion-card class="item-card" *ngFor="let content of courseContent">
+        <img src="../../../assets/images/course-default.jpg" alt="ion">
+        <ion-card-header>
+          <ion-card-subtitle>{{content.categoryName}}</ion-card-subtitle>
+          <ion-card-title>{{content.courseName}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{content.courseDescription}}
+        </ion-card-content>
+        <ion-footer>
+          <ion-grid>
+            <ion-row justify-content-around>
+              <ion-col>
+                <ion-button expand="block" fill="clear" (click)="ShareCourse($event)">
+                  Share
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-footer>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
 </ion-content>

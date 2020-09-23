@@ -47,3 +47,19 @@ ion-content {
     --background: #1a202e;
   }
 }
+
+.file-picker {
+  .file-drop-wrapper {
+      background : unset !important;
+      padding-top: 0px !important;
+  }
+
+  .files-preview-wrapper {
+      width: 93% !important;
+  }
+
+  .custom-drag{
+      padding: 28px 0 !important;
+  }
+
+}

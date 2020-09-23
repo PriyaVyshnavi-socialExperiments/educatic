@@ -32,9 +32,12 @@
           </div>
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 mt-3">
+            
               <ion-item *ngFor="let category of categoryList; let i = index" lines="none">
-                {{category.name}}
+               <span> {{category.name}} </span>
+                <a  class="txt1 float-right" slot="end" (click)="selectCategory(category)">Select</a>
               </ion-item>
+           
             </div>
           </div>
         </form>

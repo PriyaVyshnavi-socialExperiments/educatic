@@ -30,28 +30,29 @@ export class CourseCategoryPage implements OnInit {
   }
 
   addCategory() {
-
     const categoryName: string = this.f.categoryName.value;
     if (categoryName) {
       const category = { id: this.categoryList.length.toString(), name: categoryName, } as ICourseContentCategory;
 
       if (!this.categoryList.some((item) => item.name.trim().toLowerCase() === categoryName.trim().toLowerCase())) {
-        this.categoryList.push(category);
+        this.categoryList.unshift(category);
       }
       this.categoryForm.reset();
     }
   }
 
-  updateCategory(id: string) {
-
-  }
-
-  deleteCategory(id: string) {
-
-  }
-
   dismissModal() {
-    this.modalController.dismiss(this.categoryList).then(() => { this.modalController = null; });
+    this.modalController.dismiss({
+      categoryList: this.categoryList,
+      selectedCategory: this.categoryList[0]
+    }).then(() => { this.modalController = null; });
+  }
+
+  selectCategory(category: ICourseContentCategory) {
+    this.modalController.dismiss({
+      categoryList: this.categoryList,
+      selectedCategory: category
+    }).then(() => { this.modalController = null; });
   }
 
 }

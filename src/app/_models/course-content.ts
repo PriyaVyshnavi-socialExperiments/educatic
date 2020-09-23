@@ -6,5 +6,15 @@ export interface ICourseContent {
     thumbnailURL: string;
     categoryName: string;
     createdBy: string;
-    active:boolean;
+    active: boolean;
+}
+
+export interface ICategoryWiseContent {
+    [categoryName: string]: ICourseContent[];
+}
+
+export interface ICategoryContentList {
+    key: string,
+    content: ICourseContent[];
+    length: number,
 }

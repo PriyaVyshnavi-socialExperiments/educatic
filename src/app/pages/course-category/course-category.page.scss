@@ -19,15 +19,20 @@
 }
 
 .login100-form-btn {
-    width : 46% !important;
-    
+    width: 46% !important;
+
 }
 
 .course-category {
+
+    .mat-input-element {
+        width: 80%;
+    }
+
     ion-item {
         border-radius: 5px;
-        border-width: 1px;
-        border-style: var(--border-style);
-        border-color: var(--border-color);
+        border-width : 1px;
+        border-style : var(--border-style);
+        border-color : var(--border-color);
     }
 }

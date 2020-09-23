@@ -1,9 +1,9 @@
 import { Injectable, Injector } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { from, of } from 'rxjs';
-import { catchError, finalize, map, tap } from 'rxjs/operators';
+import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
 import { ICourseContentDistribution } from '../../_models/course-content-distribution';
-import { ICourseContent } from '../../_models/course-content';
+import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { HttpService } from '../http-client/http.client';
 import { NetworkService } from '../network/network.service';
@@ -72,6 +72,25 @@ export class CourseContentService extends OfflineService {
       );
   }
 
+  public GetCategoryWiseContent(CourseContent: ICourseContent[]) {
+    return  from(CourseContent) 
+    .pipe(
+      groupBy(person => person.categoryName),
+      mergeMap(group => group
+        .pipe(
+          reduce((acc, cur) => {
+            acc.content.push(cur);
+            acc.length = acc.content.length;
+            return acc;
+          },
+            { key: group.key, content: [], length: 0 } as ICategoryContentList
+          )
+        )
+      ),
+      toArray()
+    )
+  }
+
   private getOfflineCourseContents() {
     return from(this.GetOfflineData('CourseContent', 'course-content')).pipe(
       tap(response => {
@@ -84,22 +103,19 @@ export class CourseContentService extends OfflineService {
     );
   }
 
-  private UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string) {
-    return this.GetOfflineData('CourseContent', 'course-content').then((data) => {
-      const courseContents = data as ICourseContent[];
-      const courseContent = courseContents.find((s) => s.id === content.id);
-      const courseContentList = courseContents.filter((cc) => {
-        return cc.id !== (content ? content.id : contentId);
-      });
-
-      if (courseContent) {
-        courseContentList.unshift(courseContent);
-      }
-
-      this.auth.currentUser.subscribe(async (currentUser) => {
-        currentUser.courseContent = courseContentList;
-        await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
-      });
+  private async UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string) {
+    const data = await this.GetOfflineData('CourseContent', 'course-content');
+    const courseContents = data ? data as ICourseContent[] : [];
+    const courseContent = courseContents.find((s) => s.id === content.id);
+    const courseContentList = courseContents.filter((cc) => {
+      return cc.id !== (courseContent ? courseContent.id : contentId);
+    });
+    if (content) {
+      courseContentList.unshift(content);
+    }
+    this.auth.currentUser.subscribe(async (currentUser) => {
+      currentUser.CourseContent = courseContentList;
+      await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
     });
   }
 
