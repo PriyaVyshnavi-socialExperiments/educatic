@@ -4,6 +4,9 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/courses"></ion-back-button>
     </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button ion-button block  [routerLink]="['/courses']">Cancel</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -79,13 +82,4 @@
       </ngx-file-picker>
     </div>
   </div>
-  <!-- <div class="limiter">
-    <div class="container-login100">
-      <div class="wrap-login100">
-        <ngx-file-picker [adapter]="filepicker" (uploadSuccess)="uploadSuccess($event)" (uploadFail)="uploadFail($event)">
-        </ngx-file-picker>
-      </div>
-    </div>
-  </div> -->
-
 </ion-content>

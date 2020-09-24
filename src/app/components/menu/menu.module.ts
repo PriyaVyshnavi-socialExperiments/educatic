@@ -148,6 +148,11 @@ const routes: Routes = [
         loadChildren: '../../pages/attendance/attendance.module#AttendancePageModule',
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
+      {
+        path: 'content/:id/viewer',
+        loadChildren: () => import('../../pages/viewer/content-viewer/content-viewer.module').then( m => m.ContentViewerPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+      },
     ]
   }
 ]

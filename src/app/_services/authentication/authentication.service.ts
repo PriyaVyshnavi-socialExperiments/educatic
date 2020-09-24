@@ -31,7 +31,7 @@ export class AuthenticationService extends OfflineService {
             this.currentUserSubject = new BehaviorSubject<IUser>(user);
             this.currentUser = this.currentUserSubject.asObservable();
             this.ready.next(user);
-            this.refreshData();
+            this.SyncOfflineData();
         });
     }
 
@@ -48,10 +48,12 @@ export class AuthenticationService extends OfflineService {
                         // store user details and jwt token in local storage to keep user logged in between page refreshes
                         response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
                         response.schools = [...response.schools];
+                        response.courseContent = [...response.courseContent];
                         this.currentUserSubject.next(response);
                         this.ready.next(response);
                         this.appInsightsService.setUserId(response.id)
                         this.ResetDefaultSchool(response.schools[0].id)
+                        this.CourseContentOfflineSave(response.courseContent);
                     }
                     return response;
                 }));
@@ -118,7 +120,11 @@ export class AuthenticationService extends OfflineService {
         });
     }
 
-    public refreshData() {
+    private async CourseContentOfflineSave(courseContentList) {
+        await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
+    }
+
+    private SyncOfflineData() {
         this.currentUser.subscribe(async (currentUser) => {
             OfflineSync.Data.forEach(offlineData => {
                 this.GetOfflineData(offlineData.table, offlineData.key).then((data) => {

@@ -1,11 +1,11 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{!courseContentDisplay? 'Course - category(subject)' : 'Course - content'}} </ion-title>
+    <ion-title> Course  </ion-title>
     <ion-buttons slot="start">
       <ion-menu-button autoHide="true"></ion-menu-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button *ngIf="!courseContentDisplay" ion-button block (click)=courseAdd()>Add Course</ion-button>
+      <ion-button *ngIf="!courseContentDisplay && !isStudent" ion-button block (click)=courseAdd()>Add Course</ion-button>
       <ion-button *ngIf="courseContentDisplay" ion-button block  (click)="dismissModal()"> Switch Category</ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -36,12 +36,12 @@
   <ion-grid class="grid">
     <ion-row class="ion-justify-content-center">
       <ion-card class="item-card" *ngFor="let content of courseContent">
-        <img src="../../../assets/images/course-default.jpg" alt="ion">
+        <img src="../../../assets/images/course-default.jpg" (click)="ContentViewer(content)" alt="ion">
         <ion-card-header>
           <ion-card-subtitle>{{content.categoryName}}</ion-card-subtitle>
           <ion-card-title>{{content.courseName}}</ion-card-title>
         </ion-card-header>
-        <ion-card-content>
+        <ion-card-content class="ion-text-wrap">
           {{content.courseDescription}}
         </ion-card-content>
         <ion-footer>

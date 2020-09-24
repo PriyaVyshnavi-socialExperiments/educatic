@@ -114,7 +114,7 @@ export class CourseContentService extends OfflineService {
       courseContentList.unshift(content);
     }
     this.auth.currentUser.subscribe(async (currentUser) => {
-      currentUser.CourseContent = courseContentList;
+      currentUser.courseContent = courseContentList;
       await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
     });
   }

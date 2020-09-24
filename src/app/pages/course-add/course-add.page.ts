@@ -54,8 +54,8 @@ export class CourseAddPage implements OnInit {
       if (!user) {
         return;
       }
-      if (user.CourseContent) {
-        this.contentService.GetCategoryWiseContent(user.CourseContent).subscribe((groupResponse) => {
+      if (user.courseContent) {
+        this.contentService.GetCategoryWiseContent(user.courseContent).subscribe((groupResponse) => {
           this.categoryWiseContent = Object.values(groupResponse);
           this.courseCategory = this.categoryWiseContent.map((cat, index) => {
             return { id: index.toString(), name: cat.key } as ICourseContentCategory;
