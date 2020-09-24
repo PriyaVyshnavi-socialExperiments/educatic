@@ -59,12 +59,11 @@ export class CoursesPage implements OnInit {
     this.courseContentDisplay = false;
   }
 
-  public async ShareCourse(event) {
+  public async ShareCourse(contentId) {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: CourseSharePage,
-        componentProps: {
-        }
+        componentProps: { contentId }
       });
     await modal.present();
   }

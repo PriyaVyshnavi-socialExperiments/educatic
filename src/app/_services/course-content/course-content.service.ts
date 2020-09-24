@@ -73,22 +73,22 @@ export class CourseContentService extends OfflineService {
   }
 
   public GetCategoryWiseContent(CourseContent: ICourseContent[]) {
-    return  from(CourseContent) 
-    .pipe(
-      groupBy(person => person.categoryName),
-      mergeMap(group => group
-        .pipe(
-          reduce((acc, cur) => {
-            acc.content.push(cur);
-            acc.length = acc.content.length;
-            return acc;
-          },
-            { key: group.key, content: [], length: 0 } as ICategoryContentList
+    return from(CourseContent)
+      .pipe(
+        groupBy(person => person.categoryName),
+        mergeMap(group => group
+          .pipe(
+            reduce((acc, cur) => {
+              acc.content.push(cur);
+              acc.length = acc.content.length;
+              return acc;
+            },
+              { key: group.key, content: [], length: 0 } as ICategoryContentList
+            )
           )
-        )
-      ),
-      toArray()
-    )
+        ),
+        toArray()
+      )
   }
 
   private getOfflineCourseContents() {

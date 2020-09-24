@@ -9,17 +9,22 @@ import { SasGeneratorService } from 'src/app/_services/azure-blob/sas-generator.
   styleUrls: ['./content-viewer.page.scss'],
 })
 export class ContentViewerPage implements OnInit {
- contentURL ='';
- courseContent: ICourseContent;
- title ='';
-  constructor(private sasGeneratorService:SasGeneratorService) { }
+  supportedContents = ['pdf'];
+  contentURL = '';
+  contentType = '';
+  courseContent: ICourseContent;
+  title = '';
+  constructor(private sasGeneratorService: SasGeneratorService) { }
 
   ngOnInit() {
-    this.courseContent =history.state;
+    this.courseContent = history.state;
     this.title = `${this.courseContent.categoryName} - ${this.courseContent.courseName}`;
-    this.sasGeneratorService.getSasToken('coursecontent').subscribe((blobStorage: BlobStorageRequest) => {
-      this.contentURL = `${blobStorage.storageUri}coursecontent/${this.courseContent.courseURL}`;
-    })
+    this.contentType = this.courseContent.courseURL.replace(/^.*\./, '').toLowerCase();
+    if (this.supportedContents.indexOf(this.contentType) > -1) {
+      this.sasGeneratorService.getSasToken('coursecontent').subscribe((blobStorage: BlobStorageRequest) => {
+        this.contentURL = `${blobStorage.storageUri}coursecontent/${this.courseContent.courseURL}`;
+      })
+    }
   }
 
 }
