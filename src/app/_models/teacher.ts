@@ -3,6 +3,7 @@ export interface ITeacher {
     id: string;
     firstName: string;
     lastName: string;
+    gender: string;
     email: string;
     role: string;
     acceptTerms: boolean;

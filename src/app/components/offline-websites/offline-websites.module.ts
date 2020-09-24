@@ -9,7 +9,6 @@ import { OfflineWebsitesPageRoutingModule } from './offline-websites-routing.mod
 import { OfflineWebsitesPage } from './offline-websites.page';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { DocumentViewer } from '@ionic-native/document-viewer/ngx';
-import { FileOpener } from '@ionic-native/file-opener/ngx';
 
 @NgModule({
   imports: [
@@ -20,7 +19,7 @@ import { FileOpener } from '@ionic-native/file-opener/ngx';
     NgxExtendedPdfViewerModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [InAppBrowser, DocumentViewer, FileOpener],
+  providers: [InAppBrowser, DocumentViewer],
   declarations: [OfflineWebsitesPage]
 })
 export class OfflineWebsitesPageModule {}

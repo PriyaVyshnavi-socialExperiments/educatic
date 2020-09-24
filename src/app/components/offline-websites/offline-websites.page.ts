@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
-import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer/ngx';
-// import { FileOpener } from '@ionic-native/file-opener/ngx';
-import { Plugins, registerWebPlugin } from '@capacitor/core';
+import { DocumentViewer } from '@ionic-native/document-viewer/ngx';
 import { Platform } from '@ionic/angular';
-
-const { FileOpener } = Plugins;
 
 @Component({
   selector: 'app-offline-websites',

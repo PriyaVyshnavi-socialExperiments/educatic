@@ -85,19 +85,23 @@ export class ClassRoomAddPage implements OnInit {
         createdBy: this.currentUser.id,
         updatedBy: this.currentUser.id
       } as IClassRoom;
-      this.classService.SubmitClassRoom(classRoomInfo).subscribe(() => {
-        this.presentToast();
-        this.router.navigateByUrl(`/class-rooms/${classRoomInfo.schoolId}`);
+      this.classService.SubmitClassRoom(classRoomInfo).subscribe((res) => {
+        if (res === '409') {
+          this.presentToast('Class name is not available for selected school.','danger');
+        } else {
+          this.presentToast('Class room updated successfully.', 'success');
+          this.router.navigateByUrl(`/class-rooms/${classRoomInfo.schoolId}`);
+        }
       });
     }
   }
 
-  private async presentToast() {
+  private async presentToast(msg, type) {
     const toast = await this.toastController.create({
-      message: 'Class room updated successfully..',
+      message: msg,
       position: 'bottom',
       duration: 3000,
-      color: 'success',
+      color: type,
       buttons: [{
         text: 'Close',
         role: 'cancel',

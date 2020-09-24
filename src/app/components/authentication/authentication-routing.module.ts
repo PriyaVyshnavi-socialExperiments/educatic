@@ -22,10 +22,10 @@ const routes: Routes = [
     path: 'reset/password',
     component: ResetPasswordComponent,
   },
-  {
-    path: 'student/signin',
-    component: StudentSigninPage,
-  },
+  // {
+  //   path: 'student/signin',
+  //   component: StudentSigninPage,
+  // },
 ];
 @NgModule({
   imports: [RouterModule.forChild(routes)],

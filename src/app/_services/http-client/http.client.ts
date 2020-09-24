@@ -104,11 +104,14 @@ export class HttpService {
             observer.complete();
           },
           (err) => {
-            console.log(err)
-            if ((Object as any).values(OfflineSyncURL).includes(endPoint)) {
-              this.presentToast();
+            if(err.indexOf('409') !== -1) {
+              observer.next('409');
+              observer.complete();
+            } else { if ((Object as any).values(OfflineSyncURL).includes(endPoint)) {
+              this.presentToast('You are currently offline however you may continue working on this device.');
               this.offlineSyncManager.StoreRequest(endPoint, method, params);
             }
+          }
             observer.error(err);
           },
         );
@@ -118,11 +121,12 @@ export class HttpService {
     return observable;
   }
 
-  private async presentToast() {
+  private async presentToast(msg) {
     const toast = await this.toastController.create({
-      message: 'You are currently offline however you may continue working on this device.',
+      message: msg,
       position: 'top',
-      duration: 3000,
+      color: 'warning',
+      duration: 5000,
       buttons: [{
         text: 'Close',
         role: 'cancel',

@@ -30,23 +30,9 @@ export class StudentsPage implements OnInit {
     private dataShare: DataShareService,
     public router: Router,
     private activatedRoute: ActivatedRoute,
-    private lazyloadImage: LazyLoadImageHooks,
   ) { }
 
-  loadImage$(img) {
-    return Promise.resolve(this.lazyloadImage.loadImage(img).subscribe((res) => res));
-  };
-
   ngOnInit() {
-    // this.authenticationService.currentUser?.subscribe(async (user) => {
-    //   if (!user) {
-    //     return;
-    //   }
-    //   this.currentUser = user;
-    //   this.schoolId = user.defaultSchool.id;
-    //   this.schools = user.schools;
-    //   this.classRooms = [...user.defaultSchool.classRooms];
-    // });
   }
 
   ionViewDidEnter() {
@@ -98,7 +84,6 @@ export class StudentsPage implements OnInit {
   setClassRoom(selectedValue) {
     this.classRoomId = selectedValue.detail.value;
     this.router.navigateByUrl(`/students/${this.currentUser.defaultSchool.id}/${this.classRoomId}`);
-    //this.refresh();
   }
 
   public async actionPopover(ev: any, studentId: string) {
