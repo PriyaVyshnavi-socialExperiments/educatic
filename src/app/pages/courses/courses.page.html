@@ -36,7 +36,8 @@
   <ion-grid class="grid">
     <ion-row class="ion-justify-content-center">
       <ion-card class="item-card" *ngFor="let content of courseContent">
-        <img src="../../../assets/images/course-default.jpg" (click)="ContentViewer(content)" alt="ion">
+        <div (click)="ContentViewer(content)">
+        <img src="../../../assets/images/course-default.jpg"  alt="ion">
         <ion-card-header>
           <ion-card-subtitle>{{content.categoryName}}</ion-card-subtitle>
           <ion-card-title>{{content.courseName}}</ion-card-title>
@@ -44,6 +45,7 @@
         <ion-card-content class="ion-text-wrap">
           {{content.courseDescription}}
         </ion-card-content>
+      </div>
         <ion-footer>
           <ion-grid>
             <ion-row justify-content-around>

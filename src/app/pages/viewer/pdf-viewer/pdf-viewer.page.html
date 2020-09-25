@@ -1,9 +1,18 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>pdf-viewer</ion-title>
+    <ion-title>{{title}}</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <ngx-extended-pdf-viewer [src]="pdfContentURL" [height]="'90vh'" [useBrowserLocale]="true"
+  [showSidebarButton]="true" [showFindButton]="true" [showPagingButtons]="true" [showZoomButtons]="true"
+  [showPresentationModeButton]="true" [showOpenFileButton]="false" [showPrintButton]="false"
+  [showDownloadButton]="true" [showBookmarkButton]="false" [showSecondaryToolbarButton]="true"
+  [showRotateButton]="true" [showHandToolButton]="false" [showScrollingButton]="false" [showSpreadButton]="true"
+  [showPropertiesButton]="false" [mobileFriendlyZoom]="'150%'" [textLayer]="true">
+</ngx-extended-pdf-viewer>
 </ion-content>

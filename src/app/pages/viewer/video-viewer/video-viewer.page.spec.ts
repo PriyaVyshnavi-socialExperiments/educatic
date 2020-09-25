@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ContentViewerPage } from './content-viewer.page';
+import { VideoViewerPage } from './video-viewer.page';
 
-describe('ContentViewerPage', () => {
-  let component: ContentViewerPage;
-  let fixture: ComponentFixture<ContentViewerPage>;
+describe('VideoViewerPage', () => {
+  let component: VideoViewerPage;
+  let fixture: ComponentFixture<VideoViewerPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ContentViewerPage ],
+      declarations: [ VideoViewerPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ContentViewerPage);
+    fixture = TestBed.createComponent(VideoViewerPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

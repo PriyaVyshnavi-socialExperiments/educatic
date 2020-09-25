@@ -149,9 +149,12 @@ const routes: Routes = [
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
-        path: 'content/:id/viewer',
-        loadChildren: () => import('../../pages/viewer/content-viewer/content-viewer.module').then( m => m.ContentViewerPageModule),
-        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+        path: 'content/:id/pdf-viewer',
+        loadChildren: () => import('../../pages/viewer/pdf-viewer/pdf-viewer.module').then( m => m.PdfViewerPageModule),
+      },
+      {
+        path: 'content/:id/video-viewer',
+        loadChildren: () => import('../../pages/viewer/video-viewer/video-viewer.module').then( m => m.VideoViewerPageModule),
       },
     ]
   }

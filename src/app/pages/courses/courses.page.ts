@@ -15,6 +15,10 @@ import { CourseSharePage } from '../course-share/course-share.page';
 })
 export class CoursesPage implements OnInit {
 
+  pdfSupported = ['pdf'];
+  audioVideoSupported = ['wav', 'aiff', 'alac', 'flac', 'mp3', 'aac', 'wma', 'ogg',
+    'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ogg', 'mp4', 'm4p', 'm4v', 'avi', 'wmv', 'mov', 'qt', 'flv', 'swf', 'avchd'];
+
   courseContent: ICourseContent[] = [];
   categoryWiseContent: ICategoryContentList[];
   categoryList: ICourseContentCategory[] = [];
@@ -77,7 +81,13 @@ export class CoursesPage implements OnInit {
   }
 
   ContentViewer(content: ICourseContent) {
-    this.router.navigateByUrl(`content/${content.id}/viewer`, { state: content });
+    const contentType = content.courseURL.replace(/^.*\./, '').toLowerCase();
+
+    if (this.pdfSupported.indexOf(contentType) > -1) {
+      this.router.navigateByUrl(`content/${content.id}/pdf-viewer`, { state: content });
+    } else if (this.audioVideoSupported.indexOf(contentType) > -1) {
+      this.router.navigateByUrl(`content/${content.id}/video-viewer`, { state: content });
+    } 
   }
 
 }
