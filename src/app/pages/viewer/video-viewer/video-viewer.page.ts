@@ -37,7 +37,7 @@ export class VideoViewerPage implements OnInit, AfterViewInit {
     if (info.platform === 'ios' || info.platform === 'android') {
       this.videoPlayer = CapacitorVideoPlayer;
     } else {
-      this.videoPlayer = PluginsLibrary.CapacitorVideoPlayer
+      this.videoPlayer = PluginsLibrary.CapacitorVideoPlayer;
     }
 
     this.VideoConfig();
