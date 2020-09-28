@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
+import { NgxIonicImageViewerModule } from 'ngx-ionic-image-viewer';
 
 import { CoursesPageRoutingModule } from './courses-routing.module';
 
@@ -14,7 +15,8 @@ import { MatSelectModule } from '@angular/material/select';
     FormsModule,
     IonicModule,
     CoursesPageRoutingModule,
-    MatSelectModule 
+    MatSelectModule ,
+    NgxIonicImageViewerModule
   ],
   declarations: [CoursesPage]
 })

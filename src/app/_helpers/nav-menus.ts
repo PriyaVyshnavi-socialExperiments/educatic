@@ -142,7 +142,7 @@ export class NavMenuHelper {
     },
 
     {
-      name: 'Offline Content',
+      name: 'Offline Websites',
       path: '/offline-websites',
       icon: 'book-outline',
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],

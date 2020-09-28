@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { ICourseContent } from 'src/app/_models/course-content';
-import { BlobStorageRequest } from 'src/app/_services/azure-blob/azure-storage';
-import { SasGeneratorService } from 'src/app/_services/azure-blob/sas-generator.service';
+import { CourseContentService } from 'src/app/_services/course-content/course-content.service';
 
 @Component({
   selector: 'app-pdf-viewer',
@@ -15,7 +14,7 @@ export class PdfViewerPage implements OnInit {
   contentType = '';
   courseContent: ICourseContent;
   title = '';
-  constructor(private sasGeneratorService: SasGeneratorService,
+  constructor(private contentService: CourseContentService,
     private navCtrl: NavController) { }
 
   ngOnInit() {
@@ -24,8 +23,8 @@ export class PdfViewerPage implements OnInit {
       this.navCtrl.back();
     }
     this.title = `${this.courseContent.categoryName} - ${this.courseContent.courseName}`;
-    this.sasGeneratorService.getSasToken('coursecontent').subscribe((blobStorage: BlobStorageRequest) => {
-      this.pdfContentURL = `${blobStorage.storageUri}coursecontent/${this.courseContent.courseURL}`;
+    this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe((url) => {
+      this.pdfContentURL =url;
     })
   }
 

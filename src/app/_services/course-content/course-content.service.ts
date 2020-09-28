@@ -8,6 +8,8 @@ import { AuthenticationService } from '../authentication/authentication.service'
 import { HttpService } from '../http-client/http.client';
 import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
+import { BlobStorageRequest } from '../../_services/azure-blob/azure-storage';
+import { SasGeneratorService } from '../../_services/azure-blob/sas-generator.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +21,20 @@ export class CourseContentService extends OfflineService {
     public injector: Injector,
     private network: NetworkService,
     private auth: AuthenticationService,
+    private sasGeneratorService: SasGeneratorService,
   ) {
     super(injector);
   }
+
+  public get ImgSupported() { return ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'svg'] };
+  public get PdfSupported() { return ['pdf'] };
+  public get AudioVideoSupported() {
+    return ['wav', 'aiff', 'alac', 'flac', 'mp3', 'aac', 'wma', 'ogg',
+      'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ogg', 'mp4', 'm4p', 'm4v', 'avi', 'wmv', 'mov', 'qt', 'flv', 'swf', 'avchd']
+  };
+
+  public get ContentUploadSupported() { return [...this.ImgSupported, ...this.PdfSupported, ...this.AudioVideoSupported];}
+
 
   public SubmitCourseContent(courseContent: ICourseContent) {
     if (!courseContent.id) {
@@ -89,6 +102,12 @@ export class CourseContentService extends OfflineService {
         ),
         toArray()
       )
+  }
+
+  public GetAzureContentURL(contentURL: string) {
+    return this.sasGeneratorService.getSasToken('coursecontent').pipe(
+      map((blobStorage) => `${blobStorage.storageUri}coursecontent/${contentURL}`)
+    );
   }
 
   private getOfflineCourseContents() {
