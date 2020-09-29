@@ -1,5 +1,6 @@
 .container-login100 {
     min-height: 0 !important;
+    background: unset !important
 }
 
 .mat-form-field-appearance-outline {
@@ -20,21 +21,4 @@
 
 .login100-form-btn {
     width: 46% !important;
-
-}
-
-ngx-file-picker {
-    .file-drop-wrapper {
-        background : unset !important;
-        padding-top: 0px !important;
-    }
-
-    .files-preview-wrapper {
-        width: 93% !important;
-    }
-
-    .custom-drag{
-        padding: 28px 0 !important;
-    }
-
 }

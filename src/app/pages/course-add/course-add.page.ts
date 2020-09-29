@@ -1,28 +1,39 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { ICourseCategory } from 'src/app/_models/course-category';
-import { FilePicker } from 'src/app/_services/azure-blob/file-picker.service';
+import { FilePreviewModel } from 'ngx-awesome-uploader';
+import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
+import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
+import { ICourseContentCategory } from '../../_models/course-content-category';
+import { FilePicker } from '../../_services/azure-blob/file-picker.service';
+import { CourseContentService } from '../../_services/course-content/course-content.service';
 import { CourseCategoryPage } from '../course-category/course-category.page';
 
 @Component({
   selector: 'app-course-add',
   templateUrl: './course-add.page.html',
   styleUrls: ['./course-add.page.scss'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class CourseAddPage implements OnInit {
-  courseCategory: ICourseCategory[] = [];
+
+  @ViewChild('documentEditForm') documentEditForm: FormGroupDirective;
+
+  courseCategory: ICourseContentCategory[] = [];
+  fileName: string;
   progress = 0;
   public courseForm: FormGroup;
+  categoryWiseContent: ICategoryContentList[];
 
   constructor(
     public filepicker: FilePicker,
     private formBuilder: FormBuilder,
     private modalController: ModalController,
-    ) { }
+    private contentService: CourseContentService,
+    private authService: AuthenticationService,
+  ) { }
 
   ngOnInit() {
+    console.log(history.state);
     this.courseForm = this.formBuilder.group({
       courseName: new FormControl('', [
         Validators.required,
@@ -32,10 +43,30 @@ export class CourseAddPage implements OnInit {
         Validators.required,
         Validators.maxLength(1000),
       ]),
-      categoryId: new FormControl('', [
+      categoryName: new FormControl('', [
         Validators.required,
       ])
     });
+  }
+
+  ionViewDidEnter() {
+    this.authService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      if (user.courseContent) {
+        this.contentService.GetCategoryWiseContent(user.courseContent).subscribe((groupResponse) => {
+          this.categoryWiseContent = Object.values(groupResponse);
+          this.courseCategory = this.categoryWiseContent.map((cat, index) => {
+            return { id: index.toString(), name: cat.key } as ICourseContentCategory;
+          })
+        });
+      }
+    });
+  }
+
+  ionViewWillLeave() {
+    this.courseForm.reset();
   }
 
   get f() {
@@ -44,32 +75,56 @@ export class CourseAddPage implements OnInit {
 
   public async AddNewCategory() {
     const modal: HTMLIonModalElement =
-    await this.modalController.create({
-      component: CourseCategoryPage,
-      componentProps: {
-      }
-    });
+      await this.modalController.create({
+        component: CourseCategoryPage,
+        componentProps: {
+        }
+      });
     modal.onDidDismiss()
-      .then((data: any) => {
-        console.log(data);
-        this.courseCategory =[...data.data];
-    });
-  await modal.present();
+      .then((modalData: any) => {
+        console.log(modalData.data);
+        const categoryList = modalData.data.categoryList;
+        if (categoryList.length > 0) {
+          const selectedCategory = modalData.data.selectedCategory;
+          this.filepicker.blobFileName = selectedCategory.name;
+          this.courseForm.setValue({
+            categoryName: selectedCategory.name,
+            courseName: '',
+            courseDescription: ''
+          });
+          this.courseCategory = [...this.courseCategory, ...categoryList];
+          this.courseCategory = [...new Map(this.courseCategory.map(item => [item.name, item])).values()]
+        }
+      });
+    await modal.present();
   }
 
   SubmitCourse() {
+    if (this.courseForm.invalid && !this.fileName) {
+      return;
+    }
+
+    const courseContent = {
+      categoryName: this.f.categoryName.value,
+      courseName: this.f.courseName.value,
+      courseDescription: this.f.courseDescription.value,
+      courseURL: this.filepicker.blobFileName + '/' + this.fileName,
+    } as ICourseContent;
+    console.log("Called SubmitCourse");
+    this.contentService.SubmitCourseContent(courseContent).subscribe((res) => {
+      console.log("SubmitCourse SuccessFully");
+    });
 
   }
 
-  setPercentBar(i) {
-    setTimeout(() => {
-      const apc = (i / 100)
-      this.progress = apc;
-    }, 100 * i);
+  onChangeCategory(category) {
+    this.filepicker.blobFileName = category.value;
   }
 
-  uploadSuccess(item) {
-    console.log("uploadSuccess: ", item);
+  uploadSuccess(uploadedFile) {
+    console.log("uploadSuccess: ", uploadedFile);
+    this.fileName = uploadedFile.fileName;
+    this.documentEditForm.ngSubmit.emit();
   }
 
   uploadFail(item) {

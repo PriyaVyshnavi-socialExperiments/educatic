@@ -2,14 +2,12 @@
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { IUser, LoginRequest, StudentLoginRequest, ISchool } from '../../_models';
+import { IUser, LoginRequest, StudentLoginRequest, ISchool, OfflineSync } from '../../_models';
 import { ApplicationInsightsService } from '../../_helpers/application-insights';
 import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
 import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
 import { IResetPassword } from 'src/app/_models/reset-password';
-import { async } from '@angular/core/testing';
-
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends OfflineService {
 
@@ -33,6 +31,7 @@ export class AuthenticationService extends OfflineService {
             this.currentUserSubject = new BehaviorSubject<IUser>(user);
             this.currentUser = this.currentUserSubject.asObservable();
             this.ready.next(user);
+            this.SyncOfflineData();
         });
     }
 
@@ -49,10 +48,12 @@ export class AuthenticationService extends OfflineService {
                         // store user details and jwt token in local storage to keep user logged in between page refreshes
                         response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
                         response.schools = [...response.schools];
+                        response.courseContent = [...response.courseContent];
                         this.currentUserSubject.next(response);
                         this.ready.next(response);
                         this.appInsightsService.setUserId(response.id)
                         this.ResetDefaultSchool(response.schools[0].id)
+                        this.CourseContentOfflineSave(response.courseContent);
                     }
                     return response;
                 }));
@@ -107,15 +108,30 @@ export class AuthenticationService extends OfflineService {
 
     public RefreshSchools(schools: ISchool[], school: ISchool) {
         const schoolList = schools.filter((obj) => {
-            return obj.id !==  school.id;
+            return obj.id !== school.id;
         });
         if (school) {
             schoolList.unshift(school);
         }
-        this.currentUser.subscribe(async(currentUser) => {
+        this.currentUser.subscribe(async (currentUser) => {
             currentUser.schools = schoolList;
             currentUser.defaultSchool = school;
             await this.SetOfflineData('User', 'current-user', currentUser);
         });
-      }
+    }
+
+    private async CourseContentOfflineSave(courseContentList) {
+        await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
+    }
+
+    private SyncOfflineData() {
+        this.currentUser.subscribe(async (currentUser) => {
+            OfflineSync.Data.forEach(offlineData => {
+                this.GetOfflineData(offlineData.table, offlineData.key).then((data) => {
+                    currentUser[offlineData.table] = data;
+                });
+            });
+        });
+
+    }
 }
