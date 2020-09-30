@@ -104,24 +104,7 @@
       "properties": {
         "siteConfig": "[variables('configReference')[parameters('language')]]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]"
-      },
-      "resources": [
-        {
-          "condition": "[contains(variables('gitRepoUrl'),'http')]",
-          "type": "sourcecontrols",
-          "apiVersion": "2019-08-01",
-          "name": "web",
-          "location": "[parameters('location')]",
-          "dependsOn": [
-            "[resourceId('Microsoft.Web/sites', parameters('webAppName'))]"
-          ],
-          "properties": {
-            "repoUrl": "[variables('gitRepoUrl')]",
-            "branch": "master",
-            "isManualIntegration": true
-          }
-        }
-      ]
+      }
     }
   ]
 }
