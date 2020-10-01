@@ -4,11 +4,10 @@
   "parameters": {
     "webAppName": {
       "type": "string",
-      "defaultValue": "[concat('webApp-', uniqueString(resourceGroup().id))]",
+      "defaultValue": "[concat('Node-', uniqueString(resourceGroup().name, utcNow('F')))]",
       "metadata": {
-        "description": "Web app name."
-      },
-      "minLength": 2
+        "description": "That name is the name of our application. It has to be unique.Type a name followed by your resource group name. (<name>-<resourceGroupName>)"
+      }
     },
     "location": {
       "type": "string",
@@ -16,94 +15,53 @@
       "metadata": {
         "description": "Location for all resources."
       }
-    },
-    "sku": {
-      "type": "string",
-      "defaultValue": "F1",
-      "metadata": {
-        "description": "The SKU of App Service Plan."
-      }
-    },
-    "language": {
-      "type": "string",
-      "defaultValue": ".net",
-      "allowedValues": [
-        ".net",
-        "php",
-        "node",
-        "html"
-      ],
-      "metadata": {
-        "description": "The language stack of the app."
-      }
-    },
-    "helloWorld": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "true = deploy a sample Hello World app."
-      }
-    },
-    "repoUrl": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "Optional Git Repo URL"
-      }
     }
   },
   "variables": {
-    "appServicePlanPortalName": "[concat('AppServicePlan-', parameters('webAppName'))]",
-    "gitRepoReference": {
-      ".net": "https://github.com/Azure-Samples/app-service-web-dotnet-get-started",
-      "node": "https://github.com/Azure-Samples/nodejs-docs-hello-world",
-      "php": "https://github.com/Azure-Samples/php-docs-hello-world",
-      "html": "https://github.com/Azure-Samples/html-docs-hello-world"
-    },
-    "gitRepoUrl": "[if(bool(parameters('helloWorld')), 
-                            variables('gitRepoReference')[toLower(parameters('language'))], 
-                            parameters('repoUrl'))]",
-    "configReference": {
-      ".net": {
-        "comments": ".Net app. No additional configuration needed."
-      },
-      "html": {
-        "comments": "HTML app. No additional configuration needed."
-      },
-      "php": {
-        "phpVersion": "7.4"
-      },
-      "node": {
-        "appSettings": [
-          {
-            "name": "WEBSITE_NODE_DEFAULT_VERSION",
-            "value": "12.15.0"
-          }
-        ]
-      }
-    }
+    "alwaysOn": false,
+    "sku": "Free",
+    "skuCode": "F1",
+    "workerSize": "0",
+    "workerSizeId": "0",
+    "numberOfWorkers": "1",
+    "linuxFxVersion": "NODE|lts",
+    "hostingPlanName": "[concat('hpn-', resourceGroup().name)]"
   },
   "resources": [
     {
-      "apiVersion": "2019-08-01",
-      "type": "Microsoft.Web/serverfarms",
-      "name": "[variables('appServicePlanPortalName')]",
+      "apiVersion": "2018-02-01",
+      "name": "[parameters('webAppName')]",
+      "type": "Microsoft.Web/sites",
       "location": "[parameters('location')]",
-      "sku": {
-        "name": "[parameters('sku')]"
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]"
+      ],
+      "properties": {
+        "name": "[parameters('webAppName')]",
+        "siteConfig": {
+          "linuxFxVersion": "[variables('linuxFxVersion')]",
+          "alwaysOn": "[variables('alwaysOn')]"
+        },
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "clientAffinityEnabled": false
       }
     },
     {
-      "apiVersion": "2019-08-01",
-      "type": "Microsoft.Web/sites",
-      "name": "[parameters('webAppName')]",
+      "apiVersion": "2018-02-01",
+      "name": "[variables('hostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
       "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]"
-      ],
+      "kind": "linux",
+      "sku": {
+        "Tier": "[variables('sku')]",
+        "Name": "[variables('skuCode')]"
+      },
       "properties": {
-        "siteConfig": "[variables('configReference')[parameters('language')]]",
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanPortalName'))]"
+        "name": "[variables('hostingPlanName')]",
+        "workerSize": "[variables('workerSize')]",
+        "workerSizeId": "[variables('workerSizeId')]",
+        "numberOfWorkers": "[variables('numberOfWorkers')]",
+        "reserved": true
       }
     }
   ]
