@@ -3,19 +3,19 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "subscriptionId": {
-            "type": "14a69ef0-1573-4c26-825e-8a1f1b76fa8e"
+            "type": "string"
         },
         "name": {
-            "type": "goofflineapp"
+            "type": "string"
         },
         "location": {
-            "type": "West US"
+            "type": "string"
         },
         "hostingPlanName": {
-            "type": "ASP-goofflineeapp-a5d6"
+            "type": "string"
         },
         "serverFarmResourceGroup": {
-            "type": "goofflinee-app"
+            "type": "string"
         },
         "alwaysOn": {
             "type": "bool"

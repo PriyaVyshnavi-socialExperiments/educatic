@@ -15,7 +15,7 @@
             "value": "ASP-goofflineeapp-a5d6"
         },
         "serverFarmResourceGroup": {
-            "value": "goofflinee-app"
+            "value": "goofflineapp"
         },
         "alwaysOn": {
             "value": false
