@@ -1,124 +1,48 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "subscriptionId": {
-            "type": "string"
+            "value": "14a69ef0-1573-4c26-825e-8a1f1b76fa8e"
         },
         "name": {
-            "type": "string"
+            "value": "goofflineapp"
         },
         "location": {
-            "type": "string"
+            "value": "West US"
         },
         "hostingPlanName": {
-            "type": "string"
+            "value": "ASP-goofflineeapp-a5d6"
         },
         "serverFarmResourceGroup": {
-            "type": "string"
+            "value": "goofflinee-app"
         },
         "alwaysOn": {
-            "type": "bool"
+            "value": false
         },
         "sku": {
-            "type": "string"
+            "value": "Free"
         },
         "skuCode": {
-            "type": "string"
+            "value": "F1"
         },
         "workerSize": {
-            "type": "string"
+            "value": "0"
         },
         "workerSizeId": {
-            "type": "string"
+            "value": "0"
         },
         "numberOfWorkers": {
-            "type": "string"
+            "value": "1"
         },
         "currentStack": {
-            "type": "string"
+            "value": "dotnetcore"
         },
         "phpVersion": {
-            "type": "string"
+            "value": "OFF"
         },
         "errorLink": {
-            "type": "string"
+            "value": "https://goofflineapp.scm.azurewebsites.net/detectors?type=tools&name=eventviewer"
         }
-    },
-    "resources": [
-        {
-            "apiVersion": "2018-11-01",
-            "name": "[parameters('name')]",
-            "type": "Microsoft.Web/sites",
-            "location": "[parameters('location')]",
-            "tags": null,
-            "dependsOn": [
-                "microsoft.insights/components/goofflinee-app",
-                "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
-            ],
-            "properties": {
-                "name": "[parameters('name')]",
-                "siteConfig": {
-                    "appSettings": [
-                        {
-                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[reference('microsoft.insights/components/goofflinee-app', '2015-05-01').InstrumentationKey]"
-                        },
-                        {
-                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                            "value": "[reference('microsoft.insights/components/goofflinee-app', '2015-05-01').ConnectionString]"
-                        },
-                        {
-                            "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-                            "value": "~2"
-                        },
-                        {
-                            "name": "XDT_MicrosoftApplicationInsights_Mode",
-                            "value": "default"
-                        }
-                    ],
-                    "metadata": [
-                        {
-                            "name": "CURRENT_STACK",
-                            "value": "[parameters('currentStack')]"
-                        }
-                    ],
-                    "phpVersion": "[parameters('phpVersion')]",
-                    "alwaysOn": "[parameters('alwaysOn')]"
-                },
-                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-                "clientAffinityEnabled": true
-            }
-        },
-        {
-            "apiVersion": "2018-11-01",
-            "name": "[parameters('hostingPlanName')]",
-            "type": "Microsoft.Web/serverfarms",
-            "location": "[parameters('location')]",
-            "kind": "",
-            "tags": null,
-            "dependsOn": [],
-            "properties": {
-                "name": "[parameters('hostingPlanName')]",
-                "workerSize": "[parameters('workerSize')]",
-                "workerSizeId": "[parameters('workerSizeId')]",
-                "numberOfWorkers": "[parameters('numberOfWorkers')]"
-            },
-            "sku": {
-                "Tier": "[parameters('sku')]",
-                "Name": "[parameters('skuCode')]"
-            }
-        },
-        {
-            "apiVersion": "2015-05-01",
-            "name": "goofflinee-app",
-            "type": "microsoft.insights/components",
-            "location": "westus",
-            "tags": null,
-            "properties": {
-                "ApplicationId": "[parameters('name')]",
-                "Request_Source": "IbizaWebAppExtensionCreate"
-            }
-        }
-    ]
+    }
 }
