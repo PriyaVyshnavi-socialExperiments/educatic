@@ -27,10 +27,10 @@ export class StudentsPage implements OnInit {
   constructor(
     private authenticationService: AuthenticationService,
     private popoverController: PopoverController,
-    private dataShare: DataShareService,
     public router: Router,
     private activatedRoute: ActivatedRoute,
-  ) { }
+  ) {
+   }
 
   ngOnInit() {
   }
@@ -40,7 +40,6 @@ export class StudentsPage implements OnInit {
       if (!user) {
         return;
       }
-      console.table(user.defaultSchool.classRooms);
       this.currentUser = user;
       this.schoolId = user.defaultSchool.id;
       this.schools = user.schools;
@@ -119,8 +118,6 @@ export class StudentsPage implements OnInit {
   }
 
   UploadPhoto(studentId: string) {
-    const currentStudent = this.students.find(student => student.id === studentId);
-    this.dataShare.setData(currentStudent);
     this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${studentId}/photos`);
   }
 }

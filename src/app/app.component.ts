@@ -7,6 +7,8 @@ import { ApplicationInsightsService } from './_helpers/application-insights';
 import { SqliteStorageService } from './_services/sqlite-storage/sqlite.storage.service';
 import { NetworkService } from './_services/network/network.service';
 import { OfflineSyncManagerService } from './_services/offline-sync-manager/offline-sync-manager.service';
+import { RefreshServerService } from './_services/refresh-server/refresh-server.service';
+import { ServiceEvent } from './_models/service-event';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +19,7 @@ import { OfflineSyncManagerService } from './_services/offline-sync-manager/offl
 export class AppComponent implements OnInit, AfterViewInit {
   navigate: any;
   isMobileDevice: any;
+  filteredUrlPatterns = ['azure/students'];
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -25,6 +28,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private sqlStorageService: SqliteStorageService,
     private networkService: NetworkService,
     private offlineSyncManager: OfflineSyncManagerService,
+    private refreshServer: RefreshServerService,
   ) {
     this.initializeApp();
   }
@@ -43,12 +47,19 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.splashScreen.hide();
       this.isMobileDevice = isMobileDevice;
 
-       /** Monitor the network status and send offline data to API when connection is restored */
-       this.networkService.online.subscribe( ( status ) => {
+      /** Monitor the network status and send offline data to API when connection is restored */
+      this.networkService.online.subscribe((status) => {
         if (status) {
-           this.offlineSyncManager.CheckForEvents().subscribe();
+          this.offlineSyncManager.CheckForEvents().subscribe();
         }
-    } );
+      });
+
+      this.refreshServer.onChange.subscribe({
+        next: (event: ServiceEvent) => {
+          console.log(`Received message #${event.eventId}: ${event.message}`);
+        }
+      });
+
     });
   }
 }

@@ -1,127 +1,123 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
+        "applicationInsightsName": {
             "type": "string"
         },
-        "name": {
+        "appServiceName": {
             "type": "string"
         },
-        "location": {
+        "appServicePlanName": {
             "type": "string"
         },
-        "hostingPlanName": {
-            "type": "string"
-        },
-        "serverFarmResourceGroup": {
-            "type": "string"
-        },
-        "alwaysOn": {
+        "createStagingSlot": {
             "type": "bool"
         },
-        "sku": {
+        "resourceGroupCommonName": {
             "type": "string"
         },
-        "skuCode": {
-            "type": "string"
-        },
-        "workerSize": {
-            "type": "string"
-        },
-        "workerSizeId": {
-            "type": "string"
-        },
-        "numberOfWorkers": {
-            "type": "string"
-        },
-        "currentStack": {
-            "type": "string"
-        },
-        "phpVersion": {
-            "type": "string"
-        },
-        "errorLink": {
+        "appServiceAlertThreshold": {
             "type": "string"
         }
     },
+
     "resources": [
         {
-            "apiVersion": "2018-11-01",
-            "name": "[parameters('name')]",
+            "apiVersion": "2016-08-01",
             "type": "Microsoft.Web/sites",
-            "location": "[parameters('location')]",
-            "tags": {},
-            "dependsOn": [
-                "microsoft.insights/components/goofflineapp",
-                "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
-            ],
+            "kind": "app",
+            "name": "[parameters('appServiceName')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "goOfflineE": "goOfflineE"
+            },
             "properties": {
-                "name": "[parameters('name')]",
+                "serverFarmId": "[resourceId(parameters('resourceGroupCommonName'),'Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
                 "siteConfig": {
                     "appSettings": [
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[reference('microsoft.insights/components/goofflineapp', '2015-05-01').InstrumentationKey]"
-                        },
-                        {
-                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                            "value": "[reference('microsoft.insights/components/goofflineapp', '2015-05-01').ConnectionString]"
+                            "value": "[reference(resourceId(parameters('resourceGroupCommonName'),'Microsoft.Insights/components', parameters('applicationInsightsName')), '2014-04-01').InstrumentationKey]"
                         },
                         {
                             "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
                             "value": "~2"
                         },
                         {
-                            "name": "XDT_MicrosoftApplicationInsights_Mode",
-                            "value": "default"
+                            "name": "DiagnosticServices_EXTENSION_VERSION",
+                            "value": "~3"
                         },
                         {
-                            "name": "ANCM_ADDITIONAL_ERROR_PAGE_LINK",
-                            "value": "[parameters('errorLink')]"
-                        }
-                    ],
-                    "metadata": [
+                            "name": "APPINSIGHTS_PROFILERFEATURE_VERSION",
+                            "value": "1.0.0"
+                        },
                         {
-                            "name": "CURRENT_STACK",
-                            "value": "[parameters('currentStack')]"
+                            "name": "WEBSITE_LOAD_CERTIFICATES",
+                            "value": "*"
+                        },
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
                         }
-                    ],
-                    "phpVersion": "[parameters('phpVersion')]",
-                    "alwaysOn": "[parameters('alwaysOn')]"
-                },
-                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
-                "clientAffinityEnabled": true
+
+                    ]
+                }
             }
+
         },
         {
+            "condition": "[parameters('createStagingSlot')]",
             "apiVersion": "2018-11-01",
-            "name": "[parameters('hostingPlanName')]",
-            "type": "Microsoft.Web/serverfarms",
-            "location": "[parameters('location')]",
-            "kind": "",
-            "tags": {},
-            "dependsOn": [],
-            "properties": {
-                "name": "[parameters('hostingPlanName')]",
-                "workerSize": "[parameters('workerSize')]",
-                "workerSizeId": "[parameters('workerSizeId')]",
-                "numberOfWorkers": "[parameters('numberOfWorkers')]"
+            "name": "[concat(parameters('appServiceName'),'/staging')]",
+            "type": "Microsoft.Web/sites/slots",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "team": "[resourceGroup().tags.team]",
+                "department": "[resourceGroup().tags.department]",
+                "environment": "[resourceGroup().tags.environment]"
             },
-            "sku": {
-                "Tier": "[parameters('sku')]",
-                "Name": "[parameters('skuCode')]"
-            }
+            "properties": {
+                "serverFarmId": "[resourceId(parameters('resourceGroupCommonName'),'Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+            ]
         },
         {
-            "apiVersion": "2015-05-01",
-            "name": "goofflineapp",
-            "type": "microsoft.insights/components",
-            "location": "westus",
-            "tags": {},
+            "name": "digitalAppHttpException",
+            "type": "Microsoft.Insights/metricAlerts",
+            "location": "global",
+            "apiVersion": "2018-03-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+            ],
             "properties": {
-                "ApplicationId": "[parameters('name')]",
-                "Request_Source": "IbizaWebAppExtensionCreate"
+                "description": "[concat('The number of HTTP 5xx responses has increased beyond the specified threshold.')]",
+                "severity": 2,
+                "enabled": true,
+                "scopes": [
+                    "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+                ],
+                "evaluationFrequency": "PT5M",
+                "windowSize": "PT1H",
+                "criteria": {
+                    "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                    "allOf": [
+                        {
+                            "name": "HTTP 5xx greater than 3",
+                            "metricName": "Http5xx",
+                            "operator": "GreaterThan",
+                            "threshold": "[parameters('appServiceAlertThreshold')]",
+                            "timeAggregation": "Maximum"
+                        }
+                    ]
+                },
+                "actions": [
+                    {
+                        "actionGroupId": "[resourceId(parameters('resourceGroupCommonName'),'Microsoft.Insights/actionGroups', 'digitalAppTeam')]"
+                    }
+                ]
             }
         }
     ]

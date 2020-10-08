@@ -107,6 +107,7 @@ export class AuthenticationService extends OfflineService {
     }
 
     public RefreshSchools(schools: ISchool[], school: ISchool) {
+        console.log("school: ", school);
         const schoolList = schools.filter((obj) => {
             return obj.id !== school.id;
         });
@@ -128,7 +129,9 @@ export class AuthenticationService extends OfflineService {
         this.currentUser.subscribe(async (currentUser) => {
             OfflineSync.Data.forEach(offlineData => {
                 this.GetOfflineData(offlineData.table, offlineData.key).then((data) => {
+                    if(data) {
                     currentUser[offlineData.table] = data;
+                    }
                 });
             });
         });

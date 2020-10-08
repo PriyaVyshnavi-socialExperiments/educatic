@@ -13,8 +13,11 @@ export class LazyLoadImageHooks extends IntersectionObserverHooks {
         super();
     }
     loadImage({ imagePath }: Attributes){
+        console.log("imagePath: ", imagePath);
         if ( typeof imagePath === 'object') {
             return [URL.createObjectURL(imagePath)];
+        } else  if ( imagePath === 'default') {
+            return ['assets/images/avatar.svg'];
         }
         return this.studentService.GetStudentPhoto(imagePath).pipe(
             map(blob => blob.url)

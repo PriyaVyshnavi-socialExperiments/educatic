@@ -130,7 +130,7 @@ export class StudentService extends OfflineService {
     return of();
   }
 
-  private UpdateStudentOffline(student: IStudent, studentId?: string) {
+  public UpdateStudentOffline(student: IStudent, studentId?: string) {
     return this.GetOfflineData('User', 'current-user').then((data) => {
       const user = data as IUser;
       const school = user.schools.find((s) => s.id === student.schoolId);

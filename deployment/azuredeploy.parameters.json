@@ -2,47 +2,23 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "value": "14a69ef0-1573-4c26-825e-8a1f1b76fa8e"
+        "applicationInsightsName": {
+            "value": ""
         },
-        "name": {
-            "value": "goofflineapp"
+        "appServiceName": {
+            "value": ""
         },
-        "location": {
-            "value": "West US"
+        "appServicePlanName": {
+            "value": ""
         },
-        "hostingPlanName": {
-            "value": "ASP-goofflineeapp-a5d6"
+        "createStagingSlot": {
+            "value": ""
         },
-        "serverFarmResourceGroup": {
-            "value": "goofflineapp"
+        "resourceGroupCommonName": {
+            "value": ""
         },
-        "alwaysOn": {
-            "value": false
-        },
-        "sku": {
-            "value": "Free"
-        },
-        "skuCode": {
-            "value": "F1"
-        },
-        "workerSize": {
-            "value": "0"
-        },
-        "workerSizeId": {
-            "value": "0"
-        },
-        "numberOfWorkers": {
-            "value": "1"
-        },
-        "currentStack": {
-            "value": "dotnetcore"
-        },
-        "phpVersion": {
-            "value": "OFF"
-        },
-        "errorLink": {
-            "value": "https://goofflineapp.scm.azurewebsites.net/detectors?type=tools&name=eventviewer"
+        "appServiceAlertThreshold": {
+            "value": ""
         }
     }
 }
