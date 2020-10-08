@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterEvent } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { AuthenticationService } from '../../_services';
-import { NavMenuHelper } from '../../_helpers/nav-menus';
 import { ISchool, IUser, Role } from '../../_models';
 import { SchoolService } from '../../_services/school/school.service';
 

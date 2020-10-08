@@ -5,7 +5,7 @@ import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
 import { Guid } from 'guid-typescript';
 import { IStudent, OfflineSyncURL, IUser } from '../../_models';
-import { map, finalize, tap, catchError} from 'rxjs/operators';
+import { map, finalize, tap, catchError } from 'rxjs/operators';
 import { from, of } from 'rxjs';
 import { IStudentPhoto } from '../../_models/student-photos';
 import { BlobUploadsViewStateService } from '../../_services/azure-blob/blob-uploads-view-state.service';
