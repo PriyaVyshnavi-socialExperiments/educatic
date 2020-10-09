@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ITeacher, IUser, ISchool } from '../../_models';
 import { AuthenticationService } from '../../_services';
-import { IonSelect, PopoverController } from '@ionic/angular';
+import { AlertController, IonSelect, PopoverController } from '@ionic/angular';
 import { ActionPopoverPage } from 'src/app/components/action-popover/action-popover.page';
 import { DataShareService } from 'src/app/_services/data-share.service';
 import { Router, ActivatedRoute } from '@angular/router';
+import { TeacherService } from 'src/app/_services/teacher/teacher.service';
 
 @Component({
   selector: 'app-teachers',
@@ -18,6 +19,7 @@ export class TeachersPage implements OnInit {
   schools: ISchool[] = [];
   currentUser: IUser;
   schoolName: string;
+  schoolId: string;
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -25,6 +27,9 @@ export class TeachersPage implements OnInit {
     private dataShare: DataShareService,
     public router: Router,
     private activatedRoute: ActivatedRoute,
+    public alertController: AlertController,
+    private teacherService: TeacherService,
+
   ) { }
 
   ngOnInit() {
@@ -32,20 +37,7 @@ export class TeachersPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.authenticationService.currentUser.subscribe((user) => {
-      if (!user) {
-        return;
-      }
-      this.currentUser = user;
-      this.schools = user.schools;
-
-      const schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
-      if (schoolId) {
-        this.refresh(schoolId);
-      } else {
-        this.refresh(this.currentUser.defaultSchool.id);
-      }
-    });
+    this.refreshTeachers();
   }
 
   selectSchool() {
@@ -85,7 +77,7 @@ export class TeachersPage implements OnInit {
           this.TeacherEdit(actionData.currentId);
           break;
         case 'delete':
-          this.TeacherEdit(actionData.currentId);
+          this.TeacherDelete(actionData.currentId);
           break;
         default:
           break;
@@ -99,6 +91,49 @@ export class TeachersPage implements OnInit {
     const currentTeacher = this.teachers.find(teacher => teacher.id === teacherId);
     this.dataShare.setData(currentTeacher);
     this.router.navigateByUrl(`/teacher/edit/${this.currentUser.defaultSchool.id}/${teacherId}`);
+  }
+
+  private async TeacherDelete(teacherId: string) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Confirm Delete',
+      message: 'Are you sure you want delete this teacher?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Okay',
+          handler: () => {
+            this.teacherService.DeleteTeacher(this.schoolId, teacherId).toPromise().finally(() => {
+              setTimeout(() => {
+                this.refreshTeachers();
+              }, 500);
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  refreshTeachers() {
+    this.authenticationService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.schools = user.schools;
+
+       this.schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
+      if (this.schoolId) {
+        this.refresh(this.schoolId);
+      } else {
+        this.schoolId = this.currentUser.defaultSchool.id;
+        this.refresh(this.currentUser.defaultSchool.id);
+      }
+    });
   }
 
 }

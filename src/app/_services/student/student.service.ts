@@ -130,11 +130,11 @@ export class StudentService extends OfflineService {
     return of();
   }
 
-  public UpdateStudentOffline(student: IStudent, studentId?: string) {
+  public UpdateStudentOffline(student: IStudent, schoolId?: string, classId?: string, studentId?: string) {
     return this.GetOfflineData('User', 'current-user').then((data) => {
       const user = data as IUser;
-      const school = user.schools.find((s) => s.id === student.schoolId);
-      const classRoom = school.classRooms.find((s) => s.classId === student.classId);
+      const school = user.schools.find((s) => s.id === (student? student.schoolId: schoolId));
+      const classRoom = school.classRooms.find((s) => s.classId === (student? student.classId: classId));
 
       const classRoomList = school.classRooms.filter((cr) => {
         return cr.classId !== classRoom.classId;
@@ -154,5 +154,17 @@ export class StudentService extends OfflineService {
       school.classRooms = classRoomList;
       this.auth.RefreshSchools(user.schools, school);
     });
+  }
+
+  public DeleteStudent(schoolId: string, classId: string,studentId: string) {
+    return this.http.Get<Response>(`/student/${studentId}/delete`)
+      .pipe(
+        map(response => {
+          return response;
+        }),
+        finalize(() => {
+          this.UpdateStudentOffline(undefined, schoolId, classId, studentId);
+        })
+      );
   }
 }

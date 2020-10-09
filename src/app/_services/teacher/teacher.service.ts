@@ -62,6 +62,18 @@ export class TeacherService extends OfflineService {
     }
   }
 
+  public DeleteTeacher(schoolId: string, teacherId: string) {
+    return this.http.Get<Response>(`/teacher/${teacherId}/delete`)
+      .pipe(
+        map(response => {
+          return response;
+        }),
+        finalize(() => {
+          this.UpdateTeacherOfflineList(undefined, schoolId, teacherId);
+        })
+      );
+  }
+
   private getOfflineTeachers() {
     return from(this.GetOfflineData('Teacher', 'teacher-list')).pipe(
       tap(response => {
@@ -74,10 +86,10 @@ export class TeacherService extends OfflineService {
     );
   }
 
-  private UpdateTeacherOfflineList(teacher: ITeacher, teacherId?: string) {
+  private UpdateTeacherOfflineList(teacher: ITeacher, schoolId?: string, teacherId?: string) {
     return this.GetOfflineData('User', 'current-user').then((data) => {
       const user = data as IUser;
-      const school = user.schools.find((s) => s.id === teacher.schoolId);
+      const school = user.schools.find((s) => s.id === (teacher ? teacher.schoolId : schoolId));
       const teacherList = school.teachers.filter((ts) => {
         return ts.id !== (teacher ? teacher.id : teacherId);
       });

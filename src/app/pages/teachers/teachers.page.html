@@ -35,10 +35,10 @@
     <ion-row class="ion-justify-content-center">
       <ion-card class="item-card" *ngFor="let teacher of teachers">
         <ion-card-content>
-          <div class="contact-grid">
+          <div class="contact-grid" (click)="TeacherEdit(teacher.id)" >
             <div class="profile-header l-bg-orange">
-              <ion-icon class="header-dropdown m-r--5" (click)="actionPopover($event, teacher.id)"
-                name="ellipsis-vertical-outline" slot="end"></ion-icon>
+              <!-- <ion-icon class="header-dropdown m-r--5" (click)="actionPopover($event, teacher.id)"
+                name="ellipsis-vertical-outline" slot="end"></ion-icon> -->
               <div class="user-name">{{ teacher.firstName | titlecase }} {{teacher.lastName | titlecase}}</div>
               <div class="name-center">{{ teacher.email }}</div>
             </div>
@@ -52,6 +52,22 @@
             </div>
           </div>
         </ion-card-content>
+        <ion-footer>
+          <ion-grid>
+              <ion-row justify-content-around>
+                  <ion-col>
+                      <ion-button expand="block" (click)="TeacherEdit(teacher.id)" fill="clear">
+                          Edit
+                      </ion-button>
+                  </ion-col>
+                  <ion-col>
+                      <ion-button expand="block" (click)="TeacherDelete(teacher.id)" fill="clear">
+                          Delete
+                      </ion-button>
+                  </ion-col>
+              </ion-row>
+          </ion-grid>
+      </ion-footer>
       </ion-card>
     </ion-row>
   </ion-grid>

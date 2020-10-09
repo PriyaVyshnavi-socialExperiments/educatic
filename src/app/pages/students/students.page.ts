@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IonSelect, PopoverController } from '@ionic/angular';
+import { AlertController, IonSelect, PopoverController } from '@ionic/angular';
 
 import { IStudent, IUser, ISchool, IClassRoom } from '../../_models';
 import { AuthenticationService } from '../../_services';
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
-import { DataShareService } from '../../_services/data-share.service';
-import { LazyLoadImageHooks } from '../../_helpers/lazy-load-image-hook';
+import { StudentService } from 'src/app/_services/student/student.service';
 
 @Component({
   selector: 'app-students',
@@ -29,6 +28,8 @@ export class StudentsPage implements OnInit {
     private popoverController: PopoverController,
     public router: Router,
     private activatedRoute: ActivatedRoute,
+    public alertController: AlertController,
+    private studentService: StudentService
   ) {
    }
 
@@ -36,19 +37,7 @@ export class StudentsPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.authenticationService.currentUser?.subscribe(async (user) => {
-      if (!user) {
-        return;
-      }
-      this.currentUser = user;
-      this.schoolId = user.defaultSchool.id;
-      this.schools = user.schools;
-      this.classRooms = [...user.defaultSchool.classRooms];
-      this.classRoomId = this.activatedRoute.snapshot.paramMap.get('classId');
-      setTimeout(() => {
-        this.refresh();
-      });
-    });
+    this.refreshStudents();
   }
 
   async refresh() {
@@ -103,7 +92,7 @@ export class StudentsPage implements OnInit {
           this.StudentEdit(actionData.currentId);
           break;
         case 'delete':
-          this.StudentEdit(actionData.currentId);
+          this.StudentDelete(actionData.currentId);
           break;
         default:
           break;
@@ -119,5 +108,46 @@ export class StudentsPage implements OnInit {
 
   UploadPhoto(studentId: string) {
     this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.classRoomId}/student/${studentId}/photos`);
+  }
+
+  private async StudentDelete(studentId: string) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Confirm Delete',
+      message: 'Are you sure you want delete this student?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Okay',
+          handler: () => {
+            this.studentService.DeleteStudent(this.schoolId, this.classRoomId, studentId).toPromise().finally(() => {
+              setTimeout(() => {
+                this.refreshStudents();
+              }, 500);
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private refreshStudents() {
+    this.authenticationService.currentUser?.subscribe(async (user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.schoolId = user.defaultSchool.id;
+      this.schools = user.schools;
+      this.classRooms = [...user.defaultSchool.classRooms];
+      this.classRoomId = this.activatedRoute.snapshot.paramMap.get('classId');
+      setTimeout(() => {
+        this.refresh();
+      });
+    });
   }
 }
