@@ -93,7 +93,7 @@ export class TeachersPage implements OnInit {
     this.router.navigateByUrl(`/teacher/edit/${this.currentUser.defaultSchool.id}/${teacherId}`);
   }
 
-  private async TeacherDelete(teacherId: string) {
+  public async TeacherDelete(teacherId: string) {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Confirm Delete',

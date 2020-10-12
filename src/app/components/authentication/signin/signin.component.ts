@@ -65,7 +65,7 @@ export class SigninComponent implements OnInit, OnDestroy {
             this.router.navigate(['/reset/password']);
           } else {
             if (user.role === Role.Student) {
-              this.router.navigate(['/courses']);
+              this.router.navigate(['/assignments']);
             } else {
               this.router.navigate([this.returnUrl]);
             }
