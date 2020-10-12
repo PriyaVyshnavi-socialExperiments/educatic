@@ -35,7 +35,8 @@
                 "input": "node_modules/ngx-extended-pdf-viewer/assets/",
                 "output": "/assets/"
               },
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              "src/web.config"
             ],
             "styles": [
               "./node_modules/bootstrap/dist/css/bootstrap.css",
@@ -92,6 +93,32 @@
               "serviceWorker": true,
               "ngswConfigPath": "ngsw-config.json"
             },
+            "takmil": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.takmil.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json"
+            },
             "ci": {
               "progress": false
             }
@@ -105,6 +132,9 @@
           "configurations": {
             "production": {
               "browserTarget": "app:build:production"
+            },
+            "takmil": {
+              "browserTarget": "app:build:takmil"
             },
             "ci": {
               "progress": false

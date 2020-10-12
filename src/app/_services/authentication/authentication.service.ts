@@ -52,7 +52,9 @@ export class AuthenticationService extends OfflineService {
                         this.currentUserSubject.next(response);
                         this.ready.next(response);
                         this.appInsightsService.setUserId(response.id)
-                        this.ResetDefaultSchool(response.schools[0].id)
+                        if(response.schools.length) {
+                            this.ResetDefaultSchool(response.schools[0].id)
+                        }
                         this.CourseContentOfflineSave(response.courseContent);
                     }
                     return response;
@@ -108,7 +110,7 @@ export class AuthenticationService extends OfflineService {
 
     public RefreshSchools(schools: ISchool[], school: ISchool) {
         const schoolList = schools.filter((obj) => {
-            return obj.id !== school.id;
+            return obj.id !== (school? school.id: '');
         });
         if (school) {
             schoolList.unshift(school);
