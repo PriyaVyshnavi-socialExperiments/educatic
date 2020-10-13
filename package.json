@@ -1,12 +1,13 @@
 {
   "name": "go-offline-e",
-  "version": "0.0.3",
+  "version": "1.0.5",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
     "start": "ionic serve -p 8200 -i 35730",
     "build": "ng build --prod",
+    "prebuild": "npm --no-git-tag-version version patch",
     "build-prod": "ng build --prod --build-optimizer",
     "build-takmil": "ng build --configuration=takmil",
     "test": "ng test",
@@ -15,6 +16,7 @@
     "e2e": "ng e2e",
     "ios": "ionic build --prod && npx cap sync ios && npx cap open ios",
     "android": "ionic build --prod && npx cap sync android && npx cap open android",
+    "android-takmil": "ionic build --configuration=takmil && npx cap sync android && npx cap open android",
     "firebase": "ionic build --prod && firebase deploy",
     "postinstall": "jetifier"
   },

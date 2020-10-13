@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -9,6 +9,7 @@ import { NetworkService } from './_services/network/network.service';
 import { OfflineSyncManagerService } from './_services/offline-sync-manager/offline-sync-manager.service';
 import { RefreshServerService } from './_services/refresh-server/refresh-server.service';
 import { ServiceEvent } from './_models/service-event';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   navigate: any;
   isMobileDevice: any;
   filteredUrlPatterns = ['azure/students'];
+  currentApplicationVersion = environment.appVersion;
+
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -39,6 +42,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   async ngAfterViewInit() {
     // Initialize the CapacitorDataStorageSQLite plugin
     await this.sqlStorageService.init();
+    this.PageProperties();
   }
 
   initializeApp() {
@@ -61,5 +65,13 @@ export class AppComponent implements OnInit, AfterViewInit {
       });
 
     });
+  }
+
+  private PageProperties() {
+    const favicon = document.getElementById('favicon');
+    const pageTitle = document.getElementById('pagetitle');
+    const icon = `assets/${environment.ImageSource}/logo.png`;
+    favicon.setAttribute('href', icon);
+    pageTitle.innerText = environment.PageTitle;
   }
 }

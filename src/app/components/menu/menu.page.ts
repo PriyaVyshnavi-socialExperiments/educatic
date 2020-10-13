@@ -4,6 +4,7 @@ import { MenuController } from '@ionic/angular';
 import { AuthenticationService } from '../../_services';
 import { ISchool, IUser, Role } from '../../_models';
 import { SchoolService } from '../../_services/school/school.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-menu',
@@ -11,7 +12,8 @@ import { SchoolService } from '../../_services/school/school.service';
   styleUrls: ['./menu.page.scss'],
 })
 export class MenuPage implements OnInit, OnDestroy {
-
+  logo = `assets/${environment.ImageSource}/logo.png`;
+  currentApplicationVersion = environment.appVersion;
   activePath = '';
   currentUser: IUser;
   isRemainder = 0;

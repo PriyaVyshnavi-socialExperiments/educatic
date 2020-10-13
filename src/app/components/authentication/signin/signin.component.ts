@@ -6,6 +6,7 @@ import { LoginRequest, Role } from '../../../_models';
 import { ToastController, ModalController } from '@ionic/angular';
 import { ErrorStateMatcherHelper } from '../../../_helpers/error-state-matcher';
 import { StudentSigninPage } from '../student-signin/student-signin.page';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-signin',
@@ -13,6 +14,9 @@ import { StudentSigninPage } from '../student-signin/student-signin.page';
   styleUrls: ['./signin.component.scss']
 })
 export class SigninComponent implements OnInit, OnDestroy {
+  background = `assets/${environment.ImageSource}/background-image.png`;
+  logo = `assets/${environment.ImageSource}/logo.png`;
+  currentApplicationVersion = environment.appVersion;
   loginForm: FormGroup;
   submitted = false;
   returnUrl: string;
