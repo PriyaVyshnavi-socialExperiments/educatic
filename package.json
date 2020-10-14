@@ -10,6 +10,7 @@
     "prebuild": "npm --no-git-tag-version version patch",
     "build-prod": "ng build --prod --build-optimizer",
     "build-takmil": "ng build --configuration=takmil",
+    "build-millat": "ng build --configuration=millat",
     "test": "ng test",
     "test-ci": "ng test --code-coverage",
     "lint": "ng lint",
@@ -17,6 +18,7 @@
     "ios": "ionic build --prod && npx cap sync ios && npx cap open ios",
     "android": "ionic build --prod && npx cap sync android && npx cap open android",
     "android-takmil": "ionic build --configuration=takmil && npx cap sync android && npx cap open android",
+    "android-millat": "ionic build --configuration=millat && npx cap sync android && npx cap open android",
     "firebase": "ionic build --prod && firebase deploy",
     "postinstall": "jetifier"
   },
