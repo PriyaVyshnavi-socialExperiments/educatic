@@ -1,0 +1,133 @@
+[
+  {
+    "name": "Dashboard",
+    "icon": "stats-chart",
+    "path": "/",
+    "roles": [ "SuperAdmin", "SchoolSuperAdmin" ],
+    "active": true
+  },
+  {
+    "name": "School",
+    "icon": "business-outline",
+    "roles": [ "SuperAdmin" ],
+    "active": true,
+    "children": [
+      {
+        "name": "All Schools",
+        "path": "/schools",
+        "icon": "list",
+        "roles": [ "SuperAdmin" ],
+        "active": true
+      },
+      {
+        "name": "Add School",
+        "path": "/school/add",
+        "icon": "add-circle",
+        "roles": [ "SuperAdmin" ],
+        "active": true
+      }
+    ]
+  },
+  {
+    "name": "Teacher",
+    "icon": "newspaper-outline",
+    "roles": [ "SuperAdmin", "SchoolSuperAdmin" ],
+    "active": true,
+    "children": [
+      {
+        "name": "All Teachers",
+        "path": "/teachers",
+        "icon": "list",
+        "roles": [ "SuperAdmin", "SchoolSuperAdmin" ],
+        "active": true
+      },
+      {
+        "name": "Add Teacher",
+        "path": "/teacher/add",
+        "icon": "add-circle",
+        "roles": [ "SuperAdmin", "SchoolSuperAdmin" ],
+        "active": true
+      }
+    ]
+  },
+  {
+    "name": "Class Room",
+    "icon": "text-sharp",
+    "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher" ],
+    "active": true,
+    "children": [
+      {
+        "name": "All Class Rooms",
+        "path": "/class-rooms",
+        "icon": "list",
+        "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher" ],
+        "active": true
+      },
+      {
+        "name": "Add Class Room",
+        "path": "/class-room/add",
+        "icon": "add-circle",
+        "roles": [ "SuperAdmin", "SchoolSuperAdmin" ],
+        "active": true
+      }
+    ]
+  },
+  {
+    "name": "Students",
+    "icon": "people-sharp",
+    "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher" ],
+    "active": true,
+    "children": [
+      {
+        "name": "All Students",
+        "path": "/students",
+        "icon": "list",
+        "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher" ],
+        "active": true
+      },
+      {
+        "name": "Add Student",
+        "path": "/student/add",
+        "icon": "add-circle",
+        "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher" ],
+        "active": true
+      }
+    ]
+  },
+  {
+    "name": "Course",
+    "icon": "school",
+    "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher", "Student" ],
+    "active": true,
+    "children": [
+      {
+        "name": "All Course",
+        "path": "/courses",
+        "icon": "list",
+        "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher", "Student" ],
+        "active": true
+      },
+      {
+        "name": "Add Course",
+        "path": "/course/add",
+        "icon": "add-circle",
+        "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher" ],
+        "active": true
+      }
+    ]
+  },
+  {
+    "name": "Attendance",
+    "path": "/attendance",
+    "icon": "calendar-outline",
+    "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher" ],
+    "active": true
+  },
+  {
+    "name": "My Assignments",
+    "path": "/assignments",
+    "icon": "reader-outline",
+    "roles": [ "SuperAdmin", "SchoolSuperAdmin", "Teacher", "Student" ],
+    "active": true
+  }
+]

@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -21,6 +21,7 @@ import { BLOB_STORAGE_TOKEN, azureBlobStorageFactory } from './_services/azure-b
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { CacheInterceptor } from './_helpers/cache.interceptor';
+import { AppConfigService, initConfig } from './_services/configurations/app-config.service';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -48,6 +49,12 @@ import { CacheInterceptor } from './_helpers/cache.interceptor';
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     // { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
     { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },
+  //   {
+  //     provide: APP_INITIALIZER,
+  //     useFactory: initConfig,
+  //     deps: [ AppConfigService ],
+  //     multi: true
+  // }
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

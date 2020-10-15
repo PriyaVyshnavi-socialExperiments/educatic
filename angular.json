@@ -40,30 +40,13 @@
             ],
             "styles": [
               "./node_modules/bootstrap/dist/css/bootstrap.css",
-              // "./node_modules/simple-line-icons/css/simple-line-icons.css",
-              "./node_modules/node-waves/dist/waves.css",
-              "./node_modules/animate.css/animate.css",
-              "./node_modules/morris.js/morris.css",
-              "./node_modules/owl.carousel/dist/assets/owl.carousel.min.css",
-              "./node_modules/owl.carousel/dist/assets/owl.theme.default.min.css",
-              "./node_modules/perfect-scrollbar/css/perfect-scrollbar.css",
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "./node_modules/angular-archwizard/archwizard.css",
-              "src/assets/js/bundles/lightgallery/dist/css/lightgallery.min.css",
               "src/assets/scss/style.scss",
               "src/assets/scss/theme/all-themes.scss",
               "src/theme/variables.scss",
               "src/global.scss"
             ],
             "scripts": [
-              "./node_modules/jquery/dist/jquery.js",
-              "./node_modules/popper.js/dist/umd/popper.js",
-              "./node_modules/bootstrap/dist/js/bootstrap.js",
-              "./node_modules/jquery-sparkline/jquery.sparkline.min.js",
-              "./node_modules/moment/min/moment.min.js",
-              "./node_modules/owl.carousel/dist/owl.carousel.min.js",
-              "./node_modules/morris.js/morris.js",
-              "./node_modules/raphael/raphael.min.js",
             ]
           },
           "configurations": {
