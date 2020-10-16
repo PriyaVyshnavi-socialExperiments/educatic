@@ -147,13 +147,13 @@ export class NavMenuHelper {
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
       active: true
     },
-    // {
-    //   name: 'Offline Websites',
-    //   path: '/offline-websites',
-    //   icon: 'book-outline',
-    //   roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
-    //   active: true
-    // },
+    {
+      name: 'Offline Websites',
+      path: '/offline-websites',
+      icon: 'book-outline',
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      active: true
+    },
   ];
 
   constructor() { }

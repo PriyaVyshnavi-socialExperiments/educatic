@@ -3,6 +3,7 @@ export const environment = {
     production: true,
     apiBaseUrl: 'https://millat-api.azurewebsites.net/api',
     blobURL: 'https://goofflinee.blob.core.windows.net',
+    offlineWebsiteURL: 'https://goofflinee.azureedge.net',
     appInsightsKey: 'd17999d5-f224-430e-8673-7a549dd41010',
     sqlLiteDBName: 'millat',
     ImageSource: 'millat',
