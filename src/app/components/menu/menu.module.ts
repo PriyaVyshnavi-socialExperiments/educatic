@@ -157,18 +157,19 @@ const routes: Routes = [
         loadChildren: () => import('../../pages/viewer/video-viewer/video-viewer.module').then(m => m.VideoViewerPageModule),
       },
       {
-        path: 'assignments',
-        loadChildren: () => import('../../pages/assignments/my-assignments/my-assignments.module').then(m => m.MyAssignmentsPageModule)
+        path: 'student/assignments',
+        loadChildren: () => import('../../pages/student-assignments/my-assignments/my-assignments.module')
+          .then(m => m.MyAssignmentsPageModule)
       },
       {
-        path: 'assignments/:subject',
-        loadChildren: () => import('../../pages/assignments/subject-assignments/subject-assignments.module')
-        .then(m => m.SubjectAssignmentsPageModule)
+        path: 'student/assignments/:subject',
+        loadChildren: () => import('../../pages/student-assignments/subject-assignments/subject-assignments.module')
+          .then(m => m.SubjectAssignmentsPageModule)
       },
       {
-        path: 'assignment/:id',
-        loadChildren: () => import('../../pages/assignments/upload-assignment/upload-assignment.module')
-        .then(m => m.UploadAssignmentPageModule)
+        path: 'student/assignment/:id',
+        loadChildren: () => import('../../pages/student-assignments/upload-assignment/upload-assignment.module')
+          .then(m => m.UploadAssignmentPageModule)
       },
     ]
   }

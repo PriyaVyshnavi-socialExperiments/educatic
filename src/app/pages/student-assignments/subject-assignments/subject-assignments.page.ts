@@ -14,7 +14,7 @@ export class SubjectAssignmentsPage implements OnInit {
   }
 
   public selectAssignment() {
-    this.router.navigateByUrl(`/assignment/lesson`);
+    this.router.navigateByUrl(`/student/assignment/lesson`);
   }
 
 }

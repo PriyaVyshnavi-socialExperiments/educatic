@@ -19,7 +19,7 @@ export class MyAssignmentsPage implements OnInit {
   }
 
   public selectSubject() {
-    this.router.navigateByUrl(`/assignments/english`);
+    this.router.navigateByUrl(`/student/assignments/english`);
   }
 
 }

@@ -142,7 +142,7 @@ export class NavMenuHelper {
     },
     {
       name: 'My Assignments',
-      path: '/assignments',
+      path: '/student/assignments',
       icon: 'reader-outline',
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
       active: true
