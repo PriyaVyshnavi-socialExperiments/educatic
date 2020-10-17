@@ -1,0 +1,72 @@
+<ion-content>
+    <ion-grid>
+        <app-filter [(selected)]="selected"></app-filter>
+        <ion-row class="top-row">
+            <ion-col>
+                <ion-card >
+                    {{this.selected.class.name }}
+                </ion-card>
+            </ion-col>
+            <ion-col>
+                <ion-card >
+                </ion-card>
+            </ion-col>
+            <ion-col>
+                <ion-card></ion-card>
+            </ion-col>
+            <ion-col>
+                <ion-card></ion-card>
+            </ion-col>
+            <ion-col>
+                <ion-card></ion-card>
+            </ion-col>
+            <ion-col>
+                <ion-card></ion-card>
+            </ion-col>
+            <ion-col>
+                <ion-card></ion-card>
+            </ion-col>
+        </ion-row>
+        <ion-row class="graph-row">
+            <ion-col style="flex: 1">
+                <ion-card>
+                    <agm-map [latitude]="this.selected.maps.lat" [longitude]="this.selected.maps.long">
+                        <agm-marker *ngFor="let point of this.selected.maps.points" [latitude]="point.lat" [longitude]="point.long"></agm-marker>
+                      </agm-map>
+                </ion-card>
+            </ion-col>
+            <ion-col style="flex: 2;">
+                <ion-card (click)="presentModal()"                >
+                    <app-charts [labels]="this.selected.class.attendence.dates" 
+                                [title]="this.selected.class.name +' Attendence'"
+                                [data]="this.selected.class.attendence.present"
+                                [total]="this.selected.class.attendence.total"
+                    >
+                    </app-charts>
+                </ion-card>
+            </ion-col>
+            <ion-col style="flex: 1;">
+                <ion-card style="height: 50%;"></ion-card>
+                <ion-card style="height: 50%;"></ion-card>                   
+            </ion-col>
+        </ion-row>
+        <ion-row class="bottom-row">
+            <ion-col>
+                <ion-card>
+
+                </ion-card>
+            </ion-col>
+            <ion-col>
+                <ion-card>
+                    
+                </ion-card>
+            </ion-col>
+            <ion-col>
+                <ion-card>
+                    
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>
+

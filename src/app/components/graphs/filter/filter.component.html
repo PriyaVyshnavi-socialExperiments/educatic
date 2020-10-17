@@ -1,0 +1,15 @@
+<ion-list>
+  <ion-item>
+    <ion-label>School</ion-label>
+    <ion-select placeholder="Select One" multiple="false" [(ngModel)]="school" (ionChange)="changeSchool()">
+      <ion-select-option *ngFor="let school of schools" [value]="school">{{school.name}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Class</ion-label>
+    <ion-select placeholder="Select One" multiple="false" [(ngModel)]="class" (ionChange)="changeClass()">
+      <ion-select-option *ngFor="let class of classes" [value]="class">{{class.name}}</ion-select-option>
+    </ion-select>
+  </ion-item>
+</ion-list>

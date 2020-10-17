@@ -13,9 +13,6 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="powerBIConfig">
-  <ngx-powerbi-component [type]="powerBIConfig.reportType" [id]="powerBIConfig.reportId"
-    [embedUrl]="powerBIConfig.embedUrl" [tokenType]="powerBIConfig.tokenType" [accessToken]="powerBIConfig.accessToken"
-    permissions="All" on-embedded="onEmbedded($event)">
-  </ngx-powerbi-component>
+<ion-content>
+  <app-dashboard></app-dashboard>
 </ion-content>

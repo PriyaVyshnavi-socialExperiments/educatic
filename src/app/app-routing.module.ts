@@ -19,6 +19,10 @@ const routes: Routes = [
     path: 'action-popover',
     loadChildren: () => import('./components/action-popover/action-popover.module').then( m => m.ActionPopoverPageModule)
   },
+  {
+    path: 'modal',
+    loadChildren: () => import('./components/graphs/modal/modal.module').then( m => m.ModalPageModule)
+  },
 
   // {
   //   path: 'course-share',

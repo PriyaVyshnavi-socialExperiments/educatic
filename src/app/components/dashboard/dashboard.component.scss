@@ -1,0 +1,27 @@
+.top-row {
+    height: 25vh;
+}
+
+.graph-row {
+    height: 40vh;
+    display: flex;
+    overflow: scroll;
+}
+
+.bottom-row {
+    height: 30vh;
+}   
+
+ion-card {
+    margin: 1px;
+    height: 100%;
+    padding: 5px;
+}
+
+ion-icon {
+    float: right;
+}
+
+agm-map {
+    height: 100%;
+}
