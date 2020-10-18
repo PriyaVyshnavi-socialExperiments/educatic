@@ -85,6 +85,7 @@ export class AuthenticationService extends OfflineService {
 
     public Logout() {
         this.RemoveOfflineData('User', 'current-user');
+        this.RemoveOfflineData('countries-states-cities', 'countries-states-cities');
         this.currentUserSubject.next(null);
         this.ready.next(undefined);
         this.appInsightsService.clearUserId();
