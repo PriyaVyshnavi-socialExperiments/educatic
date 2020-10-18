@@ -1,5 +1,5 @@
 ﻿import { Injectable, Injector } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, ReplaySubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { IUser, LoginRequest, StudentLoginRequest, ISchool, OfflineSync } from '../../_models';
@@ -8,6 +8,7 @@ import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
 import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
 import { IResetPassword } from 'src/app/_models/reset-password';
+import { CountryStateCityService } from '../country-state-city/country-state-city.service';
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends OfflineService {
 
@@ -25,6 +26,7 @@ export class AuthenticationService extends OfflineService {
         private appInsightsService: ApplicationInsightsService,
         public injector: Injector,
         private menuHelper: NavMenuHelper,
+        private countryService: CountryStateCityService,
     ) {
         super(injector);
         this.GetOfflineData('User', 'current-user').then((user) => {
@@ -40,25 +42,27 @@ export class AuthenticationService extends OfflineService {
     }
 
     public Login(loginRequest: LoginRequest) {
-        return this.http.Post<any>(`/login`, loginRequest)
-            .pipe(
-                map(response => {
-                    // login successful if there's a jwt token in the response
-                    if (response && response.token) {
-                        // store user details and jwt token in local storage to keep user logged in between page refreshes
-                        response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
-                        response.schools = [...response.schools];
-                        response.courseContent = [...response.courseContent];
-                        this.currentUserSubject.next(response);
-                        this.ready.next(response);
-                        this.appInsightsService.setUserId(response.id)
-                        if(response.schools.length) {
-                            this.ResetDefaultSchool(response.schools[0].id)
-                        }
-                        this.CourseContentOfflineSave(response.courseContent);
+        const loginResponse = this.http.Post<any>(`/login`, loginRequest)
+        .pipe(
+            map(response => {
+                // login successful if there's a jwt token in the response
+                if (response && response.token) {
+                    // store user details and jwt token in local storage to keep user logged in between page refreshes
+                    response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
+                    response.schools = [...response.schools];
+                    response.courseContent = [...response.courseContent];
+                    this.currentUserSubject.next(response);
+                    this.ready.next(response);
+                    this.appInsightsService.setUserId(response.id)
+                    if(response.schools.length) {
+                        this.ResetDefaultSchool(response.schools[0].id)
                     }
-                    return response;
-                }));
+                    this.CourseContentOfflineSave(response.courseContent);
+                }
+                return response;
+            }));
+        const countryResponse = this.countryService.AllCountries();
+        return forkJoin([loginResponse, countryResponse]);
     }
 
     public StudentLogin(loginRequest: StudentLoginRequest) {
