@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Student</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/teacher/assignment/subjects"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="main-card ion-justify-content-center">
+    <ion-card (click)="selectStudent()">
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="../../../../assets/images/student.svg">
+          </ion-avatar>
+          <ion-label>
+            <h2>Name: Rahul Dravid</h2>
+            <p><b>Class: </b> Class I - A </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="../../../../assets/images/student.svg">
+          </ion-avatar>
+          <ion-label>
+            <h2>Name: Ram Singh</h2>
+            <p><b>Class: </b> Class II - A </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="../../../../assets/images/student.svg">
+          </ion-avatar>
+          <ion-label>
+            <h2>Name: Sheetal Yadav</h2>
+            <p><b>Class: </b> Class III - A </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

@@ -150,11 +150,13 @@ const routes: Routes = [
       },
       {
         path: 'content/:id/pdf-viewer',
-        loadChildren: () => import('../../pages/viewer/pdf-viewer/pdf-viewer.module').then(m => m.PdfViewerPageModule),
+        loadChildren: () => import('../../pages/viewer/pdf-viewer/pdf-viewer.module')
+        .then(m => m.PdfViewerPageModule),
       },
       {
         path: 'content/:id/video-viewer',
-        loadChildren: () => import('../../pages/viewer/video-viewer/video-viewer.module').then(m => m.VideoViewerPageModule),
+        loadChildren: () => import('../../pages/viewer/video-viewer/video-viewer.module')
+        .then(m => m.VideoViewerPageModule),
       },
       {
         path: 'student/assignments',
@@ -170,6 +172,31 @@ const routes: Routes = [
         path: 'student/assignment/:id',
         loadChildren: () => import('../../pages/student-assignments/upload-assignment/upload-assignment.module')
           .then(m => m.UploadAssignmentPageModule)
+      },
+      {
+        path: 'teacher/assignment/subjects',
+        loadChildren: () => import('../../pages/teacher-assignments/assignment-subjects/assignment-subjects.module')
+        .then( m => m.AssignmentSubjectsPageModule)
+      },
+      {
+        path: 'teacher/assignment/classes',
+        loadChildren: () => import('../../pages/teacher-assignments/assignment-classes/assignment-classes.module')
+        .then( m => m.AssignmentClassesPageModule)
+      },
+      {
+        path: 'teacher/assignment/students',
+        loadChildren: () => import('../../pages/teacher-assignments/assignment-students/assignment-students.module')
+        .then( m => m.AssignmentStudentsPageModule)
+      },
+      {
+        path: 'teacher/assignment/view',
+        loadChildren: () => import('../../pages/teacher-assignments/assignment-view/assignment-view.module')
+        .then( m => m.AssignmentStudentViewPageModule)
+      },
+      {
+        path: 'teacher/assignment/student/list',
+        loadChildren: () => import('../../pages/teacher-assignments/assignment-list/assignment-list.module')
+        .then( m => m.AssignmentListPageModule)
       },
     ]
   }

@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Student Assignments</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/teacher/assignment/students"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="main-card ion-justify-content-center">
+    <ion-card (click)="openStudentAssignmentInModal()">
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
+          <ion-label>
+            <h2>Worksheet of Lesson-1 (The Lazy Squirrel)</h2>
+            <p>Date Submitted: <b>15 JUN 2020</b> </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card (click)="openStudentAssignmentInModal()">
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-badge slot="start" color="danger" class="number-circle">2</ion-badge>
+          <ion-label>
+            <h2>Worksheet of Lesson-2 (The Lazy Squirrel)</h2>
+            <p>Date Submitted: <b>25 AUG 2020</b> </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card (click)="openStudentAssignmentInModal()">
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-badge slot="start" color="danger" class="number-circle">3</ion-badge>
+          <ion-label>
+            <h2>Worksheet of Lesson-5 (The Lazy Squirrel)</h2>
+            <p>Date Submitted: <b>25 OCT 2020</b> </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

@@ -148,6 +148,13 @@ export class NavMenuHelper {
       active: true
     },
     {
+      name: 'Teacher Assignments',
+      path: '/teacher/assignment/classes',
+      icon: 'reader-outline',
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      active: true
+    },
+    {
       name: 'Offline Websites',
       path: '/offline-websites',
       icon: 'book-outline',
