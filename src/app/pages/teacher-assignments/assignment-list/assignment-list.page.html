@@ -1,9 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Student Assignments</ion-title>
+    <ion-title>Assignments</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/teacher/assignment/students"></ion-back-button>
+      <ion-back-button defaultHref="/teacher/assignment/subjects"></ion-back-button>
     </ion-buttons>
+    <ion-buttons *ngIf="assignmentFor==='teacher'" slot="end">
+      <ion-button ion-button block (click)=UploadAssignment()>Upload Assignment</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-segment value="teacher" (ionChange)="segmentChanged($event)" color="light">
+      <ion-segment-button value="teacher">
+        Teacher`s Assignment(s)
+      </ion-segment-button>
+      <ion-segment-button value="student">
+        Student`s Assignment(s)
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
@@ -15,7 +28,8 @@
           <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
           <ion-label>
             <h2>Worksheet of Lesson-1 (The Lazy Squirrel)</h2>
-            <p>Date Submitted: <b>15 JUN 2020</b> </p>
+            <p *ngIf="assignmentFor==='teacher'">Date Submitted: <b>15 JUN 2020</b> </p>
+            <p *ngIf="assignmentFor==='student'">Submitted By: <b>Rahul Dravid</b> </p>
           </ion-label>
         </ion-item>
       </ion-card-content>
@@ -26,7 +40,8 @@
           <ion-badge slot="start" color="danger" class="number-circle">2</ion-badge>
           <ion-label>
             <h2>Worksheet of Lesson-2 (The Lazy Squirrel)</h2>
-            <p>Date Submitted: <b>25 AUG 2020</b> </p>
+            <p *ngIf="assignmentFor==='teacher'">Date Submitted: <b>25 AUG 2020</b> </p>
+            <p *ngIf="assignmentFor==='student'">Submitted By: <b>Mahesh Yadav</b> </p>
           </ion-label>
         </ion-item>
       </ion-card-content>
@@ -37,7 +52,8 @@
           <ion-badge slot="start" color="danger" class="number-circle">3</ion-badge>
           <ion-label>
             <h2>Worksheet of Lesson-5 (The Lazy Squirrel)</h2>
-            <p>Date Submitted: <b>25 OCT 2020</b> </p>
+            <p *ngIf="assignmentFor==='teacher'">Date Submitted: <b>25 OCT 2020</b> </p>
+            <p *ngIf="assignmentFor==='student'">Submitted By: <b>Sanjeev Sharma</b> </p>
           </ion-label>
         </ion-item>
       </ion-card-content>

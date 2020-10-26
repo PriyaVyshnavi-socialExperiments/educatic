@@ -10,12 +10,18 @@ import { AssignmentViewPage } from '../assignment-view/assignment-view.page';
 })
 export class AssignmentListPage implements OnInit {
 
+  assignmentFor = 'teacher';
+
   constructor(private modalController: ModalController,) { }
 
   ngOnInit() {
   }
   ViewAssignment() {
 
+  }
+
+  segmentChanged(event) {
+    this.assignmentFor = event.detail.value;
   }
 
   async openStudentAssignmentInModal() {
@@ -31,5 +37,9 @@ export class AssignmentListPage implements OnInit {
     });
 
     return await modal.present();
+  }
+
+  UploadAssignment() {
+
   }
 }
