@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { ICourseContentCategory } from 'src/app/_models/course-content-category';
@@ -9,6 +9,7 @@ import { ICourseContentCategory } from 'src/app/_models/course-content-category'
   styleUrls: ['./course-category.page.scss'],
 })
 export class CourseCategoryPage implements OnInit {
+  @Input() title: any;
   categoryList: ICourseContentCategory[] = [];
   categoryForm: FormGroup;
 
@@ -23,6 +24,8 @@ export class CourseCategoryPage implements OnInit {
         Validators.required
       ])
     });
+
+    this.title = this.title? this.title : 'Course category(subject)';
   }
 
   get f() {
@@ -48,6 +51,11 @@ export class CourseCategoryPage implements OnInit {
     }).then(() => { this.modalController = null; });
   }
 
+  AddCategoryAndClose() {
+    this.addCategory();
+    this.dismissModal();
+  }
+  
   selectCategory(category: ICourseContentCategory) {
     this.modalController.dismiss({
       categoryList: this.categoryList,

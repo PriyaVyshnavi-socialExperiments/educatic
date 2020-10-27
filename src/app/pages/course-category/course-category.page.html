@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Course category(subject)</ion-title>
+    <ion-title>{{title}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismissModal()">
         <ion-icon name="close-outline"></ion-icon>
@@ -27,17 +27,21 @@
                 <button item-end mat-flat-button color="primary" type="submit" class="login100-form-btn">
                   Add
                 </button>
+                <button item-end mat-flat-button color="primary" (click)="AddCategoryAndClose()" class="login100-form-btn"
+                  style="margin-left: 10px;">
+                  Select
+                </button>
               </div>
             </div>
           </div>
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2 mt-3">
-            
+
               <ion-item *ngFor="let category of categoryList; let i = index" lines="none">
-               <span> {{category.name}} </span>
-                <a  class="txt1 float-right" slot="end" (click)="selectCategory(category)">Select</a>
+                <span> {{category.name}} </span>
+                <a class="txt1 float-right" slot="end" (click)="selectCategory(category)">Select</a>
               </ion-item>
-           
+
             </div>
           </div>
         </form>

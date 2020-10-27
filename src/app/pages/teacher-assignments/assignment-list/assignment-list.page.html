@@ -5,33 +5,69 @@
       <ion-back-button defaultHref="/teacher/assignment/subjects"></ion-back-button>
     </ion-buttons>
     <ion-buttons *ngIf="assignmentFor==='teacher'" slot="end">
-      <ion-button ion-button block (click)=UploadAssignment()>Upload Assignment</ion-button>
+      <ion-button ion-button block (click)=UploadAssignment()>Upload</ion-button>
     </ion-buttons>
-  </ion-toolbar>
-  <ion-toolbar color="primary">
-    <ion-segment value="teacher" (ionChange)="segmentChanged($event)" color="light">
-      <ion-segment-button value="teacher">
-        Teacher`s Assignment(s)
-      </ion-segment-button>
-      <ion-segment-button value="student">
-        Student`s Assignment(s)
-      </ion-segment-button>
-    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="assignmentFor==='teacher'">
   <div class="main-card ion-justify-content-center">
-    <ion-card (click)="openStudentAssignmentInModal()">
+    <ion-card>
       <ion-card-content>
-        <ion-item lines="none">
-          <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
-          <ion-label>
+        <ion-item lines="none" color="medium">
+          <ion-badge slot="end" color="warning" class="number-circle" (click)="badgeToggle = !badgeToggle">
+            <h1>
+            <ion-icon *ngIf="!badgeToggle" name="chevron-down-circle-outline"></ion-icon>
+            <ion-icon *ngIf="badgeToggle" name="chevron-up-circle-outline"></ion-icon>
+          </h1>
+          </ion-badge>
+          <ion-label (click)="openStudentAssignmentInModal()">
             <h2>Worksheet of Lesson-1 (The Lazy Squirrel)</h2>
-            <p *ngIf="assignmentFor==='teacher'">Date Submitted: <b>15 JUN 2020</b> </p>
-            <p *ngIf="assignmentFor==='student'">Submitted By: <b>Rahul Dravid</b> </p>
+            <p>Date Submitted: <b>15 JUN 2020</b> </p>
           </ion-label>
         </ion-item>
+        <ion-list *ngIf="badgeToggle">
+          <ion-item> 
+            <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
+            <ion-label>
+              <h2>Rahul Dravid</h2>
+              <p> Submitted Date: <b>15 JUN 2020</b> </p>
+              <p>You will remove these restraints and leave...</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-badge slot="start" color="danger" class="number-circle">2</ion-badge>
+            <ion-label>
+            <h2>Sachin Tendulkar</h2>
+            <p> Submitted Date: <b>15 JUN 2020</b> </p>
+            <p>You will remove these restraints and leave...</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-badge slot="start" color="danger" class="number-circle">3</ion-badge>
+            <ion-label>
+            <h2>Lokesh Raj</h2>
+            <p> Submitted Date: <b>15 JUN 2020</b> </p>
+            <p>You will remove these restraints and leave...</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-badge slot="start" color="danger" class="number-circle">4</ion-badge>
+            <ion-label>
+            <h2>Sunita YAdav</h2>
+            <p> Submitted Date: <b>15 JUN 2020</b> </p>
+            <p>You will remove these restraints and leave...</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-badge slot="start" color="danger" class="number-circle">5</ion-badge>
+            <ion-label>
+            <h2>Sania Mirza</h2>
+            <p> Submitted Date: <b>15 JUN 2020</b> </p>
+            <p>You will remove these restraints and leave...</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
       </ion-card-content>
     </ion-card>
     <ion-card (click)="openStudentAssignmentInModal()">
@@ -40,8 +76,7 @@
           <ion-badge slot="start" color="danger" class="number-circle">2</ion-badge>
           <ion-label>
             <h2>Worksheet of Lesson-2 (The Lazy Squirrel)</h2>
-            <p *ngIf="assignmentFor==='teacher'">Date Submitted: <b>25 AUG 2020</b> </p>
-            <p *ngIf="assignmentFor==='student'">Submitted By: <b>Mahesh Yadav</b> </p>
+            <p>Date Submitted: <b>25 AUG 2020</b> </p>
           </ion-label>
         </ion-item>
       </ion-card-content>
@@ -52,8 +87,65 @@
           <ion-badge slot="start" color="danger" class="number-circle">3</ion-badge>
           <ion-label>
             <h2>Worksheet of Lesson-5 (The Lazy Squirrel)</h2>
-            <p *ngIf="assignmentFor==='teacher'">Date Submitted: <b>25 OCT 2020</b> </p>
-            <p *ngIf="assignmentFor==='student'">Submitted By: <b>Sanjeev Sharma</b> </p>
+            <p>Date Submitted: <b>25 OCT 2020</b> </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*" />
+</ion-content>
+
+<ion-content *ngIf="assignmentFor==='student'">
+  <div class="main-card ion-justify-content-center">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>Date Submitted: <b>15 JUN 2020</b></ion-card-subtitle>
+        <ion-card-title>Student Name: <b>Rahul Dravid</b></ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="none" (click)="openStudentAssignmentInModal()">
+          <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
+          <ion-label>
+            <h2>Worksheet of Lesson-1 (The Lazy Squirrel)</h2>
+            <p>Details Worksheet of Lesson-1 (The Lazy Squirrel) </p>
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none" (click)="openStudentAssignmentInModal()">
+          <ion-badge slot="start" color="danger" class="number-circle">2</ion-badge>
+          <ion-label>
+            <h2>Worksheet of Lesson-1 (The Lazy Squirrel)</h2>
+            <p>Details Worksheet of Lesson-1 (The Lazy Squirrel) </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>Date Submitted: <b>25 JUN 2020</b></ion-card-subtitle>
+        <ion-card-title>Student Name: <b>Mahesh Yadav</b></ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="none" (click)="openStudentAssignmentInModal()">
+          <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
+          <ion-label>
+            <h2>Worksheet of Lesson-2 (The Lazy Squirrel)</h2>
+            <p>Details Worksheet of Lesson-1 (The Lazy Squirrel) </p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>Date Submitted: <b>19 OCT 2020</b></ion-card-subtitle>
+        <ion-card-title>Student Name: <b>Sanjeev Sharma</b></ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="none" (click)="openStudentAssignmentInModal()">
+          <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
+          <ion-label>
+            <h2>Worksheet of Lesson-5 (The Lazy Squirrel)</h2>
+            <p>Details Worksheet of Lesson-1 (The Lazy Squirrel) </p>
           </ion-label>
         </ion-item>
       </ion-card-content>
