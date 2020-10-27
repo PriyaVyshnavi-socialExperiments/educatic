@@ -140,9 +140,22 @@ export class NavMenuHelper {
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
       active: true
     },
-
     {
-      name: 'Offline Content',
+      name: 'My Assignments',
+      path: '/student/assignments',
+      icon: 'reader-outline',
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      active: true
+    },
+    {
+      name: 'Teacher Assignments',
+      path: '/teacher/assignment/classes',
+      icon: 'reader-outline',
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      active: true
+    },
+    {
+      name: 'Offline Websites',
       path: '/offline-websites',
       icon: 'book-outline',
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],

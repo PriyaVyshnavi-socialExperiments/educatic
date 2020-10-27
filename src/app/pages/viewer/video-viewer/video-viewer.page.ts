@@ -6,8 +6,7 @@ import * as PluginsLibrary from 'capacitor-video-player';
 const { CapacitorVideoPlayer, Device } = Plugins;
 
 import { ICourseContent } from 'src/app/_models/course-content';
-import { BlobStorageRequest } from 'src/app/_services/azure-blob/azure-storage';
-import { SasGeneratorService } from 'src/app/_services/azure-blob/sas-generator.service';
+import { CourseContentService } from 'src/app/_services/course-content/course-content.service';
 
 
 @Component({
@@ -20,7 +19,7 @@ export class VideoViewerPage implements OnInit, AfterViewInit {
   courseContent: ICourseContent;
   title = '';
   videoPlayer: any;
-  constructor(private sasGeneratorService: SasGeneratorService,
+  constructor(private contentService: CourseContentService,
     private navCtrl: NavController) { }
 
   ngOnInit() {
@@ -37,13 +36,13 @@ export class VideoViewerPage implements OnInit, AfterViewInit {
     if (info.platform === 'ios' || info.platform === 'android') {
       this.videoPlayer = CapacitorVideoPlayer;
     } else {
-      this.videoPlayer = PluginsLibrary.CapacitorVideoPlayer
+      this.videoPlayer = PluginsLibrary.CapacitorVideoPlayer;
     }
 
     this.VideoConfig();
 
-    this.sasGeneratorService.getSasToken('coursecontent').subscribe(async (blobStorage: BlobStorageRequest) => {
-      const videoURL = `${blobStorage.storageUri}coursecontent/${this.courseContent.courseURL}`;
+    this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe(async (url) => {
+      const videoURL = url;
       await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: videoURL });
     })
   }
@@ -62,7 +61,7 @@ export class VideoViewerPage implements OnInit, AfterViewInit {
       (e: CustomEvent) => {
         console.log('Event jeepCapVideoPlayerEnded ', e.detail);
       }, false);
-      document.addEventListener('jeepCapVideoPlayerExit',
+    document.addEventListener('jeepCapVideoPlayerExit',
       (e: CustomEvent) => {
         console.log('Event jeepCapVideoPlayerExit ', e.detail);
         this.navCtrl.setDirection('back');

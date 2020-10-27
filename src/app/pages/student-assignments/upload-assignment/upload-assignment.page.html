@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/student/assignments/english"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen class="ion-padding">
+  <ion-card>
+    <ion-card-content>
+      <h1>Worksheet of Lesson-1 (The Lazy Squirrel)</h1>
+      <p>Last submission Date: <b>15 JUN 2020</b> </p>
+      <p>Dear Students</p>
+      <p>Please find attached the worksheet of lesson-1</p>
+      <p>Regards,</p>
+      <p>Subject Teacher</p>
+      <p> <b>Assignment To Be Done</b> </p>
+
+      <ion-buttons slot="end">
+        <ion-label>Download: </ion-label>
+        <ion-chip outline color="danger">
+          <ion-label>english-assignment.pdf</ion-label>
+        </ion-chip>
+        <ion-button>
+          <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-card-content>
+    <ion-footer class="ion-justify-content-center">
+      <div class="row">
+        <div class="col text-center">
+          <ion-toolbar>
+            <ion-button color="primary" shape="round" fill="outline" class="upload-button">
+              <ion-icon slot="start" name="push-outline"></ion-icon>Upload Assignment
+            </ion-button>
+          </ion-toolbar>
+        </div>
+      </div>
+    </ion-footer>
+  </ion-card>
+</ion-content>

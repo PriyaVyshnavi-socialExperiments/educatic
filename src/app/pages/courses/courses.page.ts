@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Role } from 'src/app/_models';
+import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { ICourseContentCategory } from 'src/app/_models/course-content-category';
 import { CourseContentService } from 'src/app/_services/course-content/course-content.service';
 import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
@@ -14,10 +15,6 @@ import { CourseSharePage } from '../course-share/course-share.page';
   styleUrls: ['./courses.page.scss'],
 })
 export class CoursesPage implements OnInit {
-
-  pdfSupported = ['pdf'];
-  audioVideoSupported = ['wav', 'aiff', 'alac', 'flac', 'mp3', 'aac', 'wma', 'ogg',
-    'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ogg', 'mp4', 'm4p', 'm4v', 'avi', 'wmv', 'mov', 'qt', 'flv', 'swf', 'avchd'];
 
   courseContent: ICourseContent[] = [];
   categoryWiseContent: ICategoryContentList[];
@@ -83,11 +80,30 @@ export class CoursesPage implements OnInit {
   ContentViewer(content: ICourseContent) {
     const contentType = content.courseURL.replace(/^.*\./, '').toLowerCase();
 
-    if (this.pdfSupported.indexOf(contentType) > -1) {
+    if (this.contentService.PdfSupported.indexOf(contentType) > -1) {
       this.router.navigateByUrl(`content/${content.id}/pdf-viewer`, { state: content });
-    } else if (this.audioVideoSupported.indexOf(contentType) > -1) {
+    } else if (this.contentService.AudioVideoSupported.indexOf(contentType) > -1) {
       this.router.navigateByUrl(`content/${content.id}/video-viewer`, { state: content });
-    } 
+    } else if (this.contentService.ImgSupported.indexOf(contentType) > -1) {
+      this.contentService.GetAzureContentURL(content.courseURL).subscribe((url) => {
+        this.openViewer(url, content);
+      })
+    }
+  }
+
+  async openViewer(imgContentURL: string, content: ICourseContent) {
+    const modal = await this.modalController.create({
+      component: ViewerModalComponent,
+      componentProps: {
+        src: imgContentURL,
+        title: `${content.categoryName} - ${content.courseName}`
+      },
+      cssClass: 'ion-img-viewer',
+      keyboardClose: true,
+      showBackdrop: true,
+    });
+
+    return await modal.present();
   }
 
 }

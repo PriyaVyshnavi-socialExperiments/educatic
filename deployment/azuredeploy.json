@@ -1,0 +1,124 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "applicationInsightsName": {
+            "type": "string"
+        },
+        "appServiceName": {
+            "type": "string"
+        },
+        "appServicePlanName": {
+            "type": "string"
+        },
+        "createStagingSlot": {
+            "type": "bool"
+        },
+        "resourceGroupCommonName": {
+            "type": "string"
+        },
+        "appServiceAlertThreshold": {
+            "type": "string"
+        }
+    },
+
+    "resources": [
+        {
+            "apiVersion": "2016-08-01",
+            "type": "Microsoft.Web/sites",
+            "kind": "app",
+            "name": "[parameters('appServiceName')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "goOfflineE": "goOfflineE"
+            },
+            "properties": {
+                "serverFarmId": "[resourceId(parameters('resourceGroupCommonName'),'Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId(parameters('resourceGroupCommonName'),'Microsoft.Insights/components', parameters('applicationInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+                            "value": "~2"
+                        },
+                        {
+                            "name": "DiagnosticServices_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "APPINSIGHTS_PROFILERFEATURE_VERSION",
+                            "value": "1.0.0"
+                        },
+                        {
+                            "name": "WEBSITE_LOAD_CERTIFICATES",
+                            "value": "*"
+                        },
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                        }
+
+                    ]
+                }
+            }
+
+        },
+        {
+            "condition": "[parameters('createStagingSlot')]",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('appServiceName'),'/staging')]",
+            "type": "Microsoft.Web/sites/slots",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "team": "[resourceGroup().tags.team]",
+                "department": "[resourceGroup().tags.department]",
+                "environment": "[resourceGroup().tags.environment]"
+            },
+            "properties": {
+                "serverFarmId": "[resourceId(parameters('resourceGroupCommonName'),'Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+            ]
+        },
+        {
+            "name": "digitalAppHttpException",
+            "type": "Microsoft.Insights/metricAlerts",
+            "location": "global",
+            "apiVersion": "2018-03-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+            ],
+            "properties": {
+                "description": "[concat('The number of HTTP 5xx responses has increased beyond the specified threshold.')]",
+                "severity": 2,
+                "enabled": true,
+                "scopes": [
+                    "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+                ],
+                "evaluationFrequency": "PT5M",
+                "windowSize": "PT1H",
+                "criteria": {
+                    "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                    "allOf": [
+                        {
+                            "name": "HTTP 5xx greater than 3",
+                            "metricName": "Http5xx",
+                            "operator": "GreaterThan",
+                            "threshold": "[parameters('appServiceAlertThreshold')]",
+                            "timeAggregation": "Maximum"
+                        }
+                    ]
+                },
+                "actions": [
+                    {
+                        "actionGroupId": "[resourceId(parameters('resourceGroupCommonName'),'Microsoft.Insights/actionGroups', 'digitalAppTeam')]"
+                    }
+                ]
+            }
+        }
+    ]
+}

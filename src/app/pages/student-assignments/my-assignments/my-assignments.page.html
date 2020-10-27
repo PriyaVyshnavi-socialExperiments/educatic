@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="true"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>My Assignments</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- <ion-row>
+    <ion-col>
+      <ion-card class="l-bg-orange">
+        <ion-card-content>
+          <ion-row class="ion-justify-content-center">
+            <ion-badge color="danger">66</ion-badge>
+          </ion-row>
+          <ion-row class="ion-justify-content-center">
+            <ion-text>PENDING</ion-text>
+          </ion-row>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col>
+      <ion-card class="l-bg-orange">
+        <ion-card-content>
+          <ion-row class="ion-justify-content-center">
+            <ion-badge color="success">44</ion-badge>
+          </ion-row>
+          <ion-row class="ion-justify-content-center">
+            <ion-text>COMPLETED</ion-text>
+          </ion-row>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row> -->
+
+  <ion-title>Subject Wise</ion-title>
+  <div class="subject-wise ion-justify-content-center">
+    <ion-card (click)="selectSubject()">
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="../../../../assets/images/subject.svg">
+          </ion-avatar>
+          <ion-label>
+            <h2>English</h2>
+            <p>22 Topics</p>
+          </ion-label>
+          <ion-badge slot="end">22</ion-badge>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card (click)="selectSubject()">
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="../../../../assets/images/subject.svg">
+          </ion-avatar>
+          <ion-label>
+            <h2>Mathematics</h2>
+            <p>10 Topics</p>
+          </ion-label>
+          <ion-badge slot="end">10</ion-badge>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card (click)="selectSubject()">
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="../../../../assets/images/subject.svg">
+          </ion-avatar>
+          <ion-label>
+            <h2>Science</h2>
+            <p>12 Topics</p>
+          </ion-label>
+          <ion-badge slot="end">12</ion-badge>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

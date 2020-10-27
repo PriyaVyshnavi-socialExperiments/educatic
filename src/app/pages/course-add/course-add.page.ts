@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
-import { FilePreviewModel } from 'ngx-awesome-uploader';
+import { ModalController, ToastController } from '@ionic/angular';
+import { FilePickerComponent, ValidationError } from 'ngx-awesome-uploader';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
 import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
 import { ICourseContentCategory } from '../../_models/course-content-category';
@@ -17,9 +17,11 @@ import { CourseCategoryPage } from '../course-category/course-category.page';
 export class CourseAddPage implements OnInit {
 
   @ViewChild('documentEditForm') documentEditForm: FormGroupDirective;
+  @ViewChild('uploader') uploader: FilePickerComponent;
 
   courseCategory: ICourseContentCategory[] = [];
   fileName: string;
+  contentUploadSupported: any;
   progress = 0;
   public courseForm: FormGroup;
   categoryWiseContent: ICategoryContentList[];
@@ -30,6 +32,8 @@ export class CourseAddPage implements OnInit {
     private modalController: ModalController,
     private contentService: CourseContentService,
     private authService: AuthenticationService,
+    private toastController: ToastController,
+
   ) { }
 
   ngOnInit() {
@@ -47,6 +51,7 @@ export class CourseAddPage implements OnInit {
         Validators.required,
       ])
     });
+    this.contentUploadSupported = this.contentService.ContentUploadSupported;
   }
 
   ionViewDidEnter() {
@@ -110,9 +115,7 @@ export class CourseAddPage implements OnInit {
       courseDescription: this.f.courseDescription.value,
       courseURL: this.filepicker.blobFileName + '/' + this.fileName,
     } as ICourseContent;
-    console.log("Called SubmitCourse");
     this.contentService.SubmitCourseContent(courseContent).subscribe((res) => {
-      console.log("SubmitCourse SuccessFully");
     });
 
   }
@@ -122,13 +125,38 @@ export class CourseAddPage implements OnInit {
   }
 
   uploadSuccess(uploadedFile) {
-    console.log("uploadSuccess: ", uploadedFile);
     this.fileName = uploadedFile.fileName;
     this.documentEditForm.ngSubmit.emit();
   }
 
   uploadFail(item) {
-    console.log("uploadFail: ", item);
+  }
+
+  onValidationError(error: ValidationError) {
+    switch (error.error) {
+      case 'EXTENSIONS':
+        this.presentToast(`Unable to upload a file: This file type is not supported.`, 'danger');
+        break;
+
+      default:
+        break;
+    }
+
+  }
+
+  private async presentToast(msg, type) {
+    const toast = await this.toastController.create({
+      message: msg,
+      position: 'bottom',
+      duration: 3000,
+      color: type,
+      buttons: [{
+        text: 'Close',
+        role: 'cancel',
+      }
+      ]
+    });
+    toast.present();
   }
 
 }

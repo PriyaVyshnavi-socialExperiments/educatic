@@ -12,5 +12,5 @@ export interface IUser {
     menuItems: IMenuItems[];
     schools: ISchool[];
     defaultSchool: ISchool;
-    courseContent: ICourseContent[];
+    courseContent?: ICourseContent[];
 }
