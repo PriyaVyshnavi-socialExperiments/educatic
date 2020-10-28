@@ -49,8 +49,8 @@ export class AssignmentListPage implements OnInit {
       this.subjectName = this.activatedRoute.snapshot.paramMap.get('subjectName');
       this.assignmentService.GetAssignments(this.school.id, this.classId).subscribe((list) => {
         this.assignmentService.GetSubjectWiseAssignments(list).subscribe((asms) => {
-          const subjectWiseAssignments = asms.find((a) => a.key === this.subjectName).assignment;
-          this.assignments = [...subjectWiseAssignments]
+          const subjectWiseAssignments = asms.find((a) => a.key === this.subjectName);
+          this.assignments = [...subjectWiseAssignments?.assignment || []] ;
           this.assignments.map(p =>
             p.studentAssignments !== ''
               ? { ...p, studentAssignmentList: JSON.parse(p.studentAssignments) }
