@@ -9,7 +9,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from 'src/app/_services/assignment/assignment.service';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
 import { ISchool, IUser } from 'src/app/_models';
-import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 import { ICourseContent } from 'src/app/_models/course-content';
 const { Camera } = Plugins;
@@ -36,7 +35,6 @@ export class AssignmentListPage implements OnInit {
     private plt: Platform,
     private assignmentService: AssignmentService,
     private authenticationService: AuthenticationService,
-    private sanitizer: DomSanitizer,
     private actionSheetCtrl: ActionSheetController) {
   }
 
@@ -50,12 +48,15 @@ export class AssignmentListPage implements OnInit {
       this.classId = this.activatedRoute.snapshot.paramMap.get('classId');
       this.subjectName = this.activatedRoute.snapshot.paramMap.get('subjectName');
       this.assignmentService.GetAssignments(this.school.id, this.classId).subscribe((list) => {
-        this.assignments = [...list];
-        this.assignments.map(p =>
-          p.studentAssignments !== ''
-            ? { ...p, studentAssignmentList: JSON.parse(p.studentAssignments) }
-            : p
-        );
+        this.assignmentService.GetSubjectWiseAssignments(list).subscribe((asms) => {
+          const subjectWiseAssignments = asms.find((a) => a.key === this.subjectName).assignment;
+          this.assignments = [...subjectWiseAssignments]
+          this.assignments.map(p =>
+            p.studentAssignments !== ''
+              ? { ...p, studentAssignmentList: JSON.parse(p.studentAssignments) }
+              : p
+          );
+        });
       })
     });
     console.log('assignment list..')
@@ -108,7 +109,6 @@ export class AssignmentListPage implements OnInit {
 
   UploadAssignment() {
     this.router.navigateByUrl(`assignment/teacher/${this.classId}/upload/${this.subjectName}`);
-    //this.selectImageSource();
   }
 
   async selectImageSource() {

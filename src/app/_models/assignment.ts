@@ -21,3 +21,9 @@ export interface IStudentAssignment {
     studentName: string;
     assignmentURL: string;
 }
+
+export interface ISubjectAssignmentList {
+    key: string,
+    assignment: IAssignment[];
+    length: number,
+}
