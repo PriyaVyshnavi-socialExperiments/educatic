@@ -23,9 +23,13 @@ export class PdfViewerPage implements OnInit {
       this.navCtrl.back();
     }
     this.title = `${this.courseContent.categoryName} - ${this.courseContent.courseName}`;
-    this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe((url) => {
-      this.pdfContentURL =url;
-    })
+    if (!this.courseContent.isTokenRequired) {
+      this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe((url) => {
+        this.pdfContentURL =url;
+      })
+    } else {
+      this.pdfContentURL =this.courseContent.courseURL;
+    }
   }
 
 }

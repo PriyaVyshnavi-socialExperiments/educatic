@@ -14,7 +14,7 @@
 <ion-content>
   <ion-grid class="grid">
     <ion-row class="ion-justify-content-center">
-      <ion-card class="item-card" (click)="selectSubject()"  *ngFor="let subject of subjectList">
+      <ion-card class="item-card" (click)="selectSubject(subject.name)"  *ngFor="let subject of subjectList">
         <ion-card-content>
           <ion-item lines="none">
             <ion-avatar slot="start">

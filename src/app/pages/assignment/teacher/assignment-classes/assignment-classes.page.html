@@ -10,7 +10,7 @@
 <ion-content>
   <ion-grid class="grid">
     <ion-row class="ion-justify-content-center">
-      <ion-card class="item-card" (click)="selectSubject()" *ngFor="let classRoom of classRooms">
+      <ion-card class="item-card" (click)="selectClassRoom(classRoom.classId)" *ngFor="let classRoom of classRooms">
         <ion-card-content>
           <ion-item lines="none">
             <ion-avatar slot="start">

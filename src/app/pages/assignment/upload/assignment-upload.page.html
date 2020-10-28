@@ -1,0 +1,69 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Upload Assignment</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="{{type}}/assignment/{{classId}}/list/{{subjectName}}"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="limiter">
+    <div class="container-login100">
+      <div class="wrap-login100">
+        <form class="login100-form validate-form" [formGroup]="assignmentForm" (ngSubmit)="SelectAssignment()"
+          #documentEditForm="ngForm">
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label> Subject Name</mat-label>
+                <input matInput [value]="subjectName" required readonly="true">
+              </mat-form-field>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label> Assignment Name</mat-label>
+                <input matInput formControlName="assignmentName" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="assignmentForm.get('assignmentName').hasError('required')">
+                  A assignment name is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Assignment Description</mat-label>
+                <textarea matInput formControlName="assignmentDescription" required autocomplete="off"
+                  rows="4"></textarea>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="assignmentForm.get('assignmentDescription').hasError('required')">
+                  A assignment description is required to proceed.
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" style="text-align: center;">
+              <button mat-flat-button type="button" color="secondary"
+                class="login100-form-btn container-login100-form-btn" (click)="NavigateToAssignmentList()">
+                Cancel
+              </button>
+              <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn"
+                [disabled]="!assignmentForm.valid" type="submit" style="margin-left: 5px;">
+                Select
+              </button>
+              <input type="file" #fileInput (change)="uploadFile($event)" hidden="true"
+                accept="image/*,application/pdf" />
+            </div>
+
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>

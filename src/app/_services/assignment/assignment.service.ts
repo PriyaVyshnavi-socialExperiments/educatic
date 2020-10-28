@@ -1,5 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { concat, forkJoin } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { IAssignment, IStudentAssignment } from 'src/app/_models/assignment';
 import { ICourseContentCategory } from 'src/app/_models/course-content-category';
 import { BlobSharedViewStateService } from '../azure-blob/blob-shared-view-state.service';
@@ -22,11 +23,11 @@ export class AssignmentService extends OfflineService {
   }
 
   public AssignmentTeacher(assignment: IAssignment, file: File) {
-    return forkJoin([this.UploadAssignment(file), this.Teacher(assignment)]);
+    return concat(this.UploadAssignment(file), this.Teacher(assignment));
   }
 
   public AssignmentStudent(assignment: IStudentAssignment, file: File) {
-    return forkJoin([this.UploadAssignment(file), this.Student(assignment)]);
+    return concat(this.UploadAssignment(file), this.Student(assignment));
   }
 
   public AddOfflineSubjects(subjects: ICourseContentCategory[]) {
@@ -39,6 +40,13 @@ export class AssignmentService extends OfflineService {
 
   public GetOfflineSubjects() {
     return this.GetOfflineData('subjects', 'subjects').then((data: ICourseContentCategory[]) => data);
+  }
+
+  public GetAssignments(schoolId: string, classId: string) {
+    return this.http.Get<IAssignment[]>(`/assignment/${schoolId}/${classId}`)
+    .pipe(
+      map(res=> res)
+    );
   }
 
   private UploadAssignment(assignment: File) {

@@ -160,45 +160,52 @@ const routes: Routes = [
       },
       {
         path: 'student/assignments',
-        loadChildren: () => import('../../pages/student-assignments/my-assignments/my-assignments.module')
+        loadChildren: () => import('../../pages/assignment/student/my-assignments/my-assignments.module')
           .then(m => m.MyAssignmentsPageModule)
       },
       {
         path: 'student/assignments/:subject',
-        loadChildren: () => import('../../pages/student-assignments/subject-assignments/subject-assignments.module')
+        loadChildren: () => import('../../pages/assignment/student/subject-assignments/subject-assignments.module')
           .then(m => m.SubjectAssignmentsPageModule)
       },
       {
         path: 'student/assignment/:id',
-        loadChildren: () => import('../../pages/student-assignments/upload-assignment/upload-assignment.module')
+        loadChildren: () => import('../../pages/assignment/student/upload-assignment/upload-assignment.module')
           .then(m => m.UploadAssignmentPageModule)
       },
       {
-        path: 'teacher/assignment/subjects',
-        loadChildren: () => import('../../pages/teacher-assignments/assignment-subjects/assignment-subjects.module')
+        path: 'teacher/assignment/:classId/subjects',
+        loadChildren: () => import('../../pages/assignment/teacher/assignment-subjects/assignment-subjects.module')
         .then( m => m.AssignmentSubjectsPageModule)
       },
       {
         path: 'teacher/assignment/classes',
-        loadChildren: () => import('../../pages/teacher-assignments/assignment-classes/assignment-classes.module')
+        loadChildren: () => import('../../pages/assignment/teacher/assignment-classes/assignment-classes.module')
         .then( m => m.AssignmentClassesPageModule)
       },
       {
         path: 'teacher/assignment/students',
-        loadChildren: () => import('../../pages/teacher-assignments/assignment-students/assignment-students.module')
+        loadChildren: () => import('../../pages/assignment/teacher/assignment-students/assignment-students.module')
         .then( m => m.AssignmentStudentsPageModule)
       },
       {
         path: 'teacher/assignment/view',
-        loadChildren: () => import('../../pages/teacher-assignments/assignment-view/assignment-view.module')
+        loadChildren: () => import('../../pages/assignment/teacher/assignment-view/assignment-view.module')
         .then( m => m.AssignmentStudentViewPageModule)
       },
       {
-        path: 'teacher/assignment/student/list',
-        loadChildren: () => import('../../pages/teacher-assignments/assignment-list/assignment-list.module')
-        .then( m => m.AssignmentListPageModule)
+        path: 'teacher/assignment/:classId/list/:subjectName',
+        loadChildren: () => import('../../pages/assignment/teacher/assignment-list/assignment-list.module')
+        .then( m => m.AssignmentListPageModule),
+        runGuardsAndResolvers: 'always',
       },
-    ]
+      {
+        path: 'assignment/:type/:classId/upload/:subjectName',
+        loadChildren: () => import('../../pages/assignment/upload/assignment-upload.module')
+        .then( m => m.AssignmentUploadPageModule)
+      },
+    ],
+    runGuardsAndResolvers: 'always',
   }
 ]
 

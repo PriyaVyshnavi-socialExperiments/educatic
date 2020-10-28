@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
+import { CourseCategoryPage } from '../../../course-category/course-category.page';
 import { ICourseContentCategory } from 'src/app/_models/course-content-category';
 import { AssignmentService } from 'src/app/_services/assignment/assignment.service';
-import { CourseCategoryPage } from '../../course-category/course-category.page';
 
 @Component({
   selector: 'app-assignment-subjects',
@@ -17,14 +17,16 @@ export class AssignmentSubjectsPage implements OnInit {
   constructor(
     public router: Router,
     private modalController: ModalController,
+    private activatedRoute: ActivatedRoute,
     private assignmentService: AssignmentService) { }
 
   ngOnInit() {
     this.refreshSubjects();
   }
 
-  public selectSubject() {
-    this.router.navigateByUrl(`teacher/assignment/student/list`);
+  public selectSubject(subjectName: string) {
+    const classId = this.activatedRoute.snapshot.paramMap.get('classId');
+    this.router.navigateByUrl(`teacher/assignment/${classId}/list/${subjectName}`);
   }
 
   public async AddSubject() {

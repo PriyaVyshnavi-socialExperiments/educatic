@@ -29,8 +29,8 @@ export class AssignmentClassesPage implements OnInit {
     });
   }
 
-  public selectSubject() {
-    this.router.navigateByUrl(`teacher/assignment/subjects`);
+  public selectClassRoom(classId: string) {
+    this.router.navigateByUrl(`teacher/assignment/${classId}/subjects`);
   }
 
   private refresh() {

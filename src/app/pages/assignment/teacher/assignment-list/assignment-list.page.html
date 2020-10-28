@@ -11,92 +11,45 @@
 </ion-header>
 
 <ion-content *ngIf="assignmentFor==='teacher'">
+ 
   <div class="main-card ion-justify-content-center">
-    <ion-card>
+   
+    <ion-card *ngFor="let assignment of assignments">
       <ion-card-content>
-        <ion-item lines="none" color="medium">
-          <ion-badge slot="end" color="warning" class="number-circle" (click)="badgeToggle = !badgeToggle">
+        <ion-item lines="none" color="light">
+          <ion-badge slot="end" color="warning" class="number-circle" (click)="assignment.badgeToggle = !assignment.badgeToggle">
             <h1>
-            <ion-icon *ngIf="!badgeToggle" name="chevron-down-circle-outline"></ion-icon>
-            <ion-icon *ngIf="badgeToggle" name="chevron-up-circle-outline"></ion-icon>
-          </h1>
+              <ion-icon *ngIf="!assignment.badgeToggle" name="chevron-down-circle-outline"></ion-icon>
+              <ion-icon *ngIf="assignment.badgeToggle" name="chevron-up-circle-outline"></ion-icon>
+            </h1>
           </ion-badge>
-          <ion-label (click)="openStudentAssignmentInModal()">
-            <h2>Worksheet of Lesson-1 (The Lazy Squirrel)</h2>
-            <p>Date Submitted: <b>15 JUN 2020</b> </p>
+          <ion-label (click)="openStudentAssignmentInModal(assignment)">
+            <h2>{{assignment.assignmentName}}</h2>
+            <p> {{assignment.assignmentDescription}} </p>
+            <p>Date Submitted: <b>{{assignment.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
           </ion-label>
         </ion-item>
-        <ion-list *ngIf="badgeToggle">
-          <ion-item> 
+        <ion-list *ngIf="assignment.badgeToggle">
+          <ion-item *ngFor="let item of assignment.studentAssignmentList">
             <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
             <ion-label>
-              <h2>Rahul Dravid</h2>
-              <p> Submitted Date: <b>15 JUN 2020</b> </p>
-              <p>You will remove these restraints and leave...</p>
+              <h2>{{item.studentName}}</h2>
+              <p> Submitted Date: <b>{{item.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
             </ion-label>
           </ion-item>
-          <ion-item>
-            <ion-badge slot="start" color="danger" class="number-circle">2</ion-badge>
-            <ion-label>
-            <h2>Sachin Tendulkar</h2>
-            <p> Submitted Date: <b>15 JUN 2020</b> </p>
-            <p>You will remove these restraints and leave...</p>
-            </ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-badge slot="start" color="danger" class="number-circle">3</ion-badge>
-            <ion-label>
-            <h2>Lokesh Raj</h2>
-            <p> Submitted Date: <b>15 JUN 2020</b> </p>
-            <p>You will remove these restraints and leave...</p>
-            </ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-badge slot="start" color="danger" class="number-circle">4</ion-badge>
-            <ion-label>
-            <h2>Sunita YAdav</h2>
-            <p> Submitted Date: <b>15 JUN 2020</b> </p>
-            <p>You will remove these restraints and leave...</p>
-            </ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-badge slot="start" color="danger" class="number-circle">5</ion-badge>
-            <ion-label>
-            <h2>Sania Mirza</h2>
-            <p> Submitted Date: <b>15 JUN 2020</b> </p>
-            <p>You will remove these restraints and leave...</p>
+          <ion-item lines="none" *ngIf="!assignment.studentAssignmentList">
+            <ion-label  color="danger">
+              <h2>Assignment not uploaded yet by students</h2>
             </ion-label>
           </ion-item>
         </ion-list>
-      </ion-card-content>
-    </ion-card>
-    <ion-card (click)="openStudentAssignmentInModal()">
-      <ion-card-content>
-        <ion-item lines="none">
-          <ion-badge slot="start" color="danger" class="number-circle">2</ion-badge>
-          <ion-label>
-            <h2>Worksheet of Lesson-2 (The Lazy Squirrel)</h2>
-            <p>Date Submitted: <b>25 AUG 2020</b> </p>
-          </ion-label>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
-    <ion-card (click)="openStudentAssignmentInModal()">
-      <ion-card-content>
-        <ion-item lines="none">
-          <ion-badge slot="start" color="danger" class="number-circle">3</ion-badge>
-          <ion-label>
-            <h2>Worksheet of Lesson-5 (The Lazy Squirrel)</h2>
-            <p>Date Submitted: <b>25 OCT 2020</b> </p>
-          </ion-label>
-        </ion-item>
       </ion-card-content>
     </ion-card>
   </div>
   <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*" />
 </ion-content>
 
-<ion-content *ngIf="assignmentFor==='student'">
+<!-- <ion-content *ngIf="assignmentFor==='student'">
   <div class="main-card ion-justify-content-center">
     <ion-card>
       <ion-card-header>
@@ -151,4 +104,4 @@
       </ion-card-content>
     </ion-card>
   </div>
-</ion-content>
+</ion-content> -->
