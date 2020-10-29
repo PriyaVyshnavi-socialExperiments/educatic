@@ -4,41 +4,47 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="teacher/assignment/{{ subjectName}}/subjects"></ion-back-button>
     </ion-buttons>
-    <ion-buttons *ngIf="assignmentFor==='teacher'" slot="end">
+    <ion-buttons *ngIf="currentUser?.role!== 'Student'" slot="end">
       <ion-button ion-button block (click)=UploadAssignment()>Upload</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="assignmentFor==='teacher'">
+<ion-content>
 
   <div class="main-card ion-justify-content-center">
 
     <ion-card *ngFor="let assignment of assignments">
       <ion-card-content>
         <ion-item lines="none" color="light">
-          <ion-badge slot="end" color="warning" class="number-circle"
+          <ion-buttons *ngIf="currentUser?.role === 'Student'" slot="end">
+          <ion-button color="primary" (click)=UploadAssignment(assignment) shape="round" fill="outline" class="upload-button">
+              <ion-icon slot="start" name="push-outline"></ion-icon>Upload
+            </ion-button>
+          </ion-buttons>
+
+          <ion-badge *ngIf="currentUser?.role!== 'Student'" slot="end" color="warning" class="number-circle"
             (click)="assignment.badgeToggle = !assignment.badgeToggle">
             <h1>
               <ion-icon *ngIf="!assignment.badgeToggle" name="chevron-down-circle-outline"></ion-icon>
               <ion-icon *ngIf="assignment.badgeToggle" name="chevron-up-circle-outline"></ion-icon>
             </h1>
           </ion-badge>
-          <ion-label (click)="openStudentAssignmentInModal(assignment)">
+          <ion-label (click)="ViewTeacherAssignment(assignment)">
             <h2>{{assignment.assignmentName}}</h2>
             <p> {{assignment.assignmentDescription}} </p>
             <p>Date Submitted: <b>{{assignment.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
           </ion-label>
         </ion-item>
         <ion-list *ngIf="assignment.badgeToggle">
-          <ion-item *ngFor="let item of assignment.studentAssignmentList">
+          <ion-item *ngFor="let item of assignment.studentAssignments" (click)="ViewStudentAssignment(item.assignmentURL, assignment.assignmentName)">
             <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
             <ion-label>
               <h2>{{item.studentName}}</h2>
               <p> Submitted Date: <b>{{item.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
             </ion-label>
           </ion-item>
-          <ion-item lines="none" *ngIf="!assignment.studentAssignmentList">
+          <ion-item lines="none" *ngIf="!assignment.studentAssignments">
             <ion-label color="danger">
               <h2>Assignment not uploaded yet by students</h2>
             </ion-label>
@@ -47,7 +53,6 @@
       </ion-card-content>
     </ion-card>
   </div>
-  <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*" />
 </ion-content>
 
 <!-- <ion-content *ngIf="assignmentFor==='student'">

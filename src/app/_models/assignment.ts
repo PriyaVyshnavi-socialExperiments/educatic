@@ -9,17 +9,19 @@ export interface IAssignment {
     assignmentName: string;
     assignmentDescription: string;
     assignmentURL: string;
-    studentAssignments: string;
-    studentAssignmentList: IStudentAssignment[],
+    studentAssignments: IStudentAssignment[],
     active: boolean;
     badgeToggle: boolean;
 }
 
 export interface IStudentAssignment {
     id: string;
+    assignmentId: string;
     createdDate: Date;
+    studentId: string,
     studentName: string;
     assignmentURL: string;
+    schoolId: string;
 }
 
 export interface ISubjectAssignmentList {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { IClassRoom, IUser } from 'src/app/_models';
+import { IClassRoom, IUser, Role } from 'src/app/_models';
 import { AuthenticationService } from 'src/app/_services';
 
 @Component({
@@ -13,20 +13,27 @@ export class AssignmentClassesPage implements OnInit {
   schoolId: string;
   schoolName: string;
   currentUser: IUser;
-  
+
   constructor(
     public router: Router,
     private authenticationService: AuthenticationService,
-    ) { }
+  ) { }
 
-  ngOnInit() {
+  ionViewWillEnter() {
     this.authenticationService.currentUser.subscribe((user) => {
       if (!user) {
         return;
       }
       this.currentUser = user;
+      if (this.currentUser.role === Role.Student) {
+        const classRoomId = this.currentUser.defaultSchool.classRooms[0].classId;
+        this.selectClassRoom(classRoomId);
+      }
       this.refresh();
     });
+  }
+  ngOnInit() {
+
   }
 
   public selectClassRoom(classId: string) {

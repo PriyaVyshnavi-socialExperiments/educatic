@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/teacher/assignment/classes"></ion-back-button>
     </ion-buttons>
-    <ion-buttons slot="end">
+    <ion-buttons *ngIf="currentUser?.role!== 'Student'" slot="end">
       <ion-button ion-button block (click)=AddSubject()>New Subject</ion-button>
     </ion-buttons>
     <ion-title>Subjects</ion-title>

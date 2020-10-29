@@ -6,7 +6,7 @@ import { ICourseContentCategory } from 'src/app/_models/course-content-category'
 import { AssignmentService } from 'src/app/_services/assignment/assignment.service';
 import { IAssignment, ISubjectAssignmentList } from 'src/app/_models/assignment';
 import { AuthenticationService } from 'src/app/_services';
-import { ISchool, IUser } from 'src/app/_models';
+import { ISchool, IUser, Role } from 'src/app/_models';
 
 @Component({
   selector: 'app-assignment-subjects',
@@ -28,7 +28,7 @@ export class AssignmentSubjectsPage implements OnInit {
     private assignmentService: AssignmentService) { }
 
   ngOnInit() {
-    this.refreshSubjects();
+    //this.refreshSubjects();
   }
 
   ionViewWillEnter() {
@@ -39,6 +39,9 @@ export class AssignmentSubjectsPage implements OnInit {
       this.currentUser = user;
       this.school = user.defaultSchool;
       this.classId = this.activatedRoute.snapshot.paramMap.get('classId');
+      if (!this.classId) {
+        this.classId = this.school.classRooms[0].classId;
+      }
       this.assignmentService.GetAssignments(this.school.id, this.classId).subscribe((assignments) => {
         this.assignmentService.GetSubjectWiseAssignments(assignments).subscribe((asmts) => {
           this.subjectList = [...asmts];

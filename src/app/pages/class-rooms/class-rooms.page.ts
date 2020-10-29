@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { AlertController, IonSelect, PopoverController } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/_services';
-import { DataShareService } from 'src/app/_services/data-share.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IClassRoom, ISchool, IUser } from 'src/app/_models';
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';

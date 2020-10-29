@@ -160,19 +160,19 @@ const routes: Routes = [
       },
       {
         path: 'student/assignments',
-        loadChildren: () => import('../../pages/assignment/student/my-assignments/my-assignments.module')
-          .then(m => m.MyAssignmentsPageModule)
+        loadChildren: () => import('../../pages/assignment/teacher/assignment-subjects/assignment-subjects.module')
+        .then( m => m.AssignmentSubjectsPageModule)
       },
-      {
-        path: 'student/assignments/:subject',
-        loadChildren: () => import('../../pages/assignment/student/subject-assignments/subject-assignments.module')
-          .then(m => m.SubjectAssignmentsPageModule)
-      },
-      {
-        path: 'student/assignment/:id',
-        loadChildren: () => import('../../pages/assignment/student/upload-assignment/upload-assignment.module')
-          .then(m => m.UploadAssignmentPageModule)
-      },
+      // {
+      //   path: 'student/assignments/:subject',
+      //   loadChildren: () => import('../../pages/assignment/student/subject-assignments/subject-assignments.module')
+      //     .then(m => m.SubjectAssignmentsPageModule)
+      // },
+      // {
+      //   path: 'student/assignment/:id',
+      //   loadChildren: () => import('../../pages/assignment/student/upload-assignment/upload-assignment.module')
+      //     .then(m => m.UploadAssignmentPageModule)
+      // },
       {
         path: 'teacher/assignment/:classId/subjects',
         loadChildren: () => import('../../pages/assignment/teacher/assignment-subjects/assignment-subjects.module')

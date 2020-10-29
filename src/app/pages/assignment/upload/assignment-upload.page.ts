@@ -6,10 +6,11 @@ import * as blobUtil from 'blob-util';
 import { ImageHelper } from 'src/app/_helpers/image-helper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from 'src/app/_services/assignment/assignment.service';
-import { IAssignment } from 'src/app/_models/assignment';
+import { IAssignment, IStudentAssignment } from 'src/app/_models/assignment';
 import { dateFormat } from 'src/app/_helpers';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
-import { ISchool, IUser } from 'src/app/_models';
+import { ISchool, IUser, Role } from 'src/app/_models';
+import { DataShareService } from 'src/app/_services/data-share.service';
 
 const { Camera } = Plugins;
 
@@ -27,6 +28,7 @@ export class AssignmentUploadPage implements OnInit {
   public classId: string;
   currentUser: IUser;
   school: ISchool;
+  isStudent: boolean;
 
   constructor(private formBuilder: FormBuilder,
     private plt: Platform,
@@ -35,6 +37,7 @@ export class AssignmentUploadPage implements OnInit {
     private assignmentService: AssignmentService,
     private authenticationService: AuthenticationService,
     private toastController: ToastController,
+    private dataShare: DataShareService,
     private actionSheetCtrl: ActionSheetController) { }
 
   ngOnInit() {
@@ -44,18 +47,22 @@ export class AssignmentUploadPage implements OnInit {
       }
       this.currentUser = user;
       this.school = user.defaultSchool;
+      this.isStudent = this.currentUser.role === Role.Student;
     });
-
-    this.assignmentForm = this.formBuilder.group({
-      assignmentName: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(100),
-      ]),
-      assignmentDescription: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(1000),
-      ])
-    });
+    if (!this.isStudent) {
+      this.assignmentForm = this.formBuilder.group({
+        assignmentName: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(100),
+        ]),
+        assignmentDescription: new FormControl('', [
+          Validators.required,
+          Validators.maxLength(1000),
+        ])
+      });
+    } else {
+      this.selectAssignmentSource();
+    }
     this.subjectName = this.activatedRoute.snapshot.paramMap.get('subjectName');
     this.type = this.activatedRoute.snapshot.paramMap.get('type');
     this.classId = this.activatedRoute.snapshot.paramMap.get('classId');
@@ -85,6 +92,14 @@ export class AssignmentUploadPage implements OnInit {
         handler: () => {
           this.addImage(CameraSource.Photos);
         }
+      },
+      {
+        text: 'Cancel',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+          this.NavigateToAssignmentList();
+        }
       }
     ];
 
@@ -101,9 +116,11 @@ export class AssignmentUploadPage implements OnInit {
 
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Select Assignment Source',
+      backdropDismiss: false,
       buttons
     });
     await actionSheet.present();
+
   }
 
   async addImage(source: CameraSource) {
@@ -134,10 +151,18 @@ export class AssignmentUploadPage implements OnInit {
   }
 
   private UploadAssignment(cameraImage: CameraPhoto = null, file: File = null) {
-    if (this.assignmentForm.invalid) {
+    if (!this.isStudent && this.assignmentForm.invalid) {
       return;
     }
 
+    if (this.isStudent) {
+      this.StudentUploadAssignment(cameraImage, file);
+    } else {
+      this.TeacherUploadAssignment(cameraImage, file);
+    }
+  }
+
+  private TeacherUploadAssignment(cameraImage: CameraPhoto = null, file: File = null) {
     const classRoom = this.currentUser.defaultSchool.classRooms.find((c) => c.classId === this.classId);
 
     const assignmentDetails = {
@@ -176,6 +201,50 @@ export class AssignmentUploadPage implements OnInit {
         });
       })
     }
+  }
+
+  private StudentUploadAssignment(cameraImage: CameraPhoto = null, file: File = null) {
+
+    this.dataShare.getData().subscribe((assignment: IAssignment) => {
+      const classRoom = this.currentUser.defaultSchool.classRooms[0];
+
+      const assignmentDetails = {
+        schoolId: this.currentUser.defaultSchool.id,
+        assignmentId: assignment.id,
+        studentId: this.currentUser.id,
+        studentName: `${this.currentUser.firstName} ${this.currentUser.lastName}`,
+      } as IStudentAssignment;
+
+      let blobDataURL = `${this.school.name.replace(/\s/g, '')}_${this.school.id}/${classRoom.classRoomName.replace(/\s/g, '')}_${classRoom.classId}/${this.subjectName}/${assignmentDetails.studentName}`;
+
+      if (cameraImage) {
+        const blobData = ImageHelper.b64toBlob(cameraImage.base64String, `image/${cameraImage.format}`);
+        blobDataURL = `${blobDataURL}/${assignment.assignmentName.replace(/\s/g, '')}_${dateFormat(new Date())}.${cameraImage.format}`;
+        file = ImageHelper.blobToFile(blobData, blobDataURL);
+        assignmentDetails.assignmentURL = blobDataURL;
+        this.assignmentService.AssignmentStudent(assignmentDetails, file).subscribe((res) => {
+          if (res['message']) {
+            this.presentToast(res['message'], 'success');
+            this.NavigateToAssignmentList();
+          }
+        });
+      } else {
+        const fileExt = file.type.split('/').pop();
+        blobDataURL = `${blobDataURL}/${assignment.assignmentName.replace(/\s/g, '')}_${dateFormat(new Date())}.${fileExt}`;
+        file.arrayBuffer().then((buffer) => {
+          const blobData = blobUtil.arrayBufferToBlob(buffer);
+          const fileData = ImageHelper.blobToFile(blobData, blobDataURL);
+          assignmentDetails.assignmentURL = blobDataURL;
+          this.assignmentService.AssignmentStudent(assignmentDetails, fileData).subscribe((res) => {
+            if (res['message']) {
+              this.presentToast(res['message'], 'success');
+              this.NavigateToAssignmentList();
+            }
+          });
+        })
+      }
+    });
+
   }
 
   private async presentToast(msg, type) {

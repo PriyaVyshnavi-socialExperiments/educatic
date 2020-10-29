@@ -2,16 +2,13 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { ModalController } from '@ionic/angular';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { IAssignment, IStudentAssignment } from 'src/app/_models/assignment';
-import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
-import { Platform, ActionSheetController } from '@ionic/angular';
-import { ImageHelper } from 'src/app/_helpers/image-helper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from 'src/app/_services/assignment/assignment.service';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
 import { ISchool, IUser } from 'src/app/_models';
 import { environment } from 'src/environments/environment';
 import { ICourseContent } from 'src/app/_models/course-content';
-const { Camera } = Plugins;
+import { DataShareService } from 'src/app/_services/data-share.service';
 
 @Component({
   selector: 'app-assignment-list',
@@ -32,10 +29,9 @@ export class AssignmentListPage implements OnInit {
     private modalController: ModalController,
     public router: Router,
     private activatedRoute: ActivatedRoute,
-    private plt: Platform,
     private assignmentService: AssignmentService,
     private authenticationService: AuthenticationService,
-    private actionSheetCtrl: ActionSheetController) {
+    private dataShare: DataShareService) {
   }
 
   ionViewWillEnter() {
@@ -50,10 +46,10 @@ export class AssignmentListPage implements OnInit {
       this.assignmentService.GetAssignments(this.school.id, this.classId).subscribe((list) => {
         this.assignmentService.GetSubjectWiseAssignments(list).subscribe((asms) => {
           const subjectWiseAssignments = asms.find((a) => a.key === this.subjectName);
-          this.assignments = [...subjectWiseAssignments?.assignment || []] ;
+          this.assignments = [...subjectWiseAssignments?.assignment || []];
           this.assignments.map(p =>
-            p.studentAssignments !== ''
-              ? { ...p, studentAssignmentList: JSON.parse(p.studentAssignments) }
+            p.studentAssignments?.length > 0
+              ? { ...p, studentAssignmentList: p.studentAssignments }
               : p
           );
         });
@@ -66,25 +62,41 @@ export class AssignmentListPage implements OnInit {
 
   }
 
-
-
-  ViewAssignment() {
-
-  }
-
   segmentChanged(event) {
     this.assignmentFor = event.detail.value;
   }
 
-  async openStudentAssignmentInModal(assignment: IAssignment) {
+  async ViewTeacherAssignment(assignment: IAssignment) {
     const fileExt = assignment.assignmentURL.split('.').pop();
-    const imageUrl = `${environment.blobURL}/assignments/${assignment.assignmentURL}`;
+    const assignmentURL = `${environment.blobURL}/assignments/${assignment.assignmentURL}`;
 
+    this.ViewAssignment(fileExt, assignmentURL, assignment.assignmentName);
+
+  }
+
+  async ViewStudentAssignment(url: string, assignmentName: string) {
+    const fileExt = url.split('.').pop();
+    const assignmentURL = `${environment.blobURL}/assignments/${url}`;
+
+    this.ViewAssignment(fileExt, assignmentURL, assignmentName);
+
+  }
+
+  UploadAssignment(assignment: IAssignment = null) {
+    if (assignment) {
+      this.dataShare.setData(assignment);
+      this.router.navigateByUrl(`assignment/teacher/${this.classId}/upload/${this.subjectName}`);
+    } else {
+      this.router.navigateByUrl(`assignment/teacher/${this.classId}/upload/${this.subjectName}`);
+    }
+  }
+
+  private async ViewAssignment(fileExt, assignmentURL, assignmentName) {
     if (fileExt.toLowerCase() === 'pdf') {
       const content = {
-        courseURL: imageUrl,
+        courseURL: assignmentURL,
         categoryName: this.subjectName,
-        courseName: assignment.assignmentName,
+        courseName: assignmentName,
         isTokenRequired: true,
       } as ICourseContent;
 
@@ -94,8 +106,8 @@ export class AssignmentListPage implements OnInit {
       const modal: HTMLIonModalElement = await this.modalController.create({
         component: ViewerModalComponent,
         componentProps: {
-          src: imageUrl,
-          title: `${this.subjectName} - ${assignment.assignmentName}`
+          src: assignmentURL,
+          title: `${this.subjectName} - ${assignmentName}`
         },
         cssClass: 'ion-img-viewer',
         keyboardClose: true,
@@ -104,66 +116,6 @@ export class AssignmentListPage implements OnInit {
 
       return await modal.present();
     }
-
   }
 
-  UploadAssignment() {
-    this.router.navigateByUrl(`assignment/teacher/${this.classId}/upload/${this.subjectName}`);
-  }
-
-  async selectImageSource() {
-    const buttons = [
-      {
-        text: 'Take Photo',
-        icon: 'camera',
-        handler: () => {
-          this.addImage(CameraSource.Camera);
-        }
-      },
-      {
-        text: 'Choose From Photos Photo',
-        icon: 'image',
-        handler: () => {
-          this.addImage(CameraSource.Photos);
-        }
-      }
-    ];
-
-    // Only allow file selection inside a browser
-    if (!this.plt.is('hybrid')) {
-      buttons.push({
-        text: 'Choose a File',
-        icon: 'attach',
-        handler: () => {
-          this.fileInput.nativeElement.click();
-        }
-      });
-    }
-
-    const actionSheet = await this.actionSheetCtrl.create({
-      header: 'Select Assignment Source',
-      buttons
-    });
-    await actionSheet.present();
-  }
-
-  async addImage(source: CameraSource) {
-    const image = await Camera.getPhoto({
-      quality: 60,
-      allowEditing: true,
-      resultType: CameraResultType.Base64,
-      source
-    });
-
-    const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
-    const imageName = 'Give me a name';
-
-  }
-
-  // Used for browser direct file upload
-  uploadFile(event: EventTarget) {
-    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
-    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    const file: File = target.files[0];
-  }
 }
