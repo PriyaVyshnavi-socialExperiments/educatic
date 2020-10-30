@@ -60,5 +60,13 @@
       </div>
     </div>
   </div>
+  <div class="row" *ngIf="progress>0">
+    <div class="col-md-12 col-sm-12">
+      <div class="progress-outer">
+        <div class="progress-inner" [style.width.%]="progress">{{progress}}%</div>
+      </div>
+    </div>
+  </div>
   <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*,application/pdf" />
+
 </ion-content>

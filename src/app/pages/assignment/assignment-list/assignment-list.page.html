@@ -15,7 +15,9 @@
   <div class="main-card ion-justify-content-center">
 
     <ion-card *ngFor="let assignment of assignments">
+      
       <ion-card-content>
+        
         <ion-item lines="none" color="light">
           <ion-buttons *ngIf="currentUser?.role === 'Student'" slot="end">
           <ion-button color="primary" (click)=UploadAssignment(assignment) shape="round" fill="outline" class="upload-button">
@@ -31,16 +33,17 @@
             </h1>
           </ion-badge>
           <ion-label (click)="ViewTeacherAssignment(assignment)">
-            <h2>{{assignment.assignmentName}}</h2>
+            
+            <h2>{{assignment.assignmentName}} <ion-badge *ngIf="!ShowHideBadge(assignment.createdDate)" color="danger">New</ion-badge></h2>
             <p> {{assignment.assignmentDescription}} </p>
             <p>Date Submitted: <b>{{assignment.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
           </ion-label>
         </ion-item>
         <ion-list *ngIf="assignment.badgeToggle">
-          <ion-item *ngFor="let item of assignment.studentAssignments" (click)="ViewStudentAssignment(item.assignmentURL, assignment.assignmentName)">
-            <ion-badge slot="start" color="danger" class="number-circle">1</ion-badge>
+          <ion-item *ngFor="let item of assignment.studentAssignments.reverse(); let i = index" (click)="ViewStudentAssignment(item.assignmentURL, assignment.assignmentName)">
+            <ion-badge slot="start" color="light" class="number-circle">{{i + 1}}</ion-badge>
             <ion-label>
-              <h2>{{item.studentName}}</h2>
+              <h2>{{item.studentName}} <ion-badge *ngIf="!ShowHideBadge(item.createdDate)" color="danger">New</ion-badge></h2>
               <p> Submitted Date: <b>{{item.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
             </ion-label>
           </ion-item>

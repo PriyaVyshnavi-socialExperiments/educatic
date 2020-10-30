@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActionSheetController, Platform, ToastController } from '@ionic/angular';
 import { Plugins, CameraResultType, CameraSource, CameraPhoto } from '@capacitor/core';
+import { SpinnerVisibilityService } from 'ng-http-loader';
 import * as blobUtil from 'blob-util';
 import { ImageHelper } from 'src/app/_helpers/image-helper';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,6 +30,7 @@ export class AssignmentUploadPage implements OnInit {
   currentUser: IUser;
   school: ISchool;
   isStudent: boolean;
+  progress = 0;
 
   constructor(private formBuilder: FormBuilder,
     private plt: Platform,
@@ -38,7 +40,9 @@ export class AssignmentUploadPage implements OnInit {
     private authenticationService: AuthenticationService,
     private toastController: ToastController,
     private dataShare: DataShareService,
-    private actionSheetCtrl: ActionSheetController) { }
+    private spinner: SpinnerVisibilityService,
+    private actionSheetCtrl: ActionSheetController) {
+  }
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
@@ -154,7 +158,7 @@ export class AssignmentUploadPage implements OnInit {
     if (!this.isStudent && this.assignmentForm.invalid) {
       return;
     }
-
+    this.spinner.show();
     if (this.isStudent) {
       this.StudentUploadAssignment(cameraImage, file);
     } else {
@@ -180,12 +184,21 @@ export class AssignmentUploadPage implements OnInit {
       blobDataURL = `${blobDataURL}/${assignmentDetails.assignmentName.replace(/\s/g, '')}_${dateFormat(new Date())}.${cameraImage.format}`;
       file = ImageHelper.blobToFile(blobData, blobDataURL);
       assignmentDetails.assignmentURL = blobDataURL;
-      this.assignmentService.AssignmentTeacher(assignmentDetails, file).subscribe((res) => {
-        if (res['message']) {
-          this.presentToast(res['message'], 'success');
+      this.assignmentService.AssignmentTeacher(assignmentDetails, file).subscribe(
+        (res) => {
+          if (res['message']) {
+            this.presentToast(res['message'], 'success');
+            this.NavigateToAssignmentList();
+          } else {
+            this.progress = res['progress'];
+          }
+        },
+        err => {
+          this.presentToast('Unable to upload assignment, please try again ', 'danger');
           this.NavigateToAssignmentList();
-        }
-      });
+        },
+        () => { }
+      );
     } else {
       const fileExt = file.type.split('/').pop();
       blobDataURL = `${blobDataURL}/${assignmentDetails.assignmentName.replace(/\s/g, '')}_${dateFormat(new Date())}.${fileExt}`;
@@ -193,12 +206,21 @@ export class AssignmentUploadPage implements OnInit {
         const blobData = blobUtil.arrayBufferToBlob(buffer);
         const fileData = ImageHelper.blobToFile(blobData, blobDataURL);
         assignmentDetails.assignmentURL = blobDataURL;
-        this.assignmentService.AssignmentTeacher(assignmentDetails, fileData).subscribe((res) => {
-          if (res['message']) {
-            this.presentToast(res['message'], 'success');
+        this.assignmentService.AssignmentTeacher(assignmentDetails, fileData).subscribe(
+          (res) => {
+            if (res['message']) {
+              this.presentToast(res['message'], 'success');
+              this.NavigateToAssignmentList();
+            } else {
+              this.progress = res['progress'] === 100 ? 0 : res['progress'];
+            }
+          },
+          err => {
+            this.presentToast('Unable to upload assignment, please try again ', 'danger');
             this.NavigateToAssignmentList();
-          }
-        });
+          },
+          () => { }
+        );
       })
     }
   }
@@ -222,12 +244,21 @@ export class AssignmentUploadPage implements OnInit {
         blobDataURL = `${blobDataURL}/${assignment.assignmentName.replace(/\s/g, '')}_${dateFormat(new Date())}.${cameraImage.format}`;
         file = ImageHelper.blobToFile(blobData, blobDataURL);
         assignmentDetails.assignmentURL = blobDataURL;
-        this.assignmentService.AssignmentStudent(assignmentDetails, file).subscribe((res) => {
-          if (res['message']) {
-            this.presentToast(res['message'], 'success');
+        this.assignmentService.AssignmentStudent(assignmentDetails, file).subscribe(
+          (res) => {
+            if (res['message']) {
+              this.presentToast(res['message'], 'success');
+              this.NavigateToAssignmentList();
+            } else {
+              this.progress = res['progress'];
+            }
+          },
+          err => {
+            this.presentToast('Unable to upload assignment, please try again ', 'danger');
             this.NavigateToAssignmentList();
-          }
-        });
+          },
+          () => { }
+        );
       } else {
         const fileExt = file.type.split('/').pop();
         blobDataURL = `${blobDataURL}/${assignment.assignmentName.replace(/\s/g, '')}_${dateFormat(new Date())}.${fileExt}`;
@@ -235,12 +266,20 @@ export class AssignmentUploadPage implements OnInit {
           const blobData = blobUtil.arrayBufferToBlob(buffer);
           const fileData = ImageHelper.blobToFile(blobData, blobDataURL);
           assignmentDetails.assignmentURL = blobDataURL;
-          this.assignmentService.AssignmentStudent(assignmentDetails, fileData).subscribe((res) => {
-            if (res['message']) {
-              this.presentToast(res['message'], 'success');
+          this.assignmentService.AssignmentStudent(assignmentDetails, fileData).subscribe(
+            (res) => {
+              if (res['message']) {
+                this.presentToast(res['message'], 'success');
+                this.NavigateToAssignmentList();
+              } else {
+                this.progress = res['progress'];
+              }
+            },
+            err => {
+              this.presentToast('Unable to upload assignment, please try again ', 'danger');
               this.NavigateToAssignmentList();
-            }
-          });
+            },
+            () => { });
         })
       }
     });
@@ -248,6 +287,7 @@ export class AssignmentUploadPage implements OnInit {
   }
 
   private async presentToast(msg, type) {
+    this.spinner.hide();
     const toast = await this.toastController.create({
       message: msg,
       position: 'bottom',

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
@@ -15,6 +15,7 @@ import { AssignmentListPage } from './assignment-list.page';
     IonicModule,
     AssignmentListPageRoutingModule
   ],
+  providers: [DatePipe],
   declarations: [AssignmentListPage]
 })
 export class AssignmentListPageModule {}

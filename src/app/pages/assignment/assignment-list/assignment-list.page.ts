@@ -9,6 +9,7 @@ import { ISchool, IUser } from 'src/app/_models';
 import { environment } from 'src/environments/environment';
 import { ICourseContent } from 'src/app/_models/course-content';
 import { DataShareService } from 'src/app/_services/data-share.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-assignment-list',
@@ -31,6 +32,7 @@ export class AssignmentListPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private assignmentService: AssignmentService,
     private authenticationService: AuthenticationService,
+    private datePipe: DatePipe,
     private dataShare: DataShareService) {
   }
 
@@ -89,6 +91,12 @@ export class AssignmentListPage implements OnInit {
     } else {
       this.router.navigateByUrl(`assignment/${this.classId}/upload/${this.subjectName}`);
     }
+  }
+
+  ShowHideBadge(assignmentDate) {
+    const asmDate = this.datePipe.transform(assignmentDate,'dd-MM-yyyy');
+    const todayDate = this.datePipe.transform(new Date(),'dd-MM-yyyy');
+    return todayDate > asmDate;
   }
 
   private async ViewAssignment(fileExt, assignmentURL, assignmentName) {
