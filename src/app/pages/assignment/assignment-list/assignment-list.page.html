@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>Assignments</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="teacher/assignment/{{ subjectName}}/subjects"></ion-back-button>
+      <ion-back-button defaultHref="assignment/{{ subjectName}}/subjects"></ion-back-button>
     </ion-buttons>
     <ion-buttons *ngIf="currentUser?.role!== 'Student'" slot="end">
       <ion-button ion-button block (click)=UploadAssignment()>Upload</ion-button>

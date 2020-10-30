@@ -47,7 +47,7 @@ export class StudentSigninPage implements OnInit {
       } as StudentLoginRequest;
       this.authenticationService.StudentLogin(loginRequest)
         .subscribe((user) => {
-          this.router.navigate(['/student/assignments']);
+          this.router.navigate(['assignment/subjects']);
           this.dismissModal();
         },
           error => {

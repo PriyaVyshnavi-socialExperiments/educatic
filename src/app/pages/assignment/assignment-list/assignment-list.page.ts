@@ -85,9 +85,9 @@ export class AssignmentListPage implements OnInit {
   UploadAssignment(assignment: IAssignment = null) {
     if (assignment) {
       this.dataShare.setData(assignment);
-      this.router.navigateByUrl(`assignment/teacher/${this.classId}/upload/${this.subjectName}`);
+      this.router.navigateByUrl(`assignment/${this.classId}/upload/${this.subjectName}`);
     } else {
-      this.router.navigateByUrl(`assignment/teacher/${this.classId}/upload/${this.subjectName}`);
+      this.router.navigateByUrl(`assignment/${this.classId}/upload/${this.subjectName}`);
     }
   }
 

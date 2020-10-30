@@ -141,15 +141,15 @@ export class NavMenuHelper {
       active: true
     },
     {
-      name: 'My Assignments',
-      path: '/student/assignments',
+      name: 'Assignments',
+      path: '/assignment/subjects',
       icon: 'reader-outline',
       roles: [Role.Student],
       active: true
     },
     {
-      name: 'Teacher Assignments',
-      path: '/teacher/assignment/classes',
+      name: 'Assignments',
+      path: '/assignment/classes',
       icon: 'reader-outline',
       roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
       active: true

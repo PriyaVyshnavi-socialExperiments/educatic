@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { CourseCategoryPage } from '../../../course-category/course-category.page';
-import { ICourseContentCategory } from 'src/app/_models/course-content-category';
 import { AssignmentService } from 'src/app/_services/assignment/assignment.service';
-import { IAssignment, ISubjectAssignmentList } from 'src/app/_models/assignment';
+import { ISubjectAssignmentList } from 'src/app/_models/assignment';
 import { AuthenticationService } from 'src/app/_services';
-import { ISchool, IUser, Role } from 'src/app/_models';
+import { ISchool, IUser } from 'src/app/_models';
+import { CourseCategoryPage } from '../../course-category/course-category.page';
 
 @Component({
   selector: 'app-assignment-subjects',
@@ -51,7 +50,7 @@ export class AssignmentSubjectsPage implements OnInit {
   }
 
   public selectSubject(subjectName: string) {
-    this.router.navigateByUrl(`teacher/assignment/${this.classId}/list/${subjectName}`);
+    this.router.navigateByUrl(`assignment/${this.classId}/list/${subjectName}`);
   }
 
   public async AddSubject() {

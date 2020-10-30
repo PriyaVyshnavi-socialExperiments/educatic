@@ -133,11 +133,6 @@ const routes: Routes = [
         loadChildren: '../../pages/course-add/course-add.module#CourseAddPageModule',
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
       },
-      // {
-      //   path: 'course/category',
-      //   loadChildren: '../../pages/course-category/course-category.module#CourseCategoryPageModule',
-      //   data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
-      // },
       {
         path: 'attendance',
         loadChildren: '../../pages/attendance/attendance.module#AttendancePageModule',
@@ -151,58 +146,40 @@ const routes: Routes = [
       {
         path: 'content/:id/pdf-viewer',
         loadChildren: () => import('../../pages/viewer/pdf-viewer/pdf-viewer.module')
-        .then(m => m.PdfViewerPageModule),
+          .then(m => m.PdfViewerPageModule),
       },
       {
         path: 'content/:id/video-viewer',
         loadChildren: () => import('../../pages/viewer/video-viewer/video-viewer.module')
-        .then(m => m.VideoViewerPageModule),
+          .then(m => m.VideoViewerPageModule),
       },
       {
-        path: 'student/assignments',
-        loadChildren: () => import('../../pages/assignment/teacher/assignment-subjects/assignment-subjects.module')
-        .then( m => m.AssignmentSubjectsPageModule)
+        path: 'assignment/subjects',
+        loadChildren: () => import('../../pages/assignment/assignment-subjects/assignment-subjects.module')
+          .then(m => m.AssignmentSubjectsPageModule)
       },
-      // {
-      //   path: 'student/assignments/:subject',
-      //   loadChildren: () => import('../../pages/assignment/student/subject-assignments/subject-assignments.module')
-      //     .then(m => m.SubjectAssignmentsPageModule)
-      // },
-      // {
-      //   path: 'student/assignment/:id',
-      //   loadChildren: () => import('../../pages/assignment/student/upload-assignment/upload-assignment.module')
-      //     .then(m => m.UploadAssignmentPageModule)
-      // },
+
       {
-        path: 'teacher/assignment/:classId/subjects',
-        loadChildren: () => import('../../pages/assignment/teacher/assignment-subjects/assignment-subjects.module')
-        .then( m => m.AssignmentSubjectsPageModule)
+        path: 'assignment/:classId/subjects',
+        loadChildren: () => import('../../pages/assignment/assignment-subjects/assignment-subjects.module')
+          .then(m => m.AssignmentSubjectsPageModule)
       },
       {
-        path: 'teacher/assignment/classes',
-        loadChildren: () => import('../../pages/assignment/teacher/assignment-classes/assignment-classes.module')
-        .then( m => m.AssignmentClassesPageModule)
+        path: 'assignment/classes',
+        loadChildren: () => import('../../pages/assignment/assignment-classes/assignment-classes.module')
+          .then(m => m.AssignmentClassesPageModule)
       },
+
       {
-        path: 'teacher/assignment/students',
-        loadChildren: () => import('../../pages/assignment/teacher/assignment-students/assignment-students.module')
-        .then( m => m.AssignmentStudentsPageModule)
-      },
-      {
-        path: 'teacher/assignment/view',
-        loadChildren: () => import('../../pages/assignment/teacher/assignment-view/assignment-view.module')
-        .then( m => m.AssignmentStudentViewPageModule)
-      },
-      {
-        path: 'teacher/assignment/:classId/list/:subjectName',
-        loadChildren: () => import('../../pages/assignment/teacher/assignment-list/assignment-list.module')
-        .then( m => m.AssignmentListPageModule),
+        path: 'assignment/:classId/list/:subjectName',
+        loadChildren: () => import('../../pages/assignment/assignment-list/assignment-list.module')
+          .then(m => m.AssignmentListPageModule),
         runGuardsAndResolvers: 'always',
       },
       {
-        path: 'assignment/:type/:classId/upload/:subjectName',
+        path: 'assignment/:classId/upload/:subjectName',
         loadChildren: () => import('../../pages/assignment/upload/assignment-upload.module')
-        .then( m => m.AssignmentUploadPageModule)
+          .then(m => m.AssignmentUploadPageModule)
       },
     ],
     runGuardsAndResolvers: 'always',

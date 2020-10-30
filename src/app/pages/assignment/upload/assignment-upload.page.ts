@@ -70,7 +70,7 @@ export class AssignmentUploadPage implements OnInit {
   }
 
   NavigateToAssignmentList() {
-    this.router.navigateByUrl(`${this.type}/assignment/${this.classId}/list/${this.subjectName}?d=${new Date()}`);
+    this.router.navigateByUrl(`assignment/${this.classId}/list/${this.subjectName}?d=${new Date()}`);
   }
 
   SelectAssignment() {
