@@ -125,13 +125,13 @@ const routes: Routes = [
       },
       {
         path: 'courses',
-        loadChildren: () => import('../../pages/courses/courses.module').then(m => m.CoursesPageModule),
+        loadChildren: () => import('../../pages/courses/courses/courses.module').then(m => m.CoursesPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
       },
       {
         path: 'course/add',
-        loadChildren: '../../pages/course-add/course-add.module#CourseAddPageModule',
-        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+        loadChildren: () => import('../../pages/courses/course-add/course-add.module').then(m => m.CourseAddPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
         path: 'attendance',

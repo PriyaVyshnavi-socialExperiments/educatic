@@ -3,8 +3,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ModalController, ToastController } from '@ionic/angular';
 import { ICourseContentDistribution } from 'src/app/_models/course-content-distribution';
 import { CourseContentService } from 'src/app/_services/course-content/course-content.service';
-import { IClassRoom, ISchool } from '../../_models';
-import { AuthenticationService } from '../../_services/authentication/authentication.service';
+import { IClassRoom, ISchool } from '../../../_models';
+import { AuthenticationService } from '../../../_services/authentication/authentication.service';
 
 @Component({
   selector: 'app-course-share',
@@ -65,7 +65,6 @@ export class CourseSharePage implements OnInit {
     } as ICourseContentDistribution;
 
     this.contentService.DistributeCourseContent(courseContent).subscribe(() => {
-      console.log("DistributeCourseContent");
       this.courseShareForm.reset();
       this.presentToast();
       this.dismissModal();

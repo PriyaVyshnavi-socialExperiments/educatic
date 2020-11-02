@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { AlertController, IonSelect } from '@ionic/angular';
 import { CameraSource, Camera, CameraResultType } from '@capacitor/core';
-import { ContentHelper } from '../../_helpers/image-helper';
+import { ContentHelper } from '../../_helpers/content-helper';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IUser, ISchool } from '../../_models';
 import { AuthenticationService } from '../../_services';

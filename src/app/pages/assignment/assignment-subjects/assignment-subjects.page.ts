@@ -5,7 +5,7 @@ import { AssignmentService } from 'src/app/_services/assignment/assignment.servi
 import { ISubjectAssignmentList } from 'src/app/_models/assignment';
 import { AuthenticationService } from 'src/app/_services';
 import { ISchool, IUser } from 'src/app/_models';
-import { CourseCategoryPage } from '../../course-category/course-category.page';
+import { CourseCategoryPage } from '../../courses/course-category/course-category.page';
 
 @Component({
   selector: 'app-assignment-subjects',

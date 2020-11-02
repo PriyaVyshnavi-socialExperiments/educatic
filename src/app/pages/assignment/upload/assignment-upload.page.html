@@ -4,6 +4,9 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="{{type}}/assignment/{{classId}}/list/{{subjectName}}"></ion-back-button>
     </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button ion-button block  (click)="NavigateToAssignmentList()">Cancel</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

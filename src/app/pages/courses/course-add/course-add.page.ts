@@ -2,12 +2,12 @@ import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@an
 import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { FilePickerComponent, ValidationError } from 'ngx-awesome-uploader';
-import { ContentHelper } from 'src/app/_helpers/image-helper';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
-import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
-import { ICourseContentCategory } from '../../_models/course-content-category';
-import { FilePicker } from '../../_services/azure-blob/file-picker.service';
-import { CourseContentService } from '../../_services/course-content/course-content.service';
+import { ICategoryContentList, ICourseContent } from '../../../_models/course-content';
+import { ICourseContentCategory } from '../../../_models/course-content-category';
+import { FilePicker } from '../../../_services/azure-blob/file-picker.service';
+import { CourseContentService } from '../../../_services/course-content/course-content.service';
 import { CourseCategoryPage } from '../course-category/course-category.page';
 
 @Component({

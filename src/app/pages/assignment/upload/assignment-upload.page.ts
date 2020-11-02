@@ -4,7 +4,7 @@ import { ActionSheetController, Platform, ToastController } from '@ionic/angular
 import { Plugins, CameraResultType, CameraSource, CameraPhoto } from '@capacitor/core';
 import { SpinnerVisibilityService } from 'ng-http-loader';
 import * as blobUtil from 'blob-util';
-import { ContentHelper } from 'src/app/_helpers/image-helper';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from 'src/app/_services/assignment/assignment.service';
 import { IAssignment, IStudentAssignment } from 'src/app/_models/assignment';
@@ -143,7 +143,8 @@ export class AssignmentUploadPage implements OnInit {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
-    if ((/\.(gif|jpe?g|tiff?|png|webp|bmp|pdf)$/i).test(file.name)) {
+    const fileExt = file.type.split('/').pop();
+    if ((ContentHelper.ImgSupported.indexOf(fileExt) > -1)) {
       this.UploadAssignment(null, file);
     } else {
       this.presentToast(`This file type is not supported.`, 'danger');

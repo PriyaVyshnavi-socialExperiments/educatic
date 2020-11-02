@@ -7,7 +7,7 @@ import { IStudentPhoto } from '../../_models/student-photos';
 import { ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '../../_services';
 import { IUser, ISchool, IStudent } from '../../_models';
-import { ContentHelper } from 'src/app/_helpers/image-helper';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
 import { LocationService } from 'src/app/_services/location/location.service';
 import { RefreshServerService } from 'src/app/_services/refresh-server/refresh-server.service';

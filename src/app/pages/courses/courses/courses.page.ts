@@ -5,10 +5,10 @@ import { Role } from 'src/app/_models';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { ICourseContentCategory } from 'src/app/_models/course-content-category';
 import { CourseContentService } from 'src/app/_services/course-content/course-content.service';
-import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
-import { AuthenticationService } from '../../_services/authentication/authentication.service';
+import { ICategoryContentList, ICourseContent } from '../../../_models/course-content';
+import { AuthenticationService } from '../../../_services/authentication/authentication.service';
 import { CourseSharePage } from '../course-share/course-share.page';
-import { ContentHelper } from 'src/app/_helpers/image-helper';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 
 @Component({
   selector: 'app-courses',
