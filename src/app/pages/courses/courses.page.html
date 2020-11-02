@@ -46,7 +46,7 @@
           {{content.courseDescription}}
         </ion-card-content>
       </div>
-        <ion-footer>
+        <ion-footer *ngIf="!isStudent">
           <ion-grid>
             <ion-row justify-content-around>
               <ion-col>

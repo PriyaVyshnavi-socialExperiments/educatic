@@ -47,7 +47,7 @@
               <p> Submitted Date: <b>{{item.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
             </ion-label>
           </ion-item>
-          <ion-item lines="none" *ngIf="!assignment.studentAssignments">
+          <ion-item lines="none" *ngIf="!assignment.studentAssignments.length">
             <ion-label color="danger">
               <h2>Assignment not uploaded yet by students</h2>
             </ion-label>
