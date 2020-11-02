@@ -114,14 +114,14 @@ export class NavMenuHelper {
     {
       name: 'Course',
       icon: 'school',
-      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
       active: true,
       children: [
         {
           name: 'All Course',
           path: '/courses',
           icon: 'list',
-          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
           active: true
         },
         {
@@ -132,6 +132,13 @@ export class NavMenuHelper {
           active: true
         }
       ]
+    },
+    {
+      name: 'Courses',
+      path: '/courses',
+      icon: 'school',
+      roles: [Role.Student],
+      active: true
     },
     {
       name: 'Attendance',

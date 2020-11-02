@@ -26,16 +26,6 @@ export class CourseContentService extends OfflineService {
     super(injector);
   }
 
-  public get ImgSupported() { return ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'svg'] };
-  public get PdfSupported() { return ['pdf'] };
-  public get AudioVideoSupported() {
-    return ['wav', 'aiff', 'alac', 'flac', 'mp3', 'aac', 'wma', 'ogg',
-      'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ogg', 'mp4', 'm4p', 'm4v', 'avi', 'wmv', 'mov', 'qt', 'flv', 'swf', 'avchd']
-  };
-
-  public get ContentUploadSupported() { return [...this.ImgSupported, ...this.PdfSupported, ...this.AudioVideoSupported];}
-
-
   public SubmitCourseContent(courseContent: ICourseContent) {
     if (!courseContent.id) {
       courseContent.id = Guid.create().toString();

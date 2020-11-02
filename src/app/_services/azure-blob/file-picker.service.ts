@@ -8,7 +8,7 @@ import { SasGeneratorService } from './sas-generator.service';
 import { BlobUploadsViewStateService } from './blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from './blob-shared-view-state.service';
 import { BlobDownloadsViewStateService } from './blob-downloads-view-state.service';
-import { ImageHelper } from 'src/app/_helpers/image-helper';
+import { ContentHelper } from 'src/app/_helpers/image-helper';
 
 @Injectable({
     providedIn: 'root'

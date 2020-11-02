@@ -8,6 +8,7 @@ import { CourseContentService } from 'src/app/_services/course-content/course-co
 import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
 import { AuthenticationService } from '../../_services/authentication/authentication.service';
 import { CourseSharePage } from '../course-share/course-share.page';
+import { ContentHelper } from 'src/app/_helpers/image-helper';
 
 @Component({
   selector: 'app-courses',
@@ -80,11 +81,11 @@ export class CoursesPage implements OnInit {
   ContentViewer(content: ICourseContent) {
     const contentType = content.courseURL.replace(/^.*\./, '').toLowerCase();
 
-    if (this.contentService.PdfSupported.indexOf(contentType) > -1) {
+    if (ContentHelper.PdfSupported.indexOf(contentType) > -1) {
       this.router.navigateByUrl(`content/${content.id}/pdf-viewer`, { state: content });
-    } else if (this.contentService.AudioVideoSupported.indexOf(contentType) > -1) {
+    } else if (ContentHelper.AudioVideoSupported.indexOf(contentType) > -1) {
       this.router.navigateByUrl(`content/${content.id}/video-viewer`, { state: content });
-    } else if (this.contentService.ImgSupported.indexOf(contentType) > -1) {
+    } else if (ContentHelper.ImgSupported.indexOf(contentType) > -1) {
       this.contentService.GetAzureContentURL(content.courseURL).subscribe((url) => {
         this.openViewer(url, content);
       })

@@ -77,8 +77,8 @@
         </form>
       </div>
       <ngx-file-picker #uploader class="file-picker" [fileMaxCount]="1" *ngIf="courseForm.valid" [adapter]="filepicker"
-        (uploadSuccess)="uploadSuccess($event)" (uploadFail)="uploadFail($event)"  [fileExtensions]="contentUploadSupported"
-        (validationError)= "onValidationError($event)" [accept]="contentUploadSupported">
+        (uploadSuccess)="uploadSuccess($event)" (uploadFail)="uploadFail($event)"  [fileExtensions]="contentHelper.ContentUploadSupported"
+        (validationError)= "onValidationError($event)" [accept]="contentHelper.ContentUploadSupported">
       </ngx-file-picker>
     </div>
   </div>

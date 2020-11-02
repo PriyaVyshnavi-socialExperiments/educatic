@@ -94,9 +94,11 @@ export class AssignmentListPage implements OnInit {
   }
 
   ShowHideBadge(assignmentDate) {
+    const tdate = new Date();
+    tdate.setDate(tdate.getDate() + 1);
     const asmDate = this.datePipe.transform(assignmentDate,'dd-MM-yyyy');
-    const todayDate = this.datePipe.transform(new Date(),'dd-MM-yyyy');
-    return todayDate > asmDate;
+    const todayDate = this.datePipe.transform(tdate,'dd-MM-yyyy');
+    return todayDate <  asmDate;
   }
 
   private async ViewAssignment(fileExt, assignmentURL, assignmentName) {

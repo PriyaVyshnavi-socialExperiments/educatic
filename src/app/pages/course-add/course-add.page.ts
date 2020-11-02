@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@an
 import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { FilePickerComponent, ValidationError } from 'ngx-awesome-uploader';
+import { ContentHelper } from 'src/app/_helpers/image-helper';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
 import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
 import { ICourseContentCategory } from '../../_models/course-content-category';
@@ -21,7 +22,7 @@ export class CourseAddPage implements OnInit {
 
   courseCategory: ICourseContentCategory[] = [];
   fileName: string;
-  contentUploadSupported: any;
+  contentHelper: any;
   progress = 0;
   public courseForm: FormGroup;
   categoryWiseContent: ICategoryContentList[];
@@ -51,7 +52,7 @@ export class CourseAddPage implements OnInit {
         Validators.required,
       ])
     });
-    this.contentUploadSupported = this.contentService.ContentUploadSupported;
+    this.contentHelper = ContentHelper;
   }
 
   ionViewDidEnter() {
