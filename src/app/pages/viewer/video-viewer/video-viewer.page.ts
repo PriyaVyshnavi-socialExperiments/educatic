@@ -27,10 +27,10 @@ export class VideoViewerPage implements OnInit, AfterViewInit {
 
   async ngAfterViewInit() {
     this.courseContent = history.state;
-    if (!this.courseContent.categoryName) {
+    if (!this.courseContent.courseCategory) {
       this.navCtrl.back();
     }
-    this.title = `${this.courseContent.categoryName} - ${this.courseContent.courseName}`;
+    this.title = `${this.courseContent.courseCategory} - ${this.courseContent.courseName}`;
 
     const info = await Device.getInfo();
     if (info.platform === 'ios' || info.platform === 'android') {

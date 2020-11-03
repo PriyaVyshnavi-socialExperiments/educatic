@@ -22,6 +22,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { CacheInterceptor } from './_helpers/cache.interceptor';
 import { AppConfigService, initConfig } from './_services/configurations/app-config.service';
+import { CategoryFilterPipe } from './pages/courses/category-filter.pipe';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],

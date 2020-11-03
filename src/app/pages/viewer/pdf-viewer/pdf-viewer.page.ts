@@ -19,10 +19,10 @@ export class PdfViewerPage implements OnInit {
 
   ngOnInit() {
     this.courseContent = history.state;
-    if (!this.courseContent.categoryName) {
+    if (!this.courseContent.courseCategory) {
       this.navCtrl.back();
     }
-    this.title = `${this.courseContent.categoryName} - ${this.courseContent.courseName}`;
+    this.title = `${this.courseContent.courseCategory} - ${this.courseContent.courseName}`;
     if (!this.courseContent.isTokenRequired) {
       this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe((url) => {
         this.pdfContentURL =url;
