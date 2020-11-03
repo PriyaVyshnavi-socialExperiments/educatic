@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } f
 import { ModalController, ToastController } from '@ionic/angular';
 import { FilePickerComponent, ValidationError } from 'ngx-awesome-uploader';
 import { ContentHelper } from 'src/app/_helpers/content-helper';
+import { IUser } from 'src/app/_models';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
 import { ICategoryContentList, ICourseContent } from '../../../_models/course-content';
 import { ICourseContentCategory } from '../../../_models/course-content-category';
@@ -21,11 +22,13 @@ export class CourseAddPage implements OnInit {
   @ViewChild('uploader') uploader: FilePickerComponent;
 
   courseCategory: ICourseContentCategory[] = [];
+  courseLevel: ICourseContentCategory[] = [];
   fileName: string;
   contentHelper: any;
   progress = 0;
   public courseForm: FormGroup;
   categoryWiseContent: ICategoryContentList[];
+  currentUser: IUser;
 
   constructor(
     public filepicker: FilePicker,
@@ -48,9 +51,10 @@ export class CourseAddPage implements OnInit {
         Validators.required,
         Validators.maxLength(1000),
       ]),
-      categoryName: new FormControl('', [
+      courseCategory: new FormControl('', [
         Validators.required,
-      ])
+      ]),
+      courseLevel: new FormControl('', [])
     });
     this.contentHelper = ContentHelper;
   }
@@ -60,6 +64,7 @@ export class CourseAddPage implements OnInit {
       if (!user) {
         return;
       }
+      this.currentUser = user;
       if (user.courseContent) {
         this.contentService.GetCategoryWiseContent(user.courseContent).subscribe((groupResponse) => {
           this.categoryWiseContent = Object.values(groupResponse);
@@ -83,8 +88,7 @@ export class CourseAddPage implements OnInit {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: CourseCategoryPage,
-        componentProps: {
-        }
+        componentProps: { title: 'Course category(subject)' }
       });
     modal.onDidDismiss()
       .then((modalData: any) => {
@@ -93,13 +97,30 @@ export class CourseAddPage implements OnInit {
         if (categoryList.length > 0) {
           const selectedCategory = modalData.data.selectedCategory;
           this.filepicker.blobFileName = selectedCategory.name;
-          this.courseForm.setValue({
-            categoryName: selectedCategory.name,
-            courseName: '',
-            courseDescription: ''
-          });
+          this.f.courseCategory.setValue(selectedCategory.name);
           this.courseCategory = [...this.courseCategory, ...categoryList];
           this.courseCategory = [...new Map(this.courseCategory.map(item => [item.name, item])).values()]
+        }
+      });
+    await modal.present();
+  }
+
+  public async AddNewLevel() {
+    const modal: HTMLIonModalElement =
+      await this.modalController.create({
+        component: CourseCategoryPage,
+        componentProps: { title: 'Subject Level' }
+      });
+    modal.onDidDismiss()
+      .then((modalData: any) => {
+        console.log(modalData.data);
+        const courseLevelList = modalData.data.categoryList;
+        if (courseLevelList.length > 0) {
+          const selectedCategory = modalData.data.selectedCategory;
+          this.filepicker.blobFileName = selectedCategory.name;
+          this.f.courseLevel.setValue(selectedCategory.name);
+          this.courseLevel = [...this.courseLevel, ...courseLevelList];
+          this.courseLevel = [...new Map(this.courseLevel.map(item => [item.name, item])).values()]
         }
       });
     await modal.present();
@@ -111,10 +132,12 @@ export class CourseAddPage implements OnInit {
     }
 
     const courseContent = {
-      categoryName: this.f.categoryName.value,
+      courseCategory: this.f.courseCategory.value,
+      courseLevel: this.f.courseLevel.value,
       courseName: this.f.courseName.value,
       courseDescription: this.f.courseDescription.value,
       courseURL: this.filepicker.blobFileName + '/' + this.fileName,
+      schoolId: this.currentUser.defaultSchool.id,
     } as ICourseContent;
     this.contentService.SubmitCourseContent(courseContent).subscribe((res) => {
     });

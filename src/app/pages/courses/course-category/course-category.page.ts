@@ -20,7 +20,7 @@ export class CourseCategoryPage implements OnInit {
 
   ngOnInit() {
     this.categoryForm = this.formBuilder.group({
-      categoryName: new FormControl('', [
+      courseCategory: new FormControl('', [
         Validators.required
       ])
     });
@@ -33,11 +33,11 @@ export class CourseCategoryPage implements OnInit {
   }
 
   addCategory() {
-    const categoryName: string = this.f.categoryName.value;
-    if (categoryName) {
-      const category = { id: this.categoryList.length.toString(), name: categoryName, } as ICourseContentCategory;
+    const courseCategory: string = this.f.courseCategory.value;
+    if (courseCategory) {
+      const category = { id: this.categoryList.length.toString(), name: courseCategory, } as ICourseContentCategory;
 
-      if (!this.categoryList.some((item) => item.name.trim().toLowerCase() === categoryName.trim().toLowerCase())) {
+      if (!this.categoryList.some((item) => item.name.trim().toLowerCase() === courseCategory.trim().toLowerCase())) {
         this.categoryList.unshift(category);
       }
       this.categoryForm.reset();
