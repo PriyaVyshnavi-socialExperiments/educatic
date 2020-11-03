@@ -20,7 +20,7 @@ export class MenuPage implements OnInit, OnDestroy {
   dark = false;
   menuList: any;
   schoolDetails: ISchool;
-  isProfileShow= true;
+  isProfileShow = true;
 
   constructor(
     private router: Router,

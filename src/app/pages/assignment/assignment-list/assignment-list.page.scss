@@ -1,0 +1,22 @@
+ion-card {
+  ion-item {
+    cursor       : pointer;
+    border-radius: 5px;
+
+    ion-button {
+      height: 35px;
+    }
+  }
+}
+
+.number-circle {
+  --padding-top   : 12px;
+  --padding-end   : 4px;
+  --padding-bottom: 4px;
+  --padding-start : 4px;
+  border-radius   : 40px;
+  height          : 50px;
+  width           : 50px;
+  line-height     : 30px;
+  white-space     : pre-wrap;
+}

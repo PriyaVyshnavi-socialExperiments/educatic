@@ -1,0 +1,57 @@
+.container-login100 {
+    min-height: 0 !important;
+}
+
+.mat-form-field-appearance-outline {
+    .mat-form-field-wrapper {
+        margin: .55em 0;
+    }
+}
+
+.wrap-login100 {
+    display       : contents !important;
+    flex-direction: row !important;
+}
+
+.login100-form {
+    width  : 100% !important;
+    padding: 30px !important;
+}
+
+.login100-form-btn {
+    width: 46% !important;
+
+}
+
+.course-category {
+
+    .mat-input-element {
+        width: 80%;
+    }
+
+    ion-item {
+        border-radius: 5px;
+        border-width : 1px;
+        border-style : var(--border-style);
+        border-color : var(--border-color);
+    }
+}
+
+.progress-outer {
+    width: 96%;
+    margin: 10px 2%;
+    padding: 3px;
+    text-align: center;
+    background-color: var(--ion-color-light);
+    border: 1px solid #dcdcdc;
+    color: #fff;
+    border-radius: 20px;
+}
+
+.progress-inner {
+    min-width: 5%;
+    white-space: nowrap;
+    overflow: hidden;
+    border-radius: 20px;
+    background-color: var(--ion-color-success);
+}

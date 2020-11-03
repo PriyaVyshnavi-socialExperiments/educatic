@@ -114,14 +114,14 @@ export class NavMenuHelper {
     {
       name: 'Course',
       icon: 'school',
-      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
       active: true,
       children: [
         {
           name: 'All Course',
           path: '/courses',
           icon: 'list',
-          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+          roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
           active: true
         },
         {
@@ -134,6 +134,13 @@ export class NavMenuHelper {
       ]
     },
     {
+      name: 'Courses',
+      path: '/courses',
+      icon: 'school',
+      roles: [Role.Student],
+      active: true
+    },
+    {
       name: 'Attendance',
       path: '/attendance',
       icon: 'calendar-outline',
@@ -141,17 +148,17 @@ export class NavMenuHelper {
       active: true
     },
     {
-      name: 'My Assignments',
-      path: '/student/assignments',
+      name: 'Assignments',
+      path: '/assignment/subjects',
       icon: 'reader-outline',
-      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      roles: [Role.Student],
       active: true
     },
     {
-      name: 'Teacher Assignments',
-      path: '/teacher/assignment/classes',
+      name: 'Assignments',
+      path: '/assignment/classes',
       icon: 'reader-outline',
-      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student],
+      roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher],
       active: true
     },
     {

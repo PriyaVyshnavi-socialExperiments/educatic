@@ -7,7 +7,7 @@ import { IStudentPhoto } from '../../_models/student-photos';
 import { ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '../../_services';
 import { IUser, ISchool, IStudent } from '../../_models';
-import { ImageHelper } from 'src/app/_helpers/image-helper';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
 import { LocationService } from 'src/app/_services/location/location.service';
 import { RefreshServerService } from 'src/app/_services/refresh-server/refresh-server.service';
@@ -103,12 +103,12 @@ export class StudentPhotoUploadPage implements OnInit {
       source: CameraSource.Prompt
     });
 
-    const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
+    const blobData = ContentHelper.b64toBlob(image.base64String, `image/${image.format}`);
     const schoolName = this.school.name.replace(/\s/g, '');
     const studentName = `${this.student.firstName + this.student.lastName}_${this.studentId}`;
     const blobURL = `${schoolName}_${this.school.id}/${this.classId}/${studentName.replace(/\s/g, '')}/${id}_photo.${image.format}`;
 
-    const imageFile = ImageHelper.blobToFile(blobData, blobURL);
+    const imageFile = ContentHelper.blobToFile(blobData, blobURL);
     this.studentService.UploadImageFile(imageFile).subscribe((res) => {
       console.log("res: ", res)
     }
