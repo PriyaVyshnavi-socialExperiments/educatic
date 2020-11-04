@@ -95,19 +95,17 @@ export class CourseContentService extends OfflineService {
   }
 
   public GetLevelWiseContent(courseContent: ICourseContent[]) {
-    console.log("courseContent: ", courseContent);
     return from(courseContent)
       .pipe(
-        groupBy(course => course.courseLevel),
+        groupBy(course => course.courseLevel?.length ? course.courseLevel : null),
         mergeMap(group => group
           .pipe(
             reduce((acc, cur) => {
-              console.log("cur: ", cur)
               acc.content.push(cur);
               acc.length = acc.content.length;
               return acc;
             },
-              { key: group.key, content: [], length: 0, level: true } as ICategoryContentList
+              { key: group.key?.length === 0 ? null : group.key, content: [], length: 0, level: true } as ICategoryContentList
             )
           )
         ),

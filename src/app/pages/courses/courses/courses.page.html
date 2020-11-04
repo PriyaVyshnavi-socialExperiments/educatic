@@ -40,7 +40,7 @@
 
       <ion-card class="item-card" *ngFor="let item of courseContent | categoryFilter | async">
         <ion-item color="medium">
-          <ion-label (click)=" item.key && item.level = !item.level"><b>{{item.key? item.key : 'Courses' }}</b>
+          <ion-label (click)=" item.key && item.level = !item.level"><b>{{ item.key?.length ? item.key : 'Courses' }}</b>
             <ion-badge mode="ios" color="warning" slot="end">{{item.length}}</ion-badge>
           </ion-label>
           <ion-button *ngIf="item.key" slot="end" color="secondary" shape="round" fill="outline" (click)="item.level = !item.level">
