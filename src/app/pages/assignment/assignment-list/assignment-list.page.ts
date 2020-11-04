@@ -105,7 +105,7 @@ export class AssignmentListPage implements OnInit {
     if (fileExt.toLowerCase() === 'pdf') {
       const content = {
         courseURL: assignmentURL,
-        categoryName: this.subjectName,
+        courseCategory: this.subjectName,
         courseName: assignmentName,
         isTokenRequired: true,
       } as ICourseContent;

@@ -8,6 +8,7 @@ import { CoursesPageRoutingModule } from './courses-routing.module';
 
 import { CoursesPage } from './courses.page';
 import { MatSelectModule } from '@angular/material/select';
+import { CategoryFilterPipe } from '../category-filter.pipe';
 
 @NgModule({
   imports: [
@@ -18,6 +19,6 @@ import { MatSelectModule } from '@angular/material/select';
     MatSelectModule ,
     NgxIonicImageViewerModule
   ],
-  declarations: [CoursesPage]
+  declarations: [CoursesPage, CategoryFilterPipe]
 })
 export class CoursesPageModule {}

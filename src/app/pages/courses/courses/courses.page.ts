@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationExtras, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Role } from 'src/app/_models';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
@@ -13,12 +13,13 @@ import { ContentHelper } from 'src/app/_helpers/content-helper';
 @Component({
   selector: 'app-courses',
   templateUrl: './courses.page.html',
-  styleUrls: ['./courses.page.scss'],
+  styleUrls: ['./courses.page.scss']
 })
 export class CoursesPage implements OnInit {
 
   courseContent: ICourseContent[] = [];
   categoryWiseContent: ICategoryContentList[];
+  levelWiseContent: ICategoryContentList[];
   categoryList: ICourseContentCategory[] = [];
   courseContentDisplay = false;
   isStudent = false;
@@ -44,6 +45,7 @@ export class CoursesPage implements OnInit {
       if (user.courseContent) {
         this.contentService.GetCategoryWiseContent(user.courseContent).subscribe((groupResponse) => {
           this.categoryWiseContent = Object.values(groupResponse);
+          console.log("this.categoryWiseContent: ", this.categoryWiseContent);
         });
       }
     });
@@ -53,7 +55,7 @@ export class CoursesPage implements OnInit {
   public ViewContent(content: ICourseContent[]) {
     this.courseContent = [...content];
     this.courseContentDisplay = true;
-    this.title = 'Course content - ' + content[0].categoryName;
+    this.title = 'Course content - ' + content[0].courseCategory;
   }
 
   public dismissModal() {
@@ -78,6 +80,16 @@ export class CoursesPage implements OnInit {
     this.router.navigateByUrl('/course/add', { state: this.categoryList });
   }
 
+  GetLevelWiseCategory(content: ICourseContent[])  {
+    console.log("courseContent: ", content);
+    // const subject = new Subject<ICategoryContentList[]>();
+    // // this.contentService.GetLevelWiseContent(content).subscribe((groupResponse) => {
+    // //   subject.next(Object.values(groupResponse));
+    // // });
+
+    // return subject.asObservable();
+  }
+
   ContentViewer(content: ICourseContent) {
     const contentType = content.courseURL.replace(/^.*\./, '').toLowerCase();
 
@@ -97,7 +109,7 @@ export class CoursesPage implements OnInit {
       component: ViewerModalComponent,
       componentProps: {
         src: imgContentURL,
-        title: `${content.categoryName} - ${content.courseName}`
+        title: `${content.courseCategory} - ${content.courseName}`
       },
       cssClass: 'ion-img-viewer',
       keyboardClose: true,

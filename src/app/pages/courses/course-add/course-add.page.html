@@ -19,7 +19,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Category(Subject)</mat-label>
-                <mat-select formControlName="categoryName" (selectionChange)="onChangeCategory($event)">
+                <mat-select formControlName="courseCategory" (selectionChange)="onChangeCategory($event)">
                   <mat-option>
                     <a class="txt1" (click)="AddNewCategory()">Click her to add new category</a>
                   </mat-option>
@@ -29,9 +29,26 @@
                 </mat-select>
                 <mat-icon matSuffix>
                 </mat-icon>
-                <mat-error *ngIf="courseForm.get('categoryName').hasError('required')">
+                <mat-error *ngIf="courseForm.get('courseCategory').hasError('required')">
                   A category is required to proceed.
                 </mat-error>
+              </mat-form-field>
+
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Level</mat-label>
+                <mat-select formControlName="courseLevel" (selectionChange)="onChangeCategory($event)">
+                  <mat-option>
+                    <a class="txt1" (click)="AddNewLevel()">Click her to add new level</a>
+                  </mat-option>
+                  <mat-option *ngFor="let category of courseLevel; let i = index" value="{{category.name}}">
+                    {{category.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
               </mat-form-field>
 
             </div>

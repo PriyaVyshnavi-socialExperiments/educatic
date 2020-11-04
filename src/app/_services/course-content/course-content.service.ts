@@ -78,7 +78,7 @@ export class CourseContentService extends OfflineService {
   public GetCategoryWiseContent(CourseContent: ICourseContent[]) {
     return from(CourseContent)
       .pipe(
-        groupBy(person => person.categoryName),
+        groupBy(course => course.courseCategory),
         mergeMap(group => group
           .pipe(
             reduce((acc, cur) => {
@@ -87,6 +87,27 @@ export class CourseContentService extends OfflineService {
               return acc;
             },
               { key: group.key, content: [], length: 0 } as ICategoryContentList
+            )
+          )
+        ),
+        toArray()
+      )
+  }
+
+  public GetLevelWiseContent(courseContent: ICourseContent[]) {
+    console.log("courseContent: ", courseContent);
+    return from(courseContent)
+      .pipe(
+        groupBy(course => course.courseLevel),
+        mergeMap(group => group
+          .pipe(
+            reduce((acc, cur) => {
+              console.log("cur: ", cur)
+              acc.content.push(cur);
+              acc.length = acc.content.length;
+              return acc;
+            },
+              { key: group.key, content: [], length: 0, level: true } as ICategoryContentList
             )
           )
         ),
