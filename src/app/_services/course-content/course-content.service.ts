@@ -1,6 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { from, of } from 'rxjs';
+import { concat, from, of } from 'rxjs';
 import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
 import { ICourseContentDistribution } from '../../_models/course-content-distribution';
 import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
@@ -10,6 +10,8 @@ import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
 import { BlobStorageRequest } from '../../_services/azure-blob/azure-storage';
 import { SasGeneratorService } from '../../_services/azure-blob/sas-generator.service';
+import { BlobUploadsViewStateService } from '../azure-blob/blob-uploads-view-state.service';
+import { BlobSharedViewStateService } from '../azure-blob/blob-shared-view-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,15 +24,18 @@ export class CourseContentService extends OfflineService {
     private network: NetworkService,
     private auth: AuthenticationService,
     private sasGeneratorService: SasGeneratorService,
+    private blobUpload: BlobUploadsViewStateService,
+    private blobShared: BlobSharedViewStateService,
   ) {
     super(injector);
   }
 
-  public SubmitCourseContent(courseContent: ICourseContent) {
+  public SubmitCourseContent(courseContent: ICourseContent, file: File) {
     if (!courseContent.id) {
       courseContent.id = Guid.create().toString();
     }
-    return this.http.Post<any>('/content/create', courseContent)
+
+    const courseContentDetails =   this.http.Post<any>('/content/create', courseContent)
       .pipe(
         map(response => {
           return response;
@@ -39,6 +44,14 @@ export class CourseContentService extends OfflineService {
           this.UpdateCourseContentOfflineList(courseContent);
         })
       );
+
+      return concat(this.UploadCourseFileContent(file), courseContentDetails);
+  }
+
+  private UploadCourseFileContent(courseFile: File) {
+    this.blobShared.setContainer$ = 'coursecontent';
+    this.blobShared.resetSasToken$ = true;
+    return this.blobUpload.uploadFile(courseFile);
   }
 
   public GetCourseContents() {
@@ -101,7 +114,7 @@ export class CourseContentService extends OfflineService {
         mergeMap(group => group
           .pipe(
             reduce((acc, cur) => {
-              acc.content.push(cur);
+              acc.content.unshift(cur);
               acc.length = acc.content.length;
               return acc;
             },

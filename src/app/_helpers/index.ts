@@ -16,5 +16,6 @@ export const getInitials = (name) => {
 export const dateFormat = (date) => {
     const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' });
     const [{ value: month }, , { value: day }, , { value: year }] = dateTimeFormat.formatToParts(date);
-    return `${day}-${month}-${year}`;
+    const randomNumber = Math.floor(Math.random()*90) + 100;;
+    return `${randomNumber}_${day}-${month}-${year}`;
 }
