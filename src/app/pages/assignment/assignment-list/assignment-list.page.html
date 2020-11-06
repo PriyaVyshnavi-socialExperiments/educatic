@@ -15,35 +15,51 @@
   <div class="main-card ion-justify-content-center">
 
     <ion-card *ngFor="let assignment of assignments">
-      
-      <ion-card-content>
-        
-        <ion-item lines="none" color="light">
-          <ion-buttons *ngIf="currentUser?.role === 'Student'" slot="end">
-          <ion-button color="primary" (click)=UploadAssignment(assignment) shape="round" fill="outline" class="upload-button">
-              <ion-icon slot="start" name="push-outline"></ion-icon>Upload
-            </ion-button>
-          </ion-buttons>
 
-          <ion-badge *ngIf="currentUser?.role!== 'Student'" slot="end" color="warning" class="number-circle"
-            (click)="assignment.badgeToggle = !assignment.badgeToggle">
-            <h1>
-              <ion-icon *ngIf="!assignment.badgeToggle" name="chevron-down-circle-outline"></ion-icon>
-              <ion-icon *ngIf="assignment.badgeToggle" name="chevron-up-circle-outline"></ion-icon>
-            </h1>
-          </ion-badge>
-          <ion-label (click)="ViewTeacherAssignment(assignment)">
-            
-            <h2>{{assignment.assignmentName}} <ion-badge *ngIf="!ShowHideBadge(assignment.createdDate)" color="danger">New</ion-badge></h2>
-            <p> {{assignment.assignmentDescription}} </p>
-            <p>Date Submitted: <b>{{assignment.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
-          </ion-label>
+      <ion-card-content>
+
+        <ion-item lines="none" color="light">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" size-md (click)="ViewTeacherAssignment(assignment)">
+                <h2>{{assignment.assignmentName}} <ion-badge *ngIf="!ShowHideBadge(assignment.createdDate)"
+                    color="danger">
+                    New</ion-badge>
+                </h2>
+                <p> {{assignment.assignmentDescription}} </p>
+                <p>Date Submitted: <b>{{assignment.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
+              </ion-col>
+              <ion-col>
+
+                <ion-item lines="none" color="light">
+                
+                  <ion-buttons *ngIf="currentUser?.role === 'Student'" slot="end">
+                    <ion-button color="primary" (click)=UploadAssignment(assignment) shape="round" fill="outline"
+                      class="upload-button">
+                      <ion-icon slot="start" name="push-outline"></ion-icon>Upload
+                    </ion-button>
+                  </ion-buttons>
+
+                  <ion-badge color="warning" class="number-circle" slot="end"
+                    (click)="assignment.badgeToggle = !assignment.badgeToggle">
+                    <h1>
+                      <ion-icon *ngIf="!assignment.badgeToggle" name="chevron-down-circle-outline"></ion-icon>
+                      <ion-icon *ngIf="assignment.badgeToggle" name="chevron-up-circle-outline"></ion-icon>
+                    </h1>
+                  </ion-badge>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </ion-item>
         <ion-list *ngIf="assignment.badgeToggle">
-          <ion-item *ngFor="let item of assignment.studentAssignments.reverse(); let i = index" (click)="ViewStudentAssignment(item.assignmentURL, assignment.assignmentName)">
+          <ion-item *ngFor="let item of FilterStudentAssignments(assignment.studentAssignments); let i = index"
+            (click)="ViewStudentAssignment(item.assignmentURL, assignment.assignmentName)">
             <ion-badge slot="start" color="light" class="number-circle">{{i + 1}}</ion-badge>
             <ion-label>
-              <h2>{{item.studentName}} <ion-badge *ngIf="!ShowHideBadge(item.createdDate)" color="danger">New</ion-badge></h2>
+              <h2>{{item.studentName}} <ion-badge *ngIf="!ShowHideBadge(item.createdDate)" color="danger">New
+                </ion-badge>
+              </h2>
               <p> Submitted Date: <b>{{item.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
             </ion-label>
           </ion-item>

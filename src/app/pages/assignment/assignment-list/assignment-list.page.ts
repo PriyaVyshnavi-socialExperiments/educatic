@@ -5,7 +5,7 @@ import { IAssignment, IStudentAssignment } from 'src/app/_models/assignment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignmentService } from 'src/app/_services/assignment/assignment.service';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
-import { ISchool, IUser } from 'src/app/_models';
+import { ISchool, IUser, Role } from 'src/app/_models';
 import { environment } from 'src/environments/environment';
 import { ICourseContent } from 'src/app/_models/course-content';
 import { DataShareService } from 'src/app/_services/data-share.service';
@@ -99,6 +99,13 @@ export class AssignmentListPage implements OnInit {
     const asmDate = this.datePipe.transform(assignmentDate,'dd-MM-yyyy');
     const todayDate = this.datePipe.transform(tdate,'dd-MM-yyyy');
     return todayDate <  asmDate;
+  }
+
+  FilterStudentAssignments(studentAssignments: IStudentAssignment[]) {
+    if(this.currentUser.role === Role.Student) {
+      return studentAssignments.filter((a) => a.studentId === this.currentUser.id);
+    }
+    return studentAssignments;
   }
 
   private async ViewAssignment(fileExt, assignmentURL, assignmentName) {
