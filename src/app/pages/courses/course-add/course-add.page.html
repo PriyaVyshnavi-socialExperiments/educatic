@@ -5,7 +5,7 @@
       <ion-back-button defaultHref="/courses"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button ion-button block  [routerLink]="['/courses']">Cancel</ion-button>
+      <ion-button ion-button block [routerLink]="['/courses']">Cancel</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -14,7 +14,8 @@
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100">
-        <form class="login100-form validate-form" [formGroup]="courseForm" (ngSubmit)="SubmitCourse()"  #documentEditForm="ngForm">
+        <form class="login100-form validate-form" [formGroup]="courseForm" (ngSubmit)="SelectCourseContentSource()"
+          #documentEditForm="ngForm">
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
               <mat-form-field class="example-full-width" appearance="outline">
@@ -75,28 +76,23 @@
                   A description is required to proceed.
                 </mat-error>
               </mat-form-field>
-
             </div>
 
-            <!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-              <button mat-flat-button type="button" class="login100-form-btn container-login100-form-btn  float-right"
-                [routerLink]="['/courses']">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" style="text-align: center;">
+              <button mat-flat-button type="button" color="secondary"
+                class="login100-form-btn container-login100-form-btn" [routerLink]="['/courses']">
                 Cancel
               </button>
-              <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn float-right"
-                [disabled]="!courseForm.valid" type="submit">
-                Submit
-              </button> 
-            </div>-->
-
+              <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn"
+                [disabled]="!courseForm.valid" type="submit" style="margin-left: 5px;">
+                Select
+              </button>
+            </div>
           </div>
-
         </form>
       </div>
-      <ngx-file-picker #uploader class="file-picker" [fileMaxCount]="1" *ngIf="courseForm.valid" [adapter]="filepicker"
-        (uploadSuccess)="uploadSuccess($event)" (uploadFail)="uploadFail($event)"  [fileExtensions]="contentHelper.ContentUploadSupported"
-        (validationError)= "onValidationError($event)" [accept]="contentHelper.ContentUploadSupported">
-      </ngx-file-picker>
+      <input type="file" #fileInput (change)="UploadCourseContentFile($event)" hidden="true"
+        accept="image/*,application/pdf" />
     </div>
   </div>
 </ion-content>

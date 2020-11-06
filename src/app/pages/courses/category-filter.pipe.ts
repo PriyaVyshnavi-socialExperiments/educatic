@@ -9,7 +9,7 @@ export class CategoryFilterPipe implements PipeTransform {
 
   constructor( private contentService: CourseContentService) {}
   transform(courseContent: ICourseContent[]): any {
-    return this.contentService.GetLevelWiseContent(courseContent);
+    return this.contentService.GetLevelWiseContent(courseContent.reverse());
   }
 
 }

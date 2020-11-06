@@ -44,8 +44,7 @@ export class CoursesPage implements OnInit {
       }
       if (user.courseContent) {
         this.contentService.GetCategoryWiseContent(user.courseContent).subscribe((groupResponse) => {
-          this.categoryWiseContent = Object.values(groupResponse);
-          console.log("this.categoryWiseContent: ", this.categoryWiseContent);
+          this.categoryWiseContent = Object.values(groupResponse.reverse());
         });
       }
     });
@@ -78,16 +77,6 @@ export class CoursesPage implements OnInit {
     })
 
     this.router.navigateByUrl('/course/add', { state: this.categoryList });
-  }
-
-  GetLevelWiseCategory(content: ICourseContent[])  {
-    console.log("courseContent: ", content);
-    // const subject = new Subject<ICategoryContentList[]>();
-    // // this.contentService.GetLevelWiseContent(content).subscribe((groupResponse) => {
-    // //   subject.next(Object.values(groupResponse));
-    // // });
-
-    // return subject.asObservable();
   }
 
   ContentViewer(content: ICourseContent) {
