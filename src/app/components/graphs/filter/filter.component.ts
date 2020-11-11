@@ -18,27 +18,47 @@ export class FilterComponent implements OnInit {
   constructor(public sql: ClassRoomService) { }
 
   async ngOnInit() {
-    this.school = this.selected.school;
-    this.class = this.selected.class;
-    this.schools = this.selected.schools;
-    this.classes = this.selected.classes;
+    this.school = this.selected.selectedSchools;
+    this.class = this.selected.selectedClasses;
+    this.schools = this.selected.allSchools;
+    this.classes = this.selected.allClasses;
   }
 
   changeClass() {
     if (this.selected && this.class) {
-      this.selected.class = this.class;
+      this.selected.selectedClasses = this.class;
       this.selectedChange.emit(this.selected);
     }
   }
 
   changeSchool() {
     if (this.selected && this.school) {
-      this.selected.school = this.school;
-      this.selected.classes = this.school.classList;
-      this.classes = this.selected.classes;
-      this.selected.maps.lat = this.school.lat;
-      this.selected.maps.long = this.school.long;
-      this.selectedChange.emit(this.selected);
+      this.selected.selectedSchools = this.school;
+      this.selected.allClasses = [];
+      this.selected.maps.points = [];
+      this.selected.maps.lat = null
+      this.selected.maps.long = null;
+      this.selected.selectedSchools.forEach((school) => {
+        this.selected.allClasses = this.selected.allClasses.concat(school.classList);
+        this.selected.maps.points.push({
+          lat: school.lat, 
+          long: school.long
+        });
+      })
+      if (this.school.length > 0) {
+        this.selected.maps.lat = this.school[0].lat;
+        this.selected.maps.long = this.school[0].long;  
+      }
+      this.classes = this.selected.allClasses;
+      if (this.class.length === 0) {
+        this.schoolAttendence();
+      } else {
+        this.selectedChange.emit(this.selected);
+      }
     }
+  }
+
+  schoolAttendence() {
+    this.selectedChange.emit(this.selected);
   }
 }

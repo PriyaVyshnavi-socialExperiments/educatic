@@ -9,6 +9,7 @@ import { IonicModule } from '@ionic/angular';
 import { FilterComponent } from './filter/filter.component';
 import { ModalPage } from './modal/modal.page';
 import { FormsModule } from '@angular/forms';
+import { BarChartComponent } from './bar-chart/bar-chart.component';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { FormsModule } from '@angular/forms';
     ChartsComponent,
     FilterComponent,
     ModalPage,
+    BarChartComponent,
   ],
   imports: [
     CommonModule,
@@ -30,6 +32,7 @@ import { FormsModule } from '@angular/forms';
     ChartsComponent,
     FilterComponent,
     ModalPage,
+    BarChartComponent,
   ]
 })
 export class GraphModule { }

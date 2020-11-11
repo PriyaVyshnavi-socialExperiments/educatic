@@ -8,43 +8,18 @@ import { Chart } from 'chart.js';
   styleUrls: ['./modal.page.scss'],
 })
 export class ModalPage implements OnInit {
-  @Input() labels: string[] = [];
-  @Input() data: string[] = [];
-  @Input() title: string = "";
-  @Input() total: number = 0;
-  chart: Chart;
+  @Input() chart: Chart;
+  @Input() type: String;
+  chartVar: Chart;
 
   constructor(public modalController: ModalController) { }
 
   loadGraph() {
     let temp = document.getElementById("chartss")
-    this.chart = new Chart(temp, {
-      type: 'line',
-      data: {
-          labels: this.labels,
-          datasets: [{
-              data: this.data,
-          }]
-      },
-      options: {
-          scales: {
-              yAxes: [{
-                  ticks: {
-                      beginAtZero: true,
-                      max: this.total,
-                      callback: (value) => {  
-                        return value; // convert it to percentage
-                      },
-                  }
-              }]
-          },
-          title: {
-            display: true,
-            text: this.title
-          },
-          responsive: true,
-          maintainAspectRatio: false,
-      }
+    this.chartVar = new Chart(temp, {
+      type: this.type,
+      data: this.chart.data,
+      options: this.chart.options
     });
   }
 

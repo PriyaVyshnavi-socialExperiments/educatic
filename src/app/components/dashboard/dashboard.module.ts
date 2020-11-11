@@ -10,6 +10,7 @@ import { DashboardComponent } from './dashboard.component';
 import { GraphModule } from '../graphs/graph.module';
 import { IonicModule } from '@ionic/angular';
 import { AgmCoreModule } from '@agm/core';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -18,6 +19,7 @@ import { AgmCoreModule } from '@agm/core';
     DashboardComponent,
   ],
   imports: [
+    FormsModule,
     CommonModule,
     MatDividerModule,
     IonicModule,
@@ -29,7 +31,7 @@ import { AgmCoreModule } from '@agm/core';
     GraphModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyCaVheCmHHTlYi2vyi_lZhFZl6xu0GWm8Y'
-    })
+    }) 
   ],
   exports: [
     DashboardComponent

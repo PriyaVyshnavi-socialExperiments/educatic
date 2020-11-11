@@ -2,3 +2,10 @@ ion-icon {
     margin-right: 2px;
     display: inline-block;
 }
+
+::ng-deep .filter-wider-popover
+{
+  --width: 95%;
+  --max-width: 400px;
+}
+

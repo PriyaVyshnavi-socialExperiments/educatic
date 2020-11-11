@@ -1,19 +1,16 @@
-.top-row {
-    height: 25vh;
+::ng-deep .filter-wider-popover
+{
+  --width: 95%;
+  --max-width: 400px;
 }
 
-.graph-row {
-    height: 40vh;
-    display: flex;
-    overflow: scroll;
+ion-grid {
+    --ion-grid-padding: 0px; 
 }
-
-.bottom-row {
-    height: 30vh;
-}   
 
 ion-card {
     margin: 1px;
+    min-height: 300px;
     height: 100%;
     padding: 5px;
 }

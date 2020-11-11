@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Chart}  from 'chart.js';
 // import the plugin core
 import 'chartjs-plugin-colorschemes/src/plugins/plugin.colorschemes';
@@ -7,21 +7,24 @@ import 'chartjs-plugin-colorschemes/src/plugins/plugin.colorschemes';
 import { Aspect6 } from 'chartjs-plugin-colorschemes/src/colorschemes/colorschemes.office';
 
 @Component({
-  selector: 'app-charts',
-  templateUrl: './charts.component.html',
-  styleUrls: ['./charts.component.scss'],
+  selector: 'bar-chart',
+  templateUrl: './bar-chart.component.html',
+  styleUrls: ['./bar-chart.component.scss'],
 })
-export class ChartsComponent implements OnInit {
+export class BarChartComponent implements OnInit {
   @Input() graphType: string = "";
-  @Input() data: any[] = [];
+  @Input() data: any = {};
+  @Input() Title: String;
+  @Input() xAxisTitle: String;
   @Input() set changed(changed: any[]) {
     if (changed) {
+      console.log("Changed");
       this.isChanged = changed;
       this.update();
     }
   };
   graphData = []
-  isChanged = [];
+  isChanged: any[] = [];
   labels = []
   chart : Chart;
 
@@ -36,20 +39,18 @@ export class ChartsComponent implements OnInit {
     if (this.chart) {
       this.chart.data.datasets = []
       if (this.isChanged) {
-        this.data.forEach((d) => {
-          this.chart.data.datasets.push({
-            data: d.data,
-            label: d.title,
-            fill: false
-          })
+        this.chart.data.datasets.push({
+          data: this.data.data,
+          fill: true
         })
       }
+      this.chart.data.labels = this.data.labels;
       this.chart.update();
     }
   }
 
   loadGraph() { 
-    let temp = document.getElementById("class-chart-canvas")
+    let temp = document.getElementById("school-chart-canvas")
     this.chart = new Chart(temp, {
       type: this.graphType,
       data: {
@@ -63,20 +64,12 @@ export class ChartsComponent implements OnInit {
           }
         },
         scales: {
-            xAxes: [{
-              scaleLabel: {
-                display: true,
-                labelString: "Days",
-              },
-              type: 'time',
-              time: {
-                unit: 'day',
-                unitStepSize: 1,
-                displayFormats: {
-                  'day': 'MMM DD',
-                }
-              }
-            }],
+          xAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: this.xAxisTitle,
+            },
+          }],
             yAxes: [{
               scaleLabel: {
                 display: true,
@@ -93,7 +86,7 @@ export class ChartsComponent implements OnInit {
         },
         title: {
           display: true,
-          text: "Attendence Data"
+          text: this.Title
         },
         responsive: true,
         maintainAspectRatio: false,
