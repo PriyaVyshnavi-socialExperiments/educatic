@@ -100,7 +100,6 @@ export class CoursesPage implements OnInit {
         src: imgContentURL,
         title: `${content.courseCategory} - ${content.courseName}`
       },
-      cssClass: 'ion-img-viewer',
       keyboardClose: true,
       showBackdrop: true,
     });

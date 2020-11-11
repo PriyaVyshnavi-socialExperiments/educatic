@@ -54,7 +54,7 @@
         </ion-item>
         <ion-list *ngIf="assignment.badgeToggle">
           <ion-item *ngFor="let item of FilterStudentAssignments(assignment.studentAssignments); let i = index"
-            (click)="ViewStudentAssignment(item.assignmentURL, assignment.assignmentName)">
+            (click)="ViewStudentAssignment(item, assignment.assignmentName, assignment.id)">
             <ion-badge slot="start" color="light" class="number-circle">{{i + 1}}</ion-badge>
             <ion-label>
               <h2>{{item.studentName}} <ion-badge *ngIf="!ShowHideBadge(item.createdDate)" color="danger">New

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { IAssignment, IStudentAssignment } from 'src/app/_models/assignment';
@@ -72,15 +72,14 @@ export class AssignmentListPage implements OnInit {
     const fileExt = assignment.assignmentURL.split('.').pop();
     const assignmentURL = `${environment.blobURL}/assignments/${assignment.assignmentURL}`;
 
-    this.ViewAssignment(fileExt, assignmentURL, assignment.assignmentName);
+    this.ViewAssignment(fileExt, assignmentURL, assignment.assignmentName, assignment.id);
 
   }
 
-  async ViewStudentAssignment(url: string, assignmentName: string) {
-    const fileExt = url.split('.').pop();
-    const assignmentURL = `${environment.blobURL}/assignments/${url}`;
-
-    this.ViewAssignment(fileExt, assignmentURL, assignmentName);
+  async ViewStudentAssignment(studAssignment: IStudentAssignment, assignmentName: string, id) {
+    const fileExt = studAssignment.assignmentURL.split('.').pop();
+    const assignmentURL = `${environment.blobURL}/assignments/${studAssignment.assignmentURL}`;
+    this.ViewAssignment(fileExt, assignmentURL, assignmentName,  studAssignment.id, studAssignment);
 
   }
 
@@ -96,42 +95,47 @@ export class AssignmentListPage implements OnInit {
   ShowHideBadge(assignmentDate) {
     const tdate = new Date();
     tdate.setDate(tdate.getDate() + 1);
-    const asmDate = this.datePipe.transform(assignmentDate,'dd-MM-yyyy');
-    const todayDate = this.datePipe.transform(tdate,'dd-MM-yyyy');
-    return todayDate <  asmDate;
+    const asmDate = this.datePipe.transform(assignmentDate, 'dd-MM-yyyy');
+    const todayDate = this.datePipe.transform(tdate, 'dd-MM-yyyy');
+    return todayDate < asmDate;
   }
 
   FilterStudentAssignments(studentAssignments: IStudentAssignment[]) {
-    if(this.currentUser.role === Role.Student) {
+    if (this.currentUser.role === Role.Student) {
       return studentAssignments.filter((a) => a.studentId === this.currentUser.id);
     }
     return studentAssignments;
   }
 
-  private async ViewAssignment(fileExt, assignmentURL, assignmentName) {
+  private async ViewAssignment(fileExt, assignmentURL, assignmentName, id, studentAssignments?: IStudentAssignment) {
+    const content = {
+      courseURL: assignmentURL,
+      courseCategory: this.subjectName,
+      courseName: assignmentName,
+      isTokenRequired: true,
+      id,
+    } as ICourseContent;
+
     if (fileExt.toLowerCase() === 'pdf') {
-      const content = {
-        courseURL: assignmentURL,
-        courseCategory: this.subjectName,
-        courseName: assignmentName,
-        isTokenRequired: true,
-      } as ICourseContent;
-
       this.router.navigateByUrl(`content/${content.id}/pdf-viewer`, { state: content });
-
     } else {
-      const modal: HTMLIonModalElement = await this.modalController.create({
-        component: ViewerModalComponent,
-        componentProps: {
-          src: assignmentURL,
-          title: `${this.subjectName} - ${assignmentName}`
-        },
-        cssClass: 'ion-img-viewer',
-        keyboardClose: true,
-        showBackdrop: true,
-      });
+      if (this.currentUser.role !== Role.Student) {
+        this.router.navigateByUrl(`content/${studentAssignments.id}/image-viewer`,
+        { state: {assignment: content, studAssignment: studentAssignments} });
+      } else {
+        const modal: HTMLIonModalElement = await this.modalController.create({
+          component: ViewerModalComponent,
+          componentProps: {
+            src: assignmentURL + `?d=${Math.floor(Math.random() * 1000000000)}`,
+            title: `${this.subjectName} - ${assignmentName}`
+          },
+          cssClass: 'ion-img-viewer',
+          keyboardClose: true,
+          showBackdrop: true,
+        });
 
-      return await modal.present();
+        return await modal.present();
+      }
     }
   }
 

@@ -181,6 +181,10 @@ const routes: Routes = [
         loadChildren: () => import('../../pages/assignment/upload/assignment-upload.module')
           .then(m => m.AssignmentUploadPageModule)
       },
+      {
+        path: 'content/:id/image-viewer',
+        loadChildren: () => import('../../pages/viewer/image-edit-viewer/image-edit-viewer.module').then( m => m.ImageEditViewerPageModule)
+      },
     ],
     runGuardsAndResolvers: 'always',
   }
