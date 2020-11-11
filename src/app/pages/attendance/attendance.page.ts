@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { AlertController, IonSelect } from '@ionic/angular';
 import { CameraSource, Camera, CameraResultType } from '@capacitor/core';
-import { ImageHelper } from '../../_helpers/image-helper';
+import { ContentHelper } from '../../_helpers/content-helper';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IUser, ISchool } from '../../_models';
 import { AuthenticationService } from '../../_services';
@@ -95,8 +95,8 @@ export class AttendancePage implements OnInit, AfterViewInit {
     });
     this.blobDataURL = `${this.school.name.replace(/\s/g, '')}_${this.school.id}/${this.classRoomName.replace(/\s/g, '')}_${this.classRoomId}`;
     this.blobDataURL = `${this.blobDataURL}/${dateFormat(new Date())}.${image.format}`;
-    const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
-    this.uploadAttendancePhoto = ImageHelper.blobToFile(blobData, this.blobDataURL);
+    const blobData = ContentHelper.b64toBlob(image.base64String, `image/${image.format}`);
+    this.uploadAttendancePhoto = ContentHelper.blobToFile(blobData, this.blobDataURL);
 
     this.attendanceService.UploadImageFile(this.uploadAttendancePhoto)
       .subscribe((res) => { });

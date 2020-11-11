@@ -60,6 +60,18 @@ export class ClassRoomService extends OfflineService {
     }
   }
 
+  public DeleteClassRoom(schoolId: string, classRoomId: string) {
+    return this.http.Get<Response>(`/class-room/${classRoomId}/delete`)
+      .pipe(
+        map(response => {
+          return response;
+        }),
+        finalize(() => {
+          this.UpdateClassRoomOfflineList(undefined, schoolId, classRoomId);
+        })
+      );
+  }
+
   private getOfflineClassRooms() {
     return from(this.GetOfflineData('ClassRoom', 'class-room-list')).pipe(
       tap(response => {
@@ -72,10 +84,10 @@ export class ClassRoomService extends OfflineService {
     );
   }
 
-  private UpdateClassRoomOfflineList(classRoom: IClassRoom, classRoomId?: string) {
+  private UpdateClassRoomOfflineList(classRoom: IClassRoom, schoolId?: string, classRoomId?: string) {
     return this.GetOfflineData('User', 'current-user').then((data) => {
       const user = data as IUser;
-      const school = user.schools.find((s) => s.id === classRoom.schoolId);
+      const school = user.schools.find((s) => s.id === (classRoom? classRoom.schoolId : schoolId));
       const classRoomList = school.classRooms.filter((cs) => {
         return cs.classId !== (classRoom ? classRoom.classId : classRoomId);
       });

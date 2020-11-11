@@ -6,7 +6,7 @@ const routes: Routes = [
  {
     path: '',
     canActivate: [AuthGuard],
-    loadChildren: () =>  import('./components/menu/menu.module').then(m => m.MenuPageModule)
+    loadChildren: () =>  import('./components/menu/menu.module').then(m => m.MenuPageModule),
   },
   {
     path: 'login',
@@ -23,15 +23,6 @@ const routes: Routes = [
     path: 'modal',
     loadChildren: () => import('./components/graphs/modal/modal.module').then( m => m.ModalPageModule)
   },
-
-  // {
-  //   path: 'course-share',
-  //   loadChildren: () => import('./pages/course-share/course-share.module').then( m => m.CourseSharePageModule)
-  // },
-  // {
-  //   path: 'course-category',
-  //   loadChildren: () => import('./pages/course-category/course-category.module').then( m => m.CourseCategoryPageModule)
-  // },
 
 ];
 

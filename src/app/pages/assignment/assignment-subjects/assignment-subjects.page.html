@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button *ngIf="currentUser?.role=== 'Student'" autoHide="true"></ion-menu-button>
+      <ion-back-button *ngIf="currentUser?.role!== 'Student'" defaultHref="assignment/classes"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons *ngIf="currentUser?.role!== 'Student'" slot="end">
+      <ion-button ion-button block (click)=AddSubject()>New Subject</ion-button>
+    </ion-buttons>
+    <ion-title>Subjects</ion-title>
+  </ion-toolbar>
+ 
+</ion-header>
+
+<ion-content>
+  <ion-grid class="grid">
+    <ion-row class="ion-justify-content-center">
+      <ion-card class="item-card" (click)="selectSubject(subject.key)"  *ngFor="let subject of subjectList">
+        <ion-card-content>
+          <ion-item lines="none">
+            <ion-avatar slot="start">
+              <img src="../../../../assets/images/subject.svg">
+            </ion-avatar>
+            <ion-label>
+              <h2>{{subject.key | titlecase}}</h2>
+              <p>{{subject.length?subject.length : 0}} Assignments</p>
+            </ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
+</ion-content>

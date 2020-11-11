@@ -1,20 +1,24 @@
 export interface ICourseContent {
     id: string;
+    schoolId: string;
     courseName: string;
     courseDescription: string;
     courseURL: string;
     thumbnailURL: string;
-    categoryName: string;
+    courseCategory: string;
+    courseLevel: string;
+    isTokenRequired: boolean;
     createdBy: string;
     active: boolean;
 }
 
 export interface ICategoryWiseContent {
-    [categoryName: string]: ICourseContent[];
+    [courseCategory: string]: ICourseContent[];
 }
 
 export interface ICategoryContentList {
     key: string,
     content: ICourseContent[];
     length: number,
+    level: boolean,
 }

@@ -5,8 +5,8 @@ import { AuthenticationService } from '../../../_services';
 import { LoginRequest, Role } from '../../../_models';
 import { ToastController, ModalController } from '@ionic/angular';
 import { ErrorStateMatcherHelper } from '../../../_helpers/error-state-matcher';
-import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
 import { StudentSigninPage } from '../student-signin/student-signin.page';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-signin',
@@ -14,6 +14,9 @@ import { StudentSigninPage } from '../student-signin/student-signin.page';
   styleUrls: ['./signin.component.scss']
 })
 export class SigninComponent implements OnInit, OnDestroy {
+  background = `assets/${environment.ImageSource}/background-image.png`;
+  logo = `assets/${environment.ImageSource}/logo.png`;
+  currentApplicationVersion = environment.appVersion;
   loginForm: FormGroup;
   submitted = false;
   returnUrl: string;
@@ -29,7 +32,6 @@ export class SigninComponent implements OnInit, OnDestroy {
     private router: Router,
     private authenticationService: AuthenticationService,
     public toastController: ToastController,
-    private menuHelper: NavMenuHelper,
     private modalController: ModalController,
   ) { }
   ngOnDestroy(): void {
@@ -62,12 +64,13 @@ export class SigninComponent implements OnInit, OnDestroy {
         password: this.f.password.value
       };
       this.authenticationService.Login(this.loginRequest)
-        .subscribe((user) => {
+        .subscribe((loginResponse) => {
+          const user = loginResponse[0];
           if (user.forceChangePasswordNextLogin) {
             this.router.navigate(['/reset/password']);
           } else {
             if (user.role === Role.Student) {
-              this.router.navigate(['/courses']);
+              this.router.navigate(['/student/assignments']);
             } else {
               this.router.navigate([this.returnUrl]);
             }

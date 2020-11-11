@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">goOfflineE</string>
+    <string name="title_activity_main">goOfflineE</string>
+    <string name="package_name">com.goofflinee.app</string>
+    <string name="custom_url_scheme">com.goofflinee.app</string>
+</resources>

@@ -1,32 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Offline content</ion-title>
+    <ion-title>Offline websites</ion-title>
     <ion-buttons slot="start">
       <ion-menu-button autoHide="true"></ion-menu-button>
-  </ion-buttons>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item (click)="openWebContent()">
-      <ion-label color="primary">
-        <h3>Math Expression - Web</h3>
-      </ion-label>
-    </ion-item>
-
-    <ion-item (click)="this.showPDF = !this.showPDF;">
-      <ion-label color="primary">
-        <h3>Hello English- PDF</h3>
-      </ion-label>
-    </ion-item>
-  </ion-list>
-  <ngx-extended-pdf-viewer *ngIf="showPDF" [src]="'../../../assets/offline-content/hello_english_20170315.pdf'"
-    [height]="'90vh'" [useBrowserLocale]="true" [showSidebarButton]="true" [showFindButton]="true"
-    [showPagingButtons]="true" [showZoomButtons]="true" [showPresentationModeButton]="true" [showOpenFileButton]="false"
-    [showPrintButton]="false" [showDownloadButton]="true" [showBookmarkButton]="false"
-    [showSecondaryToolbarButton]="true" [showRotateButton]="true" [showHandToolButton]="false"
-    [showScrollingButton]="false" [showSpreadButton]="true" [showPropertiesButton]="false" [mobileFriendlyZoom]="'150%'"
-    [textLayer]="true">
-  </ngx-extended-pdf-viewer>
+  <ion-card (click)="openWebContent(website.url)" *ngFor="let website of offlineWebsites">
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-badge slot="start" color="danger" class="date-circle">{{ website.id}}</ion-badge>
+        <ion-label>
+          <h2>{{ website.title}}</h2>
+          <p>{{ website.description}} </p>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

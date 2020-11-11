@@ -13,7 +13,7 @@ import { CountryStateCityService } from 'src/app/_services/country-state-city/co
   styleUrls: ['./school-add.page.scss'],
 })
 export class SchoolAddPage implements OnInit {
-
+  
   public schoolForm: FormGroup;
   public school: any = {};
   stateInfo: any[] = [];

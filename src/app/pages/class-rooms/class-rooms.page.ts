@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { IonSelect, PopoverController } from '@ionic/angular';
+import { AlertController, IonSelect, PopoverController } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/_services';
-import { DataShareService } from 'src/app/_services/data-share.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IClassRoom, ISchool, IUser } from 'src/app/_models';
 import { ActionPopoverPage } from '../../components/action-popover/action-popover.page';
+import { ClassRoomService } from 'src/app/_services/class-room/class-room.service';
 
 @Component({
   selector: 'app-class-rooms',
@@ -24,34 +24,16 @@ export class ClassRoomsPage implements OnInit {
     private popoverController: PopoverController,
     public router: Router,
     private activatedRoute: ActivatedRoute,
+    public alertController: AlertController,
+    public classRoomService: ClassRoomService,
+
   ) { }
 
   ngOnInit() {
-    // this.authenticationService.currentUser?.subscribe((user) => {
-    //   if (!user) {
-    //     return;
-    //   }
-    //   this.currentUser = user;
-    //   this.schools = user.schools;
-    //   this.refresh();
-    // });
   }
 
   ionViewDidEnter() {
-    this.authenticationService.currentUser.subscribe((user) => {
-      if (!user) {
-        return;
-      }
-      this.currentUser = user;
-      this.schools = user.schools;
-
-      const schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
-      if (schoolId) {
-        this.refresh(schoolId);
-      } else {
-        this.refresh(this.currentUser.defaultSchool.id);
-      }
-    });
+    this.refreshClassRoom();
   }
 
   refresh(schoolId: string) {
@@ -92,7 +74,7 @@ export class ClassRoomsPage implements OnInit {
           this.ClassRoomEdit(actionData.currentId);
           break;
         case 'delete':
-          this.ClassRoomEdit(actionData.currentId);
+          this.ClassRoomDelete(actionData.currentId);
           break;
         default:
           break;
@@ -118,14 +100,48 @@ export class ClassRoomsPage implements OnInit {
     this.router.navigateByUrl(`/attendance/${this.currentUser.defaultSchool.id}/${classId}`);
   }
 
-  public edit() {
-
+  private async ClassRoomDelete(classRoomId: string) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Confirm Delete',
+      message: 'Are you sure you want delete this class?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Okay',
+          handler: () => {
+            this.classRoomService.DeleteClassRoom(this.schoolId, classRoomId).toPromise().finally(() => {
+              setTimeout(() => {
+                this.refreshClassRoom();
+              }, 500);
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
-  /**
-   * name
-   */
-  public delete() {
 
+  private refreshClassRoom() {
+
+    this.authenticationService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.schools = user.schools;
+
+      this.schoolId = this.activatedRoute.snapshot.paramMap.get('schoolId');
+      if (this.schoolId) {
+        this.refresh(this.schoolId);
+      } else {
+        this.schoolId = this.currentUser.defaultSchool.id;
+        this.refresh(this.schoolId);
+      }
+    });
   }
 
 }

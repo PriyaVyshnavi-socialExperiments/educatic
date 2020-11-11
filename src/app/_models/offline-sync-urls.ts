@@ -8,7 +8,7 @@ export enum OfflineSyncURL {
 
 export class OfflineSync {
     public static Data = [{
-        table: 'CourseContent',
+        table: 'courseContent',
         key: 'course-content',
     }];
 }

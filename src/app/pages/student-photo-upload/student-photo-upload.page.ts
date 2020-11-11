@@ -7,10 +7,10 @@ import { IStudentPhoto } from '../../_models/student-photos';
 import { ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '../../_services';
 import { IUser, ISchool, IStudent } from '../../_models';
-import { ImageHelper } from 'src/app/_helpers/image-helper';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
 import { LocationService } from 'src/app/_services/location/location.service';
-import { DataShareService } from 'src/app/_services/data-share.service';
+import { RefreshServerService } from 'src/app/_services/refresh-server/refresh-server.service';
 
 const { Camera } = Plugins;
 
@@ -37,25 +37,24 @@ export class StudentPhotoUploadPage implements OnInit {
     private authenticationService: AuthenticationService,
     public alertController: AlertController,
     public locationService: LocationService,
-    private dataShare: DataShareService,
   ) { }
 
   ngOnInit() {
     this.studentId = this.activatedRoute.snapshot.paramMap.get('studentId');
     this.classId = this.activatedRoute.snapshot.paramMap.get('classId');
-    this.dataShare.getData().subscribe((stud) => {
-      this.student = stud;
-    });
-    for (let i = 0; i < 5; i++) {
-      const img = this.student.myProfile[i] ;
-      this.studentPhotos.push({ id: i, image: `${img? img : ''}` });
-    }
+
     this.authenticationService.currentUser?.subscribe((user) => {
       if (!user) {
         return;
       }
       this.currentUser = user;
       this.school = user.defaultSchool;
+      const classRoom = this.school.classRooms.find(c => c.classId === this.classId);
+      this.student = classRoom.students.find(student => student.id === this.studentId);
+      for (let i = 0; i < 5; i++) {
+        const img =  this.student.myProfile? this.student.myProfile[i] : '';
+        this.studentPhotos.push({ id: i, image: `${img ? img : 'default'}` });
+      }
     });
   }
 
@@ -76,7 +75,11 @@ export class StudentPhotoUploadPage implements OnInit {
       longitude: location.lng,
     } as IQueueMessage
 
-    this.studentService.QueueBlobMessage(queueMessage).subscribe((res) => { });
+    this.studentService.QueueBlobMessage(queueMessage).subscribe((res) => {
+      this.student.myProfile = [...queueMessage.pictureURLs];
+      console.log("this.student.myProfile:", this.student.myProfile);
+      this.studentService.UpdateStudentOffline(this.student);
+     });
   }
 
   DisplayStudentPhotos() {
@@ -100,12 +103,12 @@ export class StudentPhotoUploadPage implements OnInit {
       source: CameraSource.Prompt
     });
 
-    const blobData = ImageHelper.b64toBlob(image.base64String, `image/${image.format}`);
+    const blobData = ContentHelper.b64toBlob(image.base64String, `image/${image.format}`);
     const schoolName = this.school.name.replace(/\s/g, '');
     const studentName = `${this.student.firstName + this.student.lastName}_${this.studentId}`;
     const blobURL = `${schoolName}_${this.school.id}/${this.classId}/${studentName.replace(/\s/g, '')}/${id}_photo.${image.format}`;
 
-    const imageFile = ImageHelper.blobToFile(blobData, blobURL);
+    const imageFile = ContentHelper.blobToFile(blobData, blobURL);
     this.studentService.UploadImageFile(imageFile).subscribe((res) => {
       console.log("res: ", res)
     }

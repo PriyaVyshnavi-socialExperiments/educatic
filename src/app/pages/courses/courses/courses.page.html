@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Course </ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="true"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="!courseContentDisplay && !isStudent" ion-button block (click)=courseAdd()>Add Course
+      </ion-button>
+      <ion-button *ngIf="courseContentDisplay" ion-button block (click)="dismissModal()"> Switch Category</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="!courseContentDisplay">
+  <ion-grid class="grid">
+    <ion-row class="ion-justify-content-center">
+      <ion-card class="item-card" *ngFor="let category of categoryWiseContent" (click)="ViewContent(category.content)">
+        <ion-card-header>
+          <ion-card-subtitle>Subject</ion-card-subtitle>
+          <ion-card-title>{{category.key}}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{category.length}} Courses
+        </ion-card-content>
+        <ion-footer>
+          <ion-button class="float-right" expand="block" fill="clear" (click)="ViewContent(category.content)">
+            Take a look >>
+          </ion-button>
+        </ion-footer>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-content *ngIf="courseContentDisplay">
+
+  <ion-grid class="grid">
+    <ion-row class="ion-justify-content-center">
+
+      <ion-card class="item-card" *ngFor="let item of courseContent | categoryFilter | async">
+        <ion-item color="medium">
+          <ion-label (click)="item.level = !item.level"><b>{{ item.key?.length ? item.key : 'Courses' }}</b>
+            <ion-badge mode="ios" color="warning" slot="end">{{item.length}}</ion-badge>
+          </ion-label>
+          <ion-button slot="end" color="secondary" shape="round" fill="outline" (click)="item.level = !item.level">
+            <ion-icon *ngIf="!item.level" name="eye"></ion-icon>
+            <ion-icon *ngIf="item.level" name="eye-off"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <div *ngIf="item.level">
+          <ion-footer *ngFor="let course of item.content">
+            <ion-list>
+              <ion-item lines="none">
+                <ion-label (click)="ContentViewer(course)">
+                  <h2>{{course.courseName}}</h2>
+                  <p> {{course.courseDescription}}</p>
+                </ion-label>
+
+                <ion-chip outline="true" *ngIf="!isStudent" slot="end" color="primary" (click)="ShareCourse(course.id)">
+                  <ion-label>Share</ion-label>
+                  <ion-icon name="share-social"></ion-icon>
+                </ion-chip>
+              </ion-item>
+            </ion-list>
+          </ion-footer>
+        </div>
+      </ion-card>
+    </ion-row>
+  </ion-grid>
+</ion-content>

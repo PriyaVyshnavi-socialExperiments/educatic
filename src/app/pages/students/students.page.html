@@ -34,8 +34,8 @@
                             <div class="name-center">{{ student.enrolmentNo }}</div>
                         </div>
 
-                        <img defaultImage="assets/images/avatar.svg" errorImage="assets/images/avatar.svg"
-                            class="user-img" [lazyLoad]="student.myProfile? student.myProfile[0] : ''" />
+                        <img defaultImage="assets/images/image-wait.gif" errorImage="assets/images/avatar.svg"
+                            class="user-img" [lazyLoad]="student.myProfile.length? student.myProfile[0] : 'default'" />
                         <p> {{student.address1}} {{student.address2}} , {{student.city}} </p>
                         <br /> {{student.state}}, {{student.country}} - {{student.zip}}
                         <div>

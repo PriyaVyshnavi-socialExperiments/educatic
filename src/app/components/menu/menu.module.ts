@@ -30,7 +30,7 @@ const routes: Routes = [
       },
       {
         path: 'offline-websites',
-        loadChildren: () => import('../../components/offline-websites/offline-websites.module').then( m => m.OfflineWebsitesPageModule)
+        loadChildren: () => import('../../components/offline-websites/offline-websites.module').then(m => m.OfflineWebsitesPageModule)
       },
       {
         path: 'school/add',
@@ -64,23 +64,23 @@ const routes: Routes = [
       },
       {
         path: 'class-rooms',
-        loadChildren: () => import('../../pages/class-rooms/class-rooms.module').then( m => m.ClassRoomsPageModule)
+        loadChildren: () => import('../../pages/class-rooms/class-rooms.module').then(m => m.ClassRoomsPageModule)
       },
       {
         path: 'class-rooms/:schoolId',
-        loadChildren: () => import('../../pages/class-rooms/class-rooms.module').then( m => m.ClassRoomsPageModule)
+        loadChildren: () => import('../../pages/class-rooms/class-rooms.module').then(m => m.ClassRoomsPageModule)
       },
       {
         path: 'class-room/add',
-        loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then( m => m.ClassRoomAddPageModule)
+        loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then(m => m.ClassRoomAddPageModule)
       },
       {
         path: 'class-room/add/:schoolId',
-        loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then( m => m.ClassRoomAddPageModule)
+        loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then(m => m.ClassRoomAddPageModule)
       },
       {
         path: 'class-room/edit/:schoolId/:classId',
-        loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then( m => m.ClassRoomAddPageModule)
+        loadChildren: () => import('../../pages/class-room-add/class-room-add.module').then(m => m.ClassRoomAddPageModule)
       },
       {
         path: 'students',
@@ -99,45 +99,40 @@ const routes: Routes = [
       },
       {
         path: 'student/add',
-        loadChildren: () => import('../../pages/student-add/student-add.module').then( m => m.StudentAddPageModule),
+        loadChildren: () => import('../../pages/student-add/student-add.module').then(m => m.StudentAddPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
         path: 'student/add/:schoolId',
-        loadChildren: () => import('../../pages/student-add/student-add.module').then( m => m.StudentAddPageModule),
+        loadChildren: () => import('../../pages/student-add/student-add.module').then(m => m.StudentAddPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
         path: 'student/add/:schoolId/:classId',
-        loadChildren: () => import('../../pages/student-add/student-add.module').then( m => m.StudentAddPageModule),
+        loadChildren: () => import('../../pages/student-add/student-add.module').then(m => m.StudentAddPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
         path: 'student/:schoolId/:classId/edit/:studentId',
-        loadChildren: () => import('../../pages/student-add/student-add.module').then( m => m.StudentAddPageModule),
+        loadChildren: () => import('../../pages/student-add/student-add.module').then(m => m.StudentAddPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
         path: ':schoolId/:classId/student/:studentId/photos',
         loadChildren: () => import('../../pages/student-photo-upload/student-photo-upload.module')
-        .then( m => m.StudentPhotoUploadPageModule),
+          .then(m => m.StudentPhotoUploadPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
       {
         path: 'courses',
-        loadChildren: () => import('../../pages/courses/courses.module').then( m => m.CoursesPageModule),
+        loadChildren: () => import('../../pages/courses/courses/courses.module').then(m => m.CoursesPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
       },
       {
         path: 'course/add',
-        loadChildren: '../../pages/course-add/course-add.module#CourseAddPageModule',
-        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+        loadChildren: () => import('../../pages/courses/course-add/course-add.module').then(m => m.CourseAddPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
       },
-      // {
-      //   path: 'course/category',
-      //   loadChildren: '../../pages/course-category/course-category.module#CourseCategoryPageModule',
-      //   data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }
-      // },
       {
         path: 'attendance',
         loadChildren: '../../pages/attendance/attendance.module#AttendancePageModule',
@@ -150,13 +145,44 @@ const routes: Routes = [
       },
       {
         path: 'content/:id/pdf-viewer',
-        loadChildren: () => import('../../pages/viewer/pdf-viewer/pdf-viewer.module').then( m => m.PdfViewerPageModule),
+        loadChildren: () => import('../../pages/viewer/pdf-viewer/pdf-viewer.module')
+          .then(m => m.PdfViewerPageModule),
       },
       {
         path: 'content/:id/video-viewer',
-        loadChildren: () => import('../../pages/viewer/video-viewer/video-viewer.module').then( m => m.VideoViewerPageModule),
+        loadChildren: () => import('../../pages/viewer/video-viewer/video-viewer.module')
+          .then(m => m.VideoViewerPageModule),
       },
-    ]
+      {
+        path: 'assignment/subjects',
+        loadChildren: () => import('../../pages/assignment/assignment-subjects/assignment-subjects.module')
+          .then(m => m.AssignmentSubjectsPageModule)
+      },
+
+      {
+        path: 'assignment/:classId/subjects',
+        loadChildren: () => import('../../pages/assignment/assignment-subjects/assignment-subjects.module')
+          .then(m => m.AssignmentSubjectsPageModule)
+      },
+      {
+        path: 'assignment/classes',
+        loadChildren: () => import('../../pages/assignment/assignment-classes/assignment-classes.module')
+          .then(m => m.AssignmentClassesPageModule)
+      },
+
+      {
+        path: 'assignment/:classId/list/:subjectName',
+        loadChildren: () => import('../../pages/assignment/assignment-list/assignment-list.module')
+          .then(m => m.AssignmentListPageModule),
+        runGuardsAndResolvers: 'always',
+      },
+      {
+        path: 'assignment/:classId/upload/:subjectName',
+        loadChildren: () => import('../../pages/assignment/upload/assignment-upload.module')
+          .then(m => m.AssignmentUploadPageModule)
+      },
+    ],
+    runGuardsAndResolvers: 'always',
   }
 ]
 

@@ -4,9 +4,9 @@
       <ion-header class="menu-header">
         <ion-toolbar>
           <ion-list>
-            <ion-item lines="none" detail="false" button>
+            <ion-item lines="none" detail="false">
               <ion-avatar slot="start">
-                <img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
+                <img [src]="logo">
               </ion-avatar>
               <ion-label>
                 <p>Welcome</p>
@@ -56,15 +56,19 @@
             </ion-menu-toggle>
           </ion-list>
         </div>
-
-        <ion-list>
-          <ion-item lines="none">
-            <ion-icon slot="start" name="moon"></ion-icon>
-            <ion-label>Dark mode</ion-label>
-            <ion-toggle [(ngModel)]="dark" (ionChange)="ToggleDarkMode()"></ion-toggle>
-          </ion-item>
-        </ion-list>
       </ion-content>
+      <ion-badge color="medium">
+        <ion-item lines="none" color="medium">
+          <ion-label color="light" *ngIf="dark">Light</ion-label>
+          <ion-label color="dark" *ngIf="!dark">Dark</ion-label>
+          <ion-toggle color="light" slot="start" [(ngModel)]="dark" (ionChange)="ToggleDarkMode()"></ion-toggle>
+          <ion-button slot="end" color="secondary" shape="round" fill="outline">
+            <ion-icon name="sync-circle"></ion-icon>
+            Sync
+          </ion-button>
+        </ion-item>
+        <ion-label color="warning"> App Version: {{currentApplicationVersion}}</ion-label>
+      </ion-badge>
     </ion-menu>
 
     <!-- School details right side menu -->

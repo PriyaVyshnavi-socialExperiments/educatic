@@ -1,5 +1,5 @@
 ﻿import { Injectable, Injector } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, ReplaySubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { IUser, LoginRequest, StudentLoginRequest, ISchool, OfflineSync } from '../../_models';
@@ -8,6 +8,7 @@ import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
 import { NavMenuHelper } from 'src/app/_helpers/nav-menus';
 import { IResetPassword } from 'src/app/_models/reset-password';
+import { CountryStateCityService } from '../country-state-city/country-state-city.service';
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends OfflineService {
 
@@ -25,6 +26,7 @@ export class AuthenticationService extends OfflineService {
         private appInsightsService: ApplicationInsightsService,
         public injector: Injector,
         private menuHelper: NavMenuHelper,
+        private countryService: CountryStateCityService,
     ) {
         super(injector);
         this.GetOfflineData('User', 'current-user').then((user) => {
@@ -40,23 +42,27 @@ export class AuthenticationService extends OfflineService {
     }
 
     public Login(loginRequest: LoginRequest) {
-        return this.http.Post<any>(`/login`, loginRequest)
-            .pipe(
-                map(response => {
-                    // login successful if there's a jwt token in the response
-                    if (response && response.token) {
-                        // store user details and jwt token in local storage to keep user logged in between page refreshes
-                        response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
-                        response.schools = [...response.schools];
-                        response.courseContent = [...response.courseContent];
-                        this.currentUserSubject.next(response);
-                        this.ready.next(response);
-                        this.appInsightsService.setUserId(response.id)
+        const loginResponse = this.http.Post<any>(`/login`, loginRequest)
+        .pipe(
+            map(response => {
+                // login successful if there's a jwt token in the response
+                if (response && response.token) {
+                    // store user details and jwt token in local storage to keep user logged in between page refreshes
+                    response.menuItems = [... this.menuHelper.GetMenuList(response.role)];
+                    response.schools = [...response.schools];
+                    response.courseContent = [...response.courseContent];
+                    this.currentUserSubject.next(response);
+                    this.ready.next(response);
+                    this.appInsightsService.setUserId(response.id)
+                    if(response.schools.length) {
                         this.ResetDefaultSchool(response.schools[0].id)
-                        this.CourseContentOfflineSave(response.courseContent);
                     }
-                    return response;
-                }));
+                    this.CourseContentOfflineSave(response.courseContent);
+                }
+                return response;
+            }));
+        const countryResponse = this.countryService.AllCountries();
+        return forkJoin([loginResponse, countryResponse]);
     }
 
     public StudentLogin(loginRequest: StudentLoginRequest) {
@@ -79,6 +85,7 @@ export class AuthenticationService extends OfflineService {
 
     public Logout() {
         this.RemoveOfflineData('User', 'current-user');
+        this.RemoveOfflineData('countries-states-cities', 'countries-states-cities');
         this.currentUserSubject.next(null);
         this.ready.next(undefined);
         this.appInsightsService.clearUserId();
@@ -108,15 +115,17 @@ export class AuthenticationService extends OfflineService {
 
     public RefreshSchools(schools: ISchool[], school: ISchool) {
         const schoolList = schools.filter((obj) => {
-            return obj.id !== school.id;
+            return obj.id !== (school? school.id: '');
         });
         if (school) {
             schoolList.unshift(school);
         }
         this.currentUser.subscribe(async (currentUser) => {
-            currentUser.schools = schoolList;
-            currentUser.defaultSchool = school;
-            await this.SetOfflineData('User', 'current-user', currentUser);
+            if (currentUser) {
+                currentUser.schools = schoolList;
+                currentUser.defaultSchool = school;
+                await this.SetOfflineData('User', 'current-user', currentUser);
+            }
         });
     }
 
@@ -128,7 +137,9 @@ export class AuthenticationService extends OfflineService {
         this.currentUser.subscribe(async (currentUser) => {
             OfflineSync.Data.forEach(offlineData => {
                 this.GetOfflineData(offlineData.table, offlineData.key).then((data) => {
-                    currentUser[offlineData.table] = data;
+                    if (data) {
+                        currentUser[offlineData.table] = data;
+                    }
                 });
             });
         });
