@@ -58,6 +58,9 @@ export class BarChartComponent implements OnInit {
           datasets: []
       },
       options: {
+        legend: {
+          display: false
+        },
         plugins: {
           colorschemes: {
               scheme: Aspect6

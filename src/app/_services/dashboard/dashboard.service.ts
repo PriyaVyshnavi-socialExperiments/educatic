@@ -22,16 +22,16 @@ export class DashboardService {
     students: new Map()
   }
   url = "https://goofflinee.table.core.windows.net/";
-  attendanceSAS = "?st=2020-11-11T17%3A55%3A49Z&se=2020-11-12T17%3A55%3A49Z&sp=r&sv=2018-03-28&tn=attentdance&sig=dE%2BRg40y3cK1T32%2BKGbUzzZ5IBTmsJYTfEhpyvfH9mU%3D";
-  classRoomSAS = "?st=2020-11-11T17%3A56%3A15Z&se=2020-11-12T17%3A56%3A15Z&sp=r&sv=2018-03-28&tn=classroom&sig=szIVkvOB2mEL4Khc5vnNUzSamVKjxCzk4BSRGR3M0pY%3D";
-  schoolSAS = "?st=2020-11-11T17%3A56%3A32Z&se=2020-11-12T17%3A56%3A32Z&sp=r&sv=2018-03-28&tn=school&sig=NsSShswJTaTr384zCCqJKMdWTssCqmDvydn5z3zDFOE%3D";
-  studentSAS = "?st=2020-11-11T17%3A56%3A51Z&se=2020-11-12T17%3A56%3A51Z&sp=r&sv=2018-03-28&tn=student&sig=FRdXwFRaXSh3qthFh%2B34D2EjmEejEfMoPLsYS70La4I%3D";
+  attendanceSAS = "?sv=2018-03-28&si=Attentdance-175B9D5A6AE&tn=attentdance&sig=W4IcrVtXe80oksa%2BNCCkiPry0YKKiIa0L2X4ScyY6U4%3D";
+  classRoomSAS = "?sv=2018-03-28&si=ClassRoom-175B9D69C69&tn=classroom&sig=hHGM8bnJLdtHiTxJLK03EkeqTIFnxOn%2FqdQHe091JRw%3D";
+  schoolSAS = "?sv=2018-03-28&si=School-175B9D70B51&tn=school&sig=zMWPxe%2BbXzYc6M8RJ2L1AhkwzBI%2F76h%2B%2FsSYP%2Bi8dqI%3D";
+  studentSAS = "?sv=2018-03-28&si=Student-175B9D77880&tn=student&sig=IbRgibY2%2FPTPs%2FVEf46eiOhZPDtSv%2BKzyu2BnkYcgyg%3D";
 
   constructor(
     private http: HttpClient,
   ) { }
 
-  getTables() {
+  public getTables() {
     let schoolTable = this.getSchoolTable();
     let studentTable = this.getStudentTable();
     let attendanceTable = this.getAttendanceTable()
@@ -40,10 +40,10 @@ export class DashboardService {
   }
 
   public processData(schoolTable, studentTable, attendanceTable, classTable) {
-    this.schoolTable = schoolTable;
-    this.studentTable = studentTable;
-    this.attendanceTable = attendanceTable;
-    this.classTable = classTable; 
+    this.schoolTable = schoolTable.value;
+    this.studentTable = studentTable.value;
+    this.attendanceTable = attendanceTable.value;
+    this.classTable = classTable.value; 
     this.processSchoolTable();
     this.processClassRoomTable();
     this.processStudentTable();
@@ -51,7 +51,7 @@ export class DashboardService {
     return this.data;
   }
 
-  processSchoolTable() {
+  private processSchoolTable() {
     // Map schoolId to city, will likely want to map schoolId to school so that 
     // all student information could be accessed. This is done in order to decrease database calls
     // which could be costly 
@@ -86,7 +86,7 @@ export class DashboardService {
     })
   }
 
-  processClassRoomTable() {
+  private processClassRoomTable() {
     this.classTable.forEach((entry) => {
       if (this.data.schools.get(entry.PartitionKey) !== undefined) {
         let classRoom = {
@@ -113,7 +113,7 @@ export class DashboardService {
     })
   }
 
-  processStudentTable() {
+  private processStudentTable() {
     // Map studentId to student gender, will likely want to map studentId to student so that 
     // all student information could be accessed 
     this.studentTable.forEach((entry) => {
@@ -151,10 +151,10 @@ export class DashboardService {
    * Simply, I map cities to the schools in the city. I map schools to the classes in the school. And for 
    * schools, cities, and classes, I keep track of total attendance for each date attenance was recorded.
    */
-  public processAttendanceTable() {
+  private processAttendanceTable() {
     this.attendanceTable.forEach((entry) => {
       if (this.data.students.get(entry.StudentId) === undefined) {
-        console.log("Attendance Not Taken " + entry.StudentId);
+        //console.log("Attendance Not Taken " + entry.StudentId);
       }
       if (this.data.schools.get(entry.PartitionKey) != undefined && this.data.students.get(entry.StudentId) != undefined) {
         let city = this.data.schools.get(entry.PartitionKey).school.city;
@@ -263,27 +263,28 @@ export class DashboardService {
 
 
 
-  public getAttendanceTable() {
-    let endpoint = this.url + "Attentdance()" + this.attendanceSAS; 
+  private getAttendanceTable() {
+    let endpoint = "https://goofflinee.table.core.windows.net/Attentdance()?sv=2018-03-28&si=Attentdance-175B9D5A6AE&tn=attentdance&sig=W4IcrVtXe80oksa%2BNCCkiPry0YKKiIa0L2X4ScyY6U4%3D";
     return this.getRequest(endpoint);
   }
 
-  public getSchoolTable() {
-    let endpoint = this.url + "School()" + this.schoolSAS; 
+  private getSchoolTable() {
+    let endpoint = "https://goofflinee.table.core.windows.net/School()?sv=2018-03-28&si=School-175B9D70B51&tn=school&sig=zMWPxe%2BbXzYc6M8RJ2L1AhkwzBI%2F76h%2B%2FsSYP%2Bi8dqI%3D"; 
     return this.getRequest(endpoint)
   }
 
-  public getClassTable() {
-    let endpoint = this.url + "ClassRoom()" + this.classRoomSAS;
+  private getClassTable() {
+    let endpoint = "https://goofflinee.table.core.windows.net/ClassRoom()?sv=2018-03-28&si=ClassRoom-175B9D69C69&tn=classroom&sig=hHGM8bnJLdtHiTxJLK03EkeqTIFnxOn%2FqdQHe091JRw%3D";
     return this.getRequest(endpoint);
   }
 
-  public getStudentTable() {
-    let endpoint = this.url + `Student()` + this.studentSAS;
+  private getStudentTable() {
+    let endpoint = "https://goofflinee.table.core.windows.net/Student()?sv=2018-03-28&si=Student-175B9D77880&tn=student&sig=IbRgibY2%2FPTPs%2FVEf46eiOhZPDtSv%2BKzyu2BnkYcgyg%3D";
     return this.getRequest(endpoint);    
   }
 
-  public getRequest(endpoint: string) {
+
+  private getRequest(endpoint: string) {
     try {
       return this.http.get(endpoint);
     } catch (err) {

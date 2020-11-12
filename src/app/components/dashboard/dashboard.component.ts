@@ -53,7 +53,8 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.dash.getTables().subscribe((result) => {
-      this.data = this.dash.processData(result[0].value, result[1].value, result[2].value, result[3].value);
+      this.data = this.dash.processData(result[0], result[1], result[2], result[3]);
+      console.log(this.data);
       for (let city of this.data.cities.keys()) {
         this.cities.push(city); 
       }
