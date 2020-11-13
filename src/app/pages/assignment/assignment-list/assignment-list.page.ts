@@ -119,7 +119,7 @@ export class AssignmentListPage implements OnInit {
     if (fileExt.toLowerCase() === 'pdf') {
       this.router.navigateByUrl(`content/${content.id}/pdf-viewer`, { state: content });
     } else {
-      if (this.currentUser.role !== Role.Student) {
+      if (this.currentUser.role !== Role.Student && studentAssignments) {
         this.router.navigateByUrl(`content/${studentAssignments.id}/image-viewer`,
         { state: {assignment: content, studAssignment: studentAssignments} });
       } else {

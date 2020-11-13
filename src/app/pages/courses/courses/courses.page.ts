@@ -93,13 +93,19 @@ export class CoursesPage implements OnInit {
     }
   }
 
+  TakeAssessment ( content: ICourseContent) {
+    this.router.navigateByUrl(`assessment/${content.id}`, { state: content });
+  }
+
   async openViewer(imgContentURL: string, content: ICourseContent) {
+    console.log("content: ", content);
     const modal = await this.modalController.create({
       component: ViewerModalComponent,
       componentProps: {
         src: imgContentURL,
         title: `${content.courseCategory} - ${content.courseName}`
       },
+      cssClass: 'ion-img-viewer',
       keyboardClose: true,
       showBackdrop: true,
     });

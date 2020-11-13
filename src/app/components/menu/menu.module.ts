@@ -185,6 +185,10 @@ const routes: Routes = [
         path: 'content/:id/image-viewer',
         loadChildren: () => import('../../pages/viewer/image-edit-viewer/image-edit-viewer.module').then( m => m.ImageEditViewerPageModule)
       },
+      {
+        path: 'assessment/:id',
+        loadChildren: () => import('../../pages/assessment/assessment.module').then( m => m.AssessmentPageModule)
+      },
     ],
     runGuardsAndResolvers: 'always',
   }

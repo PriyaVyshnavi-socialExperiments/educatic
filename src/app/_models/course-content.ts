@@ -7,6 +7,7 @@ export interface ICourseContent {
     thumbnailURL: string;
     courseCategory: string;
     courseLevel: string;
+    courseAssessment: string;
     isTokenRequired: boolean;
     createdBy: string;
     active: boolean;

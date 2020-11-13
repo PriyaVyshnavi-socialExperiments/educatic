@@ -65,7 +65,10 @@ export class CourseAddPage implements OnInit {
       courseCategory: new FormControl('', [
         Validators.required,
       ]),
-      courseLevel: new FormControl('', [])
+      courseLevel: new FormControl('', []),
+      courseAssessment: new FormControl('', [
+        Validators.required,
+      ]),
     });
     this.contentHelper = ContentHelper;
   }
@@ -167,6 +170,7 @@ export class CourseAddPage implements OnInit {
       courseLevel: this.f.courseLevel.value,
       courseName: this.f.courseName.value,
       courseDescription: this.f.courseDescription.value,
+      courseAssessment: this.f.courseAssessment.value,
       schoolId: this.currentUser.defaultSchool.id,
     } as ICourseContent;
 
@@ -183,7 +187,6 @@ export class CourseAddPage implements OnInit {
       file = ContentHelper.blobToFile(blobData, blobDataURL);
       courseContent.courseURL = blobDataURL;
       this.contentService.SubmitCourseContent(courseContent, file).subscribe((res) => {
-        console.log("cameraImage res: ", res);
         if (res['message']) {
           this.presentToast(res['message'], 'success');
           this.router.navigateByUrl(`courses`);
@@ -200,7 +203,6 @@ export class CourseAddPage implements OnInit {
         const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
         courseContent.courseURL = blobDataURL;
         this.contentService.SubmitCourseContent(courseContent, fileData).subscribe((res) => {
-          console.log("File Upload res: ", res);
           if (res['message']) {
             this.presentToast(res['message'], 'success');
             this.router.navigateByUrl(`courses`);
