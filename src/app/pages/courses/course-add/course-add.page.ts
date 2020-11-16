@@ -66,9 +66,7 @@ export class CourseAddPage implements OnInit {
         Validators.required,
       ]),
       courseLevel: new FormControl('', []),
-      courseAssessment: new FormControl('', [
-        Validators.required,
-      ]),
+      courseAssessment: new FormControl('', []),
     });
     this.contentHelper = ContentHelper;
   }
@@ -153,7 +151,7 @@ export class CourseAddPage implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
     const fileExt = file.type.split('/').pop();
-    if ((ContentHelper.ImgSupported.indexOf(fileExt) > -1)) {
+    if ((ContentHelper.ImgSupported.indexOf(fileExt.toLowerCase()) > -1)) {
       this.UploadCourseContent(null, file);
     } else {
       this.presentToast(`This file type is not supported.`, 'danger');
