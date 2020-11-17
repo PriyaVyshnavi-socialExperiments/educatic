@@ -1,19 +1,24 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
+import { SchoolService } from '../../_services/school/school.service';
+import { ISchool } from '../../_models/school';
+import { IClassRoom } from '../../_models/class-room';
+import { IStudent } from '../../_models/student';
 
 
 @Injectable({
   providedIn: 'root'
 })
+/**
+ * This service processes the azure tables in order to provide the dashboard with the information needed to update.
+ * It makes four calls to do this, to the School Table, Student Table, Attendance Table, and the ClassRoom Table.
+ */
 export class DashboardService {
   prod: boolean = false;
-  // testData = schools;
-  // data = Attendance; 
-  //TODO Make types for all these things 
-  studentTable;
-  classTable;
-  schoolTable;
+  studentTable: IStudent[];
+  classTable: IClassRoom[];
+  schoolTable: ISchool[];
   attendanceTable;
   data = {
     cities: new Map(),
@@ -23,31 +28,33 @@ export class DashboardService {
   }
   url = "https://goofflinee.table.core.windows.net/";
   attendanceSAS = "?sv=2018-03-28&si=Attentdance-175B9D5A6AE&tn=attentdance&sig=W4IcrVtXe80oksa%2BNCCkiPry0YKKiIa0L2X4ScyY6U4%3D";
-  classRoomSAS = "?sv=2018-03-28&si=ClassRoom-175B9D69C69&tn=classroom&sig=hHGM8bnJLdtHiTxJLK03EkeqTIFnxOn%2FqdQHe091JRw%3D";
-  schoolSAS = "?sv=2018-03-28&si=School-175B9D70B51&tn=school&sig=zMWPxe%2BbXzYc6M8RJ2L1AhkwzBI%2F76h%2B%2FsSYP%2Bi8dqI%3D";
-  studentSAS = "?sv=2018-03-28&si=Student-175B9D77880&tn=student&sig=IbRgibY2%2FPTPs%2FVEf46eiOhZPDtSv%2BKzyu2BnkYcgyg%3D";
 
   constructor(
     private http: HttpClient,
+    private schoolService: SchoolService
   ) { }
 
+  /**
+   * Make Get requests to the azure table subscription to load in the correct Tables. T
+   */
   public getTables() {
-    let schoolTable = this.getSchoolTable();
-    let studentTable = this.getStudentTable();
-    let attendanceTable = this.getAttendanceTable()
-    let classTable = this.getClassTable();
-    return forkJoin([schoolTable, studentTable, attendanceTable, classTable]);
+    let schoolTable = this.getSchoolTable(); // Will contain classes and students within individual school entries
+    let attendanceTable = this.getAttendanceTable() // No backend set up, so done manually 
+    return forkJoin([schoolTable, attendanceTable]);
   }
 
-  public processData(schoolTable, studentTable, attendanceTable, classTable) {
-    this.schoolTable = schoolTable.value;
-    this.studentTable = studentTable.value;
+  public processData(schoolTable: ISchool[], attendanceTable) {
+    this.data = {
+      cities: new Map(),
+      schools: new Map(),
+      classes: new Map(),
+      students: new Map()
+    }
+    this.schoolTable = schoolTable;
     this.attendanceTable = attendanceTable.value;
-    this.classTable = classTable.value; 
     this.processSchoolTable();
-    this.processClassRoomTable();
-    this.processStudentTable();
     this.processAttendanceTable();
+    this.data.classes = new Map([...this.data.classes.entries()].sort());
     return this.data;
   }
 
@@ -55,19 +62,7 @@ export class DashboardService {
     // Map schoolId to city, will likely want to map schoolId to school so that 
     // all student information could be accessed. This is done in order to decrease database calls
     // which could be costly 
-    this.schoolTable.forEach((entry) => {
-      let school = {
-        id: entry.PartitionKey,
-        name: entry.Name,
-        address1: entry.Address1,
-        address2: entry.Address2,
-        country: entry.Country,
-        state: entry.State,
-        city: entry.City,
-        zip: entry.Zip,
-        latitude: entry.Latitude,
-        longitude: entry.Longitutde
-      }
+    this.schoolTable.forEach((school: ISchool) => {
       if (this.data.cities.get(school.city) === undefined) {
         this.data.cities.set(school.city, {
           schools: new Set(),
@@ -79,64 +74,32 @@ export class DashboardService {
       if (this.data.schools.get(school.id) === undefined) {
         this.data.schools.set(school.id, { 
           school: school,
-          classes: new Set(),
           attendance: new Map()
         });
       }
+      this.processClassRooms(school.classRooms);
     })
   }
 
-  private processClassRoomTable() {
-    this.classTable.forEach((entry) => {
-      if (this.data.schools.get(entry.PartitionKey) !== undefined) {
-        let classRoom = {
-          classId: entry.RowKey,
-          schoolId: entry.PartitionKey,
-          classRoomName: entry.ClassRoomName,
-          classDivision: entry.ClassDivision,
-          createdBy: entry.CreatedBy,
-          updatedBy: entry.UpdatedBy,
-          students: new Set(),
-        }
-        if (!this.data.schools.get(classRoom.schoolId).classes.has(classRoom)) {
-          this.data.schools.get(classRoom.schoolId).classes.add(classRoom)
-        }
-  
-        if (this.data.classes.get(classRoom.classId) == undefined) {
-          this.data.classes.set(classRoom.classId, {
-            classRoom: classRoom,
-            students: new Set(), 
-            attendance: new Map()
-          })
-        }
+  private processClassRooms(classRooms: IClassRoom[]) {
+    classRooms.forEach((classRoom) => {
+      if (this.data.classes.get(classRoom.classId) == undefined) {
+        this.data.classes.set(classRoom.classId, {
+          classRoom: classRoom,
+          attendance: new Map()
+        })
+        this.processStudents(classRoom.students);
       }
     })
   }
 
-  private processStudentTable() {
+  private processStudents(students: IStudent[]) {
     // Map studentId to student gender, will likely want to map studentId to student so that 
     // all student information could be accessed 
-    this.studentTable.forEach((entry) => {
-      let student = {
-        schoolId: entry.PartitionKey,
-        classId: entry.ClassId,
-        id: entry.RowKey,
-        firstName: entry.FirstName,
-        lastName: entry.LastName,
-        enrolmentNo: entry.EnrolmentNo,
-        gender: entry.Gender,
-        address1: entry.Address1,
-        address2: entry.Address2,
-        country: entry.Country,
-        state: entry.State,
-        city: entry.City,
-        zip: entry.Zip,
-        latitude: entry.Latitude,
-        longitude: entry.Longitude,
-      }
+    students.forEach((student) => {
       if (this.data.students.get(student.id) == undefined) {
         this.data.students.set(student.id, {
-          gender: student.gender
+          student: student,
         });
       }
     })
@@ -154,7 +117,7 @@ export class DashboardService {
   private processAttendanceTable() {
     this.attendanceTable.forEach((entry) => {
       if (this.data.students.get(entry.StudentId) === undefined) {
-        //console.log("Attendance Not Taken " + entry.StudentId);
+        console.log("Attendance Not Taken " + entry.StudentId);
       }
       if (this.data.schools.get(entry.PartitionKey) != undefined && this.data.students.get(entry.StudentId) != undefined) {
         let city = this.data.schools.get(entry.PartitionKey).school.city;
@@ -164,34 +127,14 @@ export class DashboardService {
         // Convert datetime to JavaScript Date and then convert into readable date format to ensure 
         // attendance taken at slightly different times of the same day still counts as the same day 
         let date = new Date(entry.Timestamp);
-        let dateKey = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
-
-        // Initalize the map of day to attendance data inside the class map
-        if (this.data.classes.get(classId).attendance.get(dateKey) === undefined) {
-          this.data.classes.get(classId).attendance.set(dateKey, {
-            present: 0,
-            total: 0,
-            studentData: [],
-            male: {
-              present: 0,
-              total: 0
-            },
-            female: {
-              present: 0,
-              total: 0
-            },
-            nonBinary: {
-              present: 0,
-              total: 0
-            }
-          });
-        }
+        let dateKey = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
 
         // Initailize the schoolAttendance map from day to cumulative attendance 
         if (this.data.schools.get(schoolId).attendance.get(dateKey) === undefined) {
           this.data.schools.get(schoolId).attendance.set(dateKey, {
             present: 0,
             total: 0,
+            false: 0,
             male: {
               present: 0,
               total: 0
@@ -212,6 +155,7 @@ export class DashboardService {
           this.data.cities.get(city).attendance.set(dateKey, {
             present: 0,
             total: 0,
+            false: 0,
             male: {
               present: 0,
               total: 0
@@ -227,11 +171,38 @@ export class DashboardService {
           });
         }
 
+
+        // Initalize the map of day to attendance data inside the class map and finds out the total number of students 
+        // In each city, school, and class
+        if (this.data.classes.get(classId).attendance.get(dateKey) === undefined) {
+          this.data.classes.get(classId).attendance.set(dateKey, {
+            present: 0,
+            total: this.data.classes.get(classId).classRoom.students.length,
+            false: 0,
+            studentData: [],
+            male: {
+              present: 0,
+              total: 0
+            },
+            female: {
+              present: 0,
+              total: 0
+            },
+            nonBinary: {
+              present: 0,
+              total: 0
+            }
+          });
+          // Updates total number of students in each school/city
+          this.data.schools.get(schoolId).attendance.get(dateKey).total += this.data.classes.get(classId).attendance.get(dateKey).total;
+          this.data.cities.get(city).attendance.get(dateKey).total += this.data.classes.get(classId).attendance.get(dateKey).total;
+        }
+
         // Format indivudal student attendance data for each student
         let attendanceData = {
           present: entry.Present,
           studentId: entry.StudentId,
-          gender: this.data.students.get(entry.StudentId).gender
+          gender: this.data.students.get(entry.StudentId).student.gender
         }
 
         if (attendanceData.gender !== "male" && attendanceData.gender !== "female") {
@@ -239,13 +210,14 @@ export class DashboardService {
         }
 
         // Update cumulative attendance for cities, schools, and classes 
-        this.data.cities.get(city).attendance.get(dateKey).total++;
-        this.data.schools.get(schoolId).attendance.get(dateKey).total++;
-        this.data.classes.get(classId).attendance.get(dateKey).total++;
         if (attendanceData.present) {
           this.data.cities.get(city).attendance.get(dateKey).present++;
           this.data.schools.get(schoolId).attendance.get(dateKey).present++;
           this.data.classes.get(classId).attendance.get(dateKey).present++;
+        } else {
+          this.data.cities.get(city).attendance.get(dateKey).false++;
+          this.data.schools.get(schoolId).attendance.get(dateKey).false++;
+          this.data.classes.get(classId).attendance.get(dateKey).false++;
         }
 
         // Update cumulative gender attendance for cities, schools, and classes
@@ -262,26 +234,26 @@ export class DashboardService {
   }
 
 
-
   private getAttendanceTable() {
-    let endpoint = "https://goofflinee.table.core.windows.net/Attentdance()?sv=2018-03-28&si=Attentdance-175B9D5A6AE&tn=attentdance&sig=W4IcrVtXe80oksa%2BNCCkiPry0YKKiIa0L2X4ScyY6U4%3D";
+    let endpoint = this.url + "Attentdance()" + this.attendanceSAS;
     return this.getRequest(endpoint);
   }
 
   private getSchoolTable() {
-    let endpoint = "https://goofflinee.table.core.windows.net/School()?sv=2018-03-28&si=School-175B9D70B51&tn=school&sig=zMWPxe%2BbXzYc6M8RJ2L1AhkwzBI%2F76h%2B%2FsSYP%2Bi8dqI%3D"; 
-    return this.getRequest(endpoint)
+    // Using school service (Gets rid of inactive/deleted schools)
+    // let endpoint = this.url + "School()" + this.schoolSAS;
+    return this.schoolService.GetSchools();
   }
 
-  private getClassTable() {
-    let endpoint = "https://goofflinee.table.core.windows.net/ClassRoom()?sv=2018-03-28&si=ClassRoom-175B9D69C69&tn=classroom&sig=hHGM8bnJLdtHiTxJLK03EkeqTIFnxOn%2FqdQHe091JRw%3D";
-    return this.getRequest(endpoint);
-  }
+  // private getClassTable() {
+  //   let endpoint = this.url + "ClassRoom()" + this.classRoomSAS;
+  //   return this.getRequest(endpoint);
+  // }
 
-  private getStudentTable() {
-    let endpoint = "https://goofflinee.table.core.windows.net/Student()?sv=2018-03-28&si=Student-175B9D77880&tn=student&sig=IbRgibY2%2FPTPs%2FVEf46eiOhZPDtSv%2BKzyu2BnkYcgyg%3D";
-    return this.getRequest(endpoint);    
-  }
+  // private getStudentTable() {
+  //   let endpoint = this.url + "Student()" + this.studentSAS;
+  //   return this.getRequest(endpoint);    
+  // }
 
 
   private getRequest(endpoint: string) {

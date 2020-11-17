@@ -1,16 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import { AuthenticationService } from '../../_services';
 import { isMobileDevice } from '../../_helpers';
 import { PopoverController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Role } from 'src/app/_models';
 import { SchoolService } from 'src/app/_services/school/school.service';
+import { DashboardComponent } from '../dashboard/dashboard.component';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, OnDestroy {
+  @ViewChild(DashboardComponent) dashboard: DashboardComponent;
   isLoggedIn = false;
   isMobileDevice: any;
   currentUser: any;
@@ -36,6 +38,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   refreshDashboard() {
+    this.dashboard.ngOnInit();
     // this.schoolService.GetPowerBIConfig().subscribe((config) => {
     //   this.powerBIConfig = config[0];
     //   this.powerBIConfig.embedUrl = this.powerBIConfig.embedUrl + '&isMobile=true';

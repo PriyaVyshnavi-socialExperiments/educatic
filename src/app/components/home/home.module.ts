@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgxPowerBiModule } from 'ngx-powerbi';
 import { DashboardModule } from 'src/app/components/dashboard/dashboard.module';
-
 import { HomePage } from './home.page';
 
 @NgModule({

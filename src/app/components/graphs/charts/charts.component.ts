@@ -58,7 +58,7 @@ export class ChartsComponent implements OnInit {
       },
       options: {
         legend: {
-          display: false
+          display: true
         },
         plugins: {
           colorschemes: {

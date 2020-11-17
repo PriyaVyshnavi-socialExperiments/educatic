@@ -20,7 +20,7 @@
                     <ion-item>
                         <ion-label>Class</ion-label>
                         <ion-select [interfaceOptions]="{'cssClass': 'filter-wider-popover'}" placeholder="Select One" multiple="true" [(ngModel)]="this.classes" (ionChange)="changeClasses()">
-                        <ion-select-option *ngFor="let class of allClasses" [value]="class">{{class.classRoomName}}</ion-select-option>
+                        <ion-select-option *ngFor="let class of allClasses" [value]="class">{{class.classRoomName}} - {{this.data.schools.get(class.schoolId).school.name}}</ion-select-option>
                         </ion-select>
                     </ion-item>
                     <ion-item>
@@ -92,6 +92,14 @@
             <ion-col size="12" size-sm="4">
                 <ion-card (click)="presentModal(this.barChartComponent.chart, 'bar')" >
                     City Attendance
+                    <!-- <bar-chart 
+                    [graphType]="'bar'"
+                    [data]="this.cityChartData"
+                    [changed]="this.cityChartData.data"
+                    [Title] = "'Cumulative City Attendance'"
+                    [xAxisTitle] = "'Cities'"
+                    >
+        </bar-chart> -->
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="4">
@@ -108,19 +116,38 @@
             </ion-col>
             <ion-col size="12" size-sm="4">
                 <ion-card>
-                    Attendence By Gender
+                    attendance By Gender
                 </ion-card>
             </ion-col>
         </ion-row>
         <ion-row class="bottom-row">
             <ion-col size="12" size-sm="6">
                 <ion-card>
-                    Classes by #Attendence 
+                    Classes by #attendance 
+                    <ion-grid>
+                        <ion-row>
+                          <ion-col>
+                            <div>
+                              1 of 3
+                            </div>
+                          </ion-col>
+                          <ion-col>
+                            <div>
+                              2 of 3
+                            </div>
+                          </ion-col>
+                          <ion-col>
+                            <div>
+                              3 of 3
+                            </div>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="6">
                 <ion-card>
-                    Schools with low attendence
+                    Schools with low attendance
                 </ion-card>
             </ion-col>
         </ion-row>

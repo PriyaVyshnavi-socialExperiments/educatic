@@ -5,6 +5,10 @@ import { DashboardService } from '../../_services/dashboard/dashboard.service';
 import { ChartsComponent } from '../graphs/charts/charts.component';
 import { Chart } from 'chart.js';
 import { BarChartComponent } from '../graphs/bar-chart/bar-chart.component';
+import { ISchool } from '../../_models/school';
+import { IClassRoom } from '../../_models/class-room';
+import { IStudent } from '../../_models/student';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -16,11 +20,11 @@ export class DashboardComponent implements OnInit {
   @ViewChild(BarChartComponent) barChartComponent : BarChartComponent;
   data;
   cities = [];
-  schools = [];
-  classes = [];
+  schools: ISchool[] = [];
+  classes: IClassRoom[] = [];
   allCities = []; 
-  allSchools = [];
-  allClasses = [];
+  allSchools: ISchool[] = [];
+  allClasses: IClassRoom[] = [];
 
   classChartData = [];
   schoolChartData = {
@@ -53,7 +57,8 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.dash.getTables().subscribe((result) => {
-      this.data = this.dash.processData(result[0], result[1], result[2], result[3]);
+      this.data = this.dash.processData(result[0], result[1]);
+      this.cities = [];
       console.log(this.data);
       for (let city of this.data.cities.keys()) {
         this.cities.push(city); 
@@ -84,8 +89,8 @@ export class DashboardComponent implements OnInit {
     this.allClasses = [];
     if (this.schools) {
       this.schools.forEach((school) => {
-        if (school && this.data.schools.get(school.id).classes) {
-          for (let classRoom of this.data.schools.get(school.id).classes) {
+        if (school && school.classRooms) {
+          for (let classRoom of school.classRooms) {
             this.allClasses.push(classRoom);
           }
         }
@@ -103,6 +108,8 @@ export class DashboardComponent implements OnInit {
           for (let dateEntry of this.data.classes.get(entry.classId).attendance.keys()) {
             let total: number = this.data.classes.get(entry.classId).attendance.get(dateEntry).total;
             let present: number = this.data.classes.get(entry.classId).attendance.get(dateEntry).present;
+            console.log(total);
+            console.log(present);
             let attendance = (present / total) * 100;
             let data = {
               x: new Date(dateEntry),
