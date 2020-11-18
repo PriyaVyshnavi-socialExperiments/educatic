@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./menu.page.scss'],
 })
 export class MenuPage implements OnInit, OnDestroy {
-  logo = `assets/${environment.ImageSource}/logo.png`;
+  logo = `assets/${environment.StaticSourcePath}/logo.png`;
   currentApplicationVersion = environment.appVersion;
   activePath = '';
   currentUser: IUser;

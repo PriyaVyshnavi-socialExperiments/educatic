@@ -70,7 +70,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   private PageProperties() {
     const favicon = document.getElementById('favicon');
     const pageTitle = document.getElementById('pagetitle');
-    const icon = `assets/${environment.ImageSource}/logo.png`;
+    const icon = `assets/${environment.StaticSourcePath}/logo.png`;
     favicon.setAttribute('href', icon);
     pageTitle.innerText = environment.PageTitle;
   }
