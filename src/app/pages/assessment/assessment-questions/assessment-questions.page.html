@@ -4,9 +4,47 @@
       <ion-back-button defaultHref="/assessments"></ion-back-button>
     </ion-buttons>
     <ion-title>Questions</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="secondary" slot="end" (click)="AddNewQuestion()" shape="round" fill="outline">
+        New Question
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <div class="main-card ion-justify-content-center">
+    <ion-grid class="grid">
+      <ion-row class="ion-justify-content-center">
+        <ion-card class="item-card">
+          <ion-item-divider color="warning">
+            <ion-label>Title: CSS 3</ion-label>
+            <ion-chip outline="true" slot="end" color="dark" (click)="ShareQuestions()">
+              <ion-label>Share</ion-label>
+              <ion-icon name="share-social-sharp"></ion-icon>
+            </ion-chip>
+          </ion-item-divider>
+          <ion-list lines="full">
+            <ion-item>
+              <ion-chip color="primary">
+                1
+              </ion-chip>
+              <ion-label style="margin-left: 5px;">Which prefix do you need to get CSS3 properties to work on older
+                Mozilla Firefox browsers?</ion-label>
+              <ion-icon name="create" color="success" slot="end"></ion-icon>
+              <ion-icon name="trash" color="danger" slot="end"></ion-icon>
+            </ion-item>
+            <ion-item>
+              <ion-chip color="primary">
+                2
+              </ion-chip>
+              <ion-label style="margin-left: 5px;">What does the a stand for in RGBa?</ion-label>
+              <ion-icon name="create" color="success" slot="end"></ion-icon>
+              <ion-icon name="trash" color="danger" slot="end"></ion-icon>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+      </ion-row>
+    </ion-grid>
+  </div>
 </ion-content>

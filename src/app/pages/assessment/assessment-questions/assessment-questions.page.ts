@@ -12,4 +12,12 @@ export class AssessmentQuestionsPage implements OnInit {
   ngOnInit() {
   }
 
+  AddNewQuestion() {
+
+  }
+
+  ShareQuestions() {
+    
+  }
+
 }
