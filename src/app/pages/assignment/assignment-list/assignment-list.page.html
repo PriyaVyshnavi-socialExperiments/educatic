@@ -14,7 +14,9 @@
 
   <div class="main-card ion-justify-content-center">
 
-    <ion-card *ngFor="let assignment of assignments">
+    <ion-grid class="grid">
+      <ion-row class="ion-justify-content-center">
+    <ion-card class="item-card" *ngFor="let assignment of assignments">
 
       <ion-card-content>
 
@@ -71,5 +73,7 @@
         </ion-list>
       </ion-card-content>
     </ion-card>
+      </ion-row>
+    </ion-grid>
   </div>
 </ion-content>

@@ -1,3 +1,4 @@
+
 .grid {
     .grid-items {
         margin-bottom: 20px;
@@ -6,9 +7,14 @@
     .item-card {
         cursor: pointer;
         height: 100%;
-        width: 100%;
+        width: 300px;
+    }
+
+    .level {
+        width: 100% !important;
     }
 }
+
 
 .ion-img-viewer {
     --ion-header {

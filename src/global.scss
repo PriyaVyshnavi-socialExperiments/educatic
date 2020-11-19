@@ -140,8 +140,18 @@ ion-content {
   }
 }
 
-iframe{
-.freebirdFormviewerViewFooterEmbeddedBackground {
-  visibility: hidden;
+
+@media (max-width: 650px) {
+  .grid {
+      .item-card {
+          width: 100% !important;
+      }
+  }
 }
+
+
+iframe {
+  .freebirdFormviewerViewFooterEmbeddedBackground {
+    visibility: hidden;
+  }
 }
