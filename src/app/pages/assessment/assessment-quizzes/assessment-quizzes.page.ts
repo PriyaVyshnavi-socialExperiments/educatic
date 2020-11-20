@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-assessment-quizzes',
@@ -8,7 +9,8 @@ import { Router } from '@angular/router';
 })
 export class AssessmentQuizzesPage implements OnInit {
 
-  constructor( private router: Router,) { }
+  constructor( private router: Router,
+    private alertController: AlertController,) { }
 
   ngOnInit() {
   }
@@ -17,12 +19,33 @@ export class AssessmentQuizzesPage implements OnInit {
 
   }
 
+   async confirmQuizDelete() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Confirm!',
+      message: `<strong>Are you sure you want to delete quiz?</strong>`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+        }, {
+          text: 'Okay',
+          handler: () => {
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   AddNewQuiz() {
-    this.router.navigate(['/assessment/quiz/add']);
+    this.router.navigate(['assessment/quiz/add']);
   }
 
   NavigateToQuestions() {
-    this.router.navigate(['/assessment/questions']);
+    this.router.navigate(['assessment/questions']);
   }
 
 }
