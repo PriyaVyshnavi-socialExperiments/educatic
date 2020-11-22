@@ -87,7 +87,7 @@ export class SigninComponent implements OnInit, OnDestroy {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: StudentSigninPage,
-        //mode: 'ios',
+        mode: 'ios',
         componentProps: {
         }
       });

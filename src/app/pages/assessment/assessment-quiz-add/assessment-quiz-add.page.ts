@@ -56,6 +56,7 @@ export class AssessmentQuizAddPage implements OnInit {
     const modal: HTMLIonModalElement =
     await this.modalController.create({
       component: CourseCategoryPage,
+      mode: 'ios',
       componentProps: { title: 'Course category(subject)' }
     });
   modal.onDidDismiss()

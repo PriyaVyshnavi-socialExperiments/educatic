@@ -35,21 +35,25 @@ export class AssessmentQuestionAddPage implements OnInit {
 
   }
 
+  selectedAnswerOption(event) {
+    console.log('selectedAnswerOption ', event.target.value);
+  }
+
   checkEvent($event) {
-    console.log("$event: ", $event);
+    console.log('$event: ', $event);
   }
 
   onChangeQuestionType(questionType) {
     this.t.clear();
     switch (questionType.value) {
-      case "multiplechoice":
+      case 'multiplechoice':
         for (let i = this.t.length; i < 4; i++) {
           this.t.push(this.formBuilder.group({
             answerOption: [`${48 - i}`, Validators.required]
           }));
         }
         break;
-      case "truefalse":
+      case 'truefalse':
         this.t.push(this.formBuilder.group({
           answerOption: [{value: `True`, disabled: true}, Validators.required]
         }));

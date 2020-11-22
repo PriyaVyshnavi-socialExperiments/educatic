@@ -66,6 +66,7 @@ export class CoursesPage implements OnInit {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: CourseSharePage,
+        mode: 'ios',
         componentProps: { contentId }
       });
     await modal.present();
@@ -98,9 +99,9 @@ export class CoursesPage implements OnInit {
   }
 
   async openViewer(imgContentURL: string, content: ICourseContent) {
-    console.log("content: ", content);
     const modal = await this.modalController.create({
       component: ViewerModalComponent,
+      mode: 'ios',
       componentProps: {
         src: imgContentURL,
         title: `${content.courseCategory} - ${content.courseName}`

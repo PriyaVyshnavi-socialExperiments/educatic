@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
+import { AssessmentSharePage } from '../assessment-share/assessment-share.page';
 
 @Component({
   selector: 'app-assessment-questions',
@@ -10,6 +11,7 @@ import { AlertController } from '@ionic/angular';
 export class AssessmentQuestionsPage implements OnInit {
 
   constructor(private alertController: AlertController,
+    private modalController: ModalController,
     private router: Router) { }
 
   ngOnInit() {
@@ -17,10 +19,6 @@ export class AssessmentQuestionsPage implements OnInit {
 
   AddNewQuestion() {
     this.router.navigate(['assessment/question/add']);
-  }
-
-  ShareQuestions() {
-
   }
 
   async confirmQuestionDelete() {
@@ -42,6 +40,16 @@ export class AssessmentQuestionsPage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  public async ShareQuestions(contentId) {
+    const modal: HTMLIonModalElement =
+      await this.modalController.create({
+        component: AssessmentSharePage,
+        mode: 'ios',
+        componentProps: { contentId }
+      });
+    await modal.present();
   }
 
 }
