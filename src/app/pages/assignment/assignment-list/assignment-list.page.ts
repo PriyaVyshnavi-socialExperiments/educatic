@@ -129,6 +129,7 @@ export class AssignmentListPage implements OnInit {
             src: assignmentURL + `?d=${Math.floor(Math.random() * 1000000000)}`,
             title: `${this.subjectName} - ${assignmentName}`
           },
+          mode: 'ios',
           cssClass: 'ion-img-viewer',
           keyboardClose: true,
           showBackdrop: true,

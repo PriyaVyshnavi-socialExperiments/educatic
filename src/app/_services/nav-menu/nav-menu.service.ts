@@ -25,7 +25,8 @@ export class NavMenuService extends OfflineService {
         menuItem.iconClass = menu.icon;
         menuItem.name = menu.name;
         menuItem.path = menu.path;
-        menuItem.roles = menu.roles
+        menuItem.roles = menu.roles;
+        menuItem.open = false;
         return menuItem;
       }
     };

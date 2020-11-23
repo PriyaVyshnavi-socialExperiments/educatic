@@ -225,6 +225,7 @@ export class CourseAddPage implements OnInit {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: CourseCategoryPage,
+        mode: 'ios',
         componentProps: { title: 'Course category(subject)' }
       });
     modal.onDidDismiss()
@@ -246,6 +247,7 @@ export class CourseAddPage implements OnInit {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: CourseCategoryPage,
+        mode: 'ios',
         componentProps: { title: 'Subject Level' }
       });
     modal.onDidDismiss()

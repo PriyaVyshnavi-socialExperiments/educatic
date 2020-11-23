@@ -1,0 +1,78 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> Add Quiz</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/assessment/quizzes"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button ion-button block [routerLink]="['/assessment/quizzes']">Cancel</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="limiter">
+    <div class="container-login100">
+      <div class="wrap-login100">
+        <form class="login100-form validate-form" [formGroup]="quizForm" (ngSubmit)="SubmitQuiz()"
+          #documentEditForm="ngForm">
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Category(Subject)</mat-label>
+                <mat-select formControlName="quizCategory" (selectionChange)="onChangeCategory($event)">
+                  <mat-option>
+                    <a class="txt1" (click)="AddNewCategory()">Click her to add new category</a>
+                  </mat-option>
+                  <mat-option *ngFor="let category of courseCategory; let i = index" value="{{category.name}}">
+                    {{category.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="quizForm.get('quizCategory').hasError('required')">
+                  A category is required to proceed.
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label> Title</mat-label>
+                <input matInput formControlName="quizTitle" required autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="quizForm.get('quizTitle').hasError('required')">
+                  A title is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label> Description</mat-label>
+                <textarea matInput formControlName="quizDescription" required autocomplete="off" rows="4"></textarea>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="quizForm.get('quizDescription').hasError('required')">
+                  A description is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" style="text-align: center;">
+              <button mat-flat-button type="button" color="secondary"
+                class="login100-form-btn container-login100-form-btn" [routerLink]="['/assessment/quizzes']">
+                Cancel
+              </button>
+              <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn"
+                [disabled]="!quizForm.valid" type="submit" style="margin-left: 5px;">
+                Save
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>

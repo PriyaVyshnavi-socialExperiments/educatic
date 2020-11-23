@@ -192,24 +192,39 @@ const routes: Routes = [
       //   .then( m => m.AssessmentPageModule)
       // },
       {
-        path: 'assessment/quiz/add',
-        loadChildren: () => import('../../pages/assessment/assessment-add/assessment-add.module')
-        .then( m => m.AssessmentAddPageModule)
+        path: 'assessment/quizzes',
+        loadChildren: () => import('../../pages/assessment/assessment-quizzes/assessment-quizzes.module')
+        .then( m => m.AssessmentQuizzesPageModule)
       },
       {
         path: 'assessments',
-        loadChildren: () => import('../../pages/assessment/assessment-list/assessment-list.module')
-        .then( m => m.AssessmentListPageModule)
+        loadChildren: () => import('../../pages/assessment/assessments/assessments.module')
+        .then( m => m.AssessmentsPageModule)
       },
       {
-        path: 'assessment/share',
-        loadChildren: () => import('../../pages/assessment/assessment-share/assessment-share.module')
-        .then( m => m.AssessmentSharePageModule)
+        path: 'assessment/:subject/:id/student',
+        loadChildren: () => import('../../pages/assessment/assessment/assessment.module')
+        .then( m => m.AssessmentPageModule)
+      },
+      {
+        path: 'assessment/quiz/add',
+        loadChildren: () => import('../../pages/assessment/assessment-quiz-add/assessment-quiz-add.module')
+        .then( m => m.AssessmentQuizAddPageModule)
       },
       {
         path: 'assessment/questions',
         loadChildren: () => import('../../pages/assessment/assessment-questions/assessment-questions.module')
         .then( m => m.AssessmentQuestionsPageModule)
+      },
+      {
+        path: 'assessment/question/add',
+        loadChildren: () => import('../../pages/assessment/assessment-question-add/assessment-question-add.module')
+        .then( m => m.AssessmentQuestionAddPageModule)
+      },
+      {
+        path: 'assessment/share',
+        loadChildren: () => import('../../pages/assessment/assessment-share/assessment-share.module')
+        .then( m => m.AssessmentSharePageModule)
       }
     ],
     runGuardsAndResolvers: 'always',
