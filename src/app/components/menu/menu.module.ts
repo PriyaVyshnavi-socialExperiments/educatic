@@ -202,7 +202,7 @@ const routes: Routes = [
         .then( m => m.AssessmentsPageModule)
       },
       {
-        path: 'assessment/:id',
+        path: 'assessment/:subject/:id/student',
         loadChildren: () => import('../../pages/assessment/assessment/assessment.module')
         .then( m => m.AssessmentPageModule)
       },

@@ -14,7 +14,7 @@ export class AssessmentsPage implements OnInit {
   }
 
   selectAssessment(subject: string) {
-    this.router.navigate([`assessment/${subject}`]);
+    this.router.navigate([`assessment/${subject}/1000/student`]);
   }
 
 }
