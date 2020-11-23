@@ -1,0 +1,26 @@
+.tui-image-editor-header {
+    visibility: hidden;
+}
+
+.tui-image-editor-container {
+    position: unset;
+}
+
+.progress-outer {
+    width: 96%;
+    margin: 10px 2%;
+    padding: 3px;
+    text-align: center;
+    background-color: var(--ion-color-light);
+    border: 1px solid #dcdcdc;
+    color: #fff;
+    border-radius: 20px;
+}
+
+.progress-inner {
+    min-width: 5%;
+    white-space: nowrap;
+    overflow: hidden;
+    border-radius: 20px;
+    background-color: var(--ion-color-success);
+}

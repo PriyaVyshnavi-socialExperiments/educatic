@@ -181,6 +181,36 @@ const routes: Routes = [
         loadChildren: () => import('../../pages/assignment/upload/assignment-upload.module')
           .then(m => m.AssignmentUploadPageModule)
       },
+      {
+        path: 'content/:id/image-viewer',
+        loadChildren: () => import('../../pages/viewer/image-edit-viewer/image-edit-viewer.module')
+        .then( m => m.ImageEditViewerPageModule)
+      },
+      // {
+      //   path: 'assessment/:id',
+      //   loadChildren: () => import('../../pages/assessment/assessment.module')
+      //   .then( m => m.AssessmentPageModule)
+      // },
+      {
+        path: 'assessment/quiz/add',
+        loadChildren: () => import('../../pages/assessment/assessment-add/assessment-add.module')
+        .then( m => m.AssessmentAddPageModule)
+      },
+      {
+        path: 'assessments',
+        loadChildren: () => import('../../pages/assessment/assessment-list/assessment-list.module')
+        .then( m => m.AssessmentListPageModule)
+      },
+      {
+        path: 'assessment/share',
+        loadChildren: () => import('../../pages/assessment/assessment-share/assessment-share.module')
+        .then( m => m.AssessmentSharePageModule)
+      },
+      {
+        path: 'assessment/questions',
+        loadChildren: () => import('../../pages/assessment/assessment-questions/assessment-questions.module')
+        .then( m => m.AssessmentQuestionsPageModule)
+      }
     ],
     runGuardsAndResolvers: 'always',
   }

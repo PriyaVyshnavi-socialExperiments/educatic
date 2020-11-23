@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{title}}</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button ion-button block (click)=SaveAssignment()>Save</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <div class="row" *ngIf="progress>0">
+    <div class="col-md-12 col-sm-12">
+      <div class="progress-outer">
+        <div class="progress-inner" [style.width.%]="progress">{{progress}}%</div>
+      </div>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content>
+  <div  style="height: 100%; width: 100%">
+    <tui-image-editor [options]="options"></tui-image-editor>
+  </div>
+</ion-content>

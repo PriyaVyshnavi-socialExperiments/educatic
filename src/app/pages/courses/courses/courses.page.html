@@ -38,7 +38,7 @@
   <ion-grid class="grid">
     <ion-row class="ion-justify-content-center">
 
-      <ion-card class="item-card" *ngFor="let item of courseContent | categoryFilter | async">
+      <ion-card class="item-card level" *ngFor="let item of courseContent | categoryFilter | async">
         <ion-item color="medium">
           <ion-label (click)="item.level = !item.level"><b>{{ item.key?.length ? item.key : 'Courses' }}</b>
             <ion-badge mode="ios" color="warning" slot="end">{{item.length}}</ion-badge>
@@ -56,7 +56,10 @@
                   <h2>{{course.courseName}}</h2>
                   <p> {{course.courseDescription}}</p>
                 </ion-label>
-
+                <ion-chip outline="true" *ngIf="isStudent && course.courseAssessment" slot="end" color="primary" (click)="TakeAssessment(course)">
+                  <ion-label>Assessment</ion-label>
+                  <ion-icon name="document-text-outline"></ion-icon>
+                </ion-chip>
                 <ion-chip outline="true" *ngIf="!isStudent" slot="end" color="primary" (click)="ShareCourse(course.id)">
                   <ion-label>Share</ion-label>
                   <ion-icon name="share-social"></ion-icon>

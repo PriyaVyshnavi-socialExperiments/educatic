@@ -1,6 +1,20 @@
-ion-card {
-    cursor: pointer;
+.grid {
+  .grid-items {
+      margin-bottom: 20px;
+  }
+
+  .item-card {
+      cursor: pointer;
+      height: 100%;
+      width: 300px;
+      img{
+        width: 100% !important;
+        height: 200px;
+    }
+  }
 }
+
+
 
   .date-circle {
     --padding-top: 10px;

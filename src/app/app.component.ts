@@ -10,6 +10,7 @@ import { OfflineSyncManagerService } from './_services/offline-sync-manager/offl
 import { RefreshServerService } from './_services/refresh-server/refresh-server.service';
 import { ServiceEvent } from './_models/service-event';
 import { environment } from '../environments/environment';
+import { UpdateService } from './_services/update/update.service';
 
 @Component({
   selector: 'app-root',
@@ -32,7 +33,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     private networkService: NetworkService,
     private offlineSyncManager: OfflineSyncManagerService,
     private refreshServer: RefreshServerService,
+    private sw: UpdateService
   ) {
+    this.sw.checkForUpdates();
     this.initializeApp();
   }
   ngOnInit(): void {
@@ -70,7 +73,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   private PageProperties() {
     const favicon = document.getElementById('favicon');
     const pageTitle = document.getElementById('pagetitle');
-    const icon = `assets/${environment.ImageSource}/logo.png`;
+    const icon = `assets/${environment.StaticSourcePath}/logo.png`;
     favicon.setAttribute('href', icon);
     pageTitle.innerText = environment.PageTitle;
   }

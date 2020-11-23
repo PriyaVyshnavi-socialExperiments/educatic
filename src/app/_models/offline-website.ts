@@ -3,4 +3,5 @@ export interface IOfflineWebsite {
     title: string;
     description: string;
     url: string;
+    img: string;
 }
