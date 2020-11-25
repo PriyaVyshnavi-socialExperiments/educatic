@@ -4,14 +4,12 @@
     <ion-buttons slot="start">
       <ion-menu-button autoHide="true"></ion-menu-button>
     </ion-buttons>
-   
-
     <ion-buttons slot="end">
       <ion-button ion-button block (click)='selectClass()'>Choose Class</ion-button>
     </ion-buttons>
     <ion-item [hidden]='true'>
       <ion-label>Choose Class</ion-label>
-      <ion-select placeholder="School" #classList (ionChange)='setClassRoom($event)' interface="popover">
+      <ion-select placeholder="School" [(ngModel)]="classRoomId" #classList (ionChange)='setClassRoom($event)' interface="popover">
         <ion-select-option *ngFor="let classRoom of classRooms" value="{{ classRoom.classId }}">
           {{ classRoom.classRoomName }} - {{ classRoom.classDivision }}</ion-select-option>
       </ion-select>
@@ -21,14 +19,13 @@
 </ion-header>
 <ion-content>
   <ion-grid style="padding: 10px;" *ngIf="classRoomName" class="grid">
-  <ion-toolbar>
-    <ion-label>
-     <h4> Class Room: <strong>{{classRoomName}}</strong></h4>
-    </ion-label>
-    <ion-buttons *ngIf="attendancePhoto" slot="end">
-      <ion-button ion-button block (click)='uploadPhotoAlertConfirm()'>Process Attendance</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+    <ion-item lines="none">
+      <ion-title class="content-title">Class Room: {{classRoomName}}</ion-title>
+      <ion-buttons *ngIf="!attendancePhoto" slot="end">
+        <ion-button ion-button block  (click)="selectImageSource()">Take Attendance</ion-button>
+      </ion-buttons>
+  </ion-item>
+
 </ion-grid>
   <ion-grid style="height: 80%;" *ngIf="!attendancePhoto" (click)="selectImageSource()">
     <ion-row justify-content-center align-items-center class="justify-center">

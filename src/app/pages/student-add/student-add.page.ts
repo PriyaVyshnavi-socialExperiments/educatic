@@ -119,7 +119,6 @@ export class StudentAddPage implements OnInit, OnDestroy {
         this.getCountries();
       }
     });
-    this.onChanges();
   }
 
   ngOnDestroy(): void {
@@ -187,14 +186,21 @@ export class StudentAddPage implements OnInit, OnDestroy {
     this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.student.classId}/student/${this.student.id}/photos`);
   }
 
-  private onChanges() {
-    this.f.classId.valueChanges.subscribe(classId => {
-      this.classRoomInfo = this.classInfo.find((c) => c.classId === classId)
+  Cancel() {
+    if(this.student?.classId) {
+      this.router.navigateByUrl(`students/${this.currentUser.defaultSchool.id}/${this.student.classId}`);
+    } else {
+    this.router.navigateByUrl(`students/${this.currentUser.defaultSchool.id}`);
+
+    }
+  }
+
+  public onChangeClass(classRoom) {
+      this.classRoomInfo = this.classInfo.find((c) => c.classId === classRoom.value)
       const enrolmentNo = `${getInitials(this.currentUser.defaultSchool.name)}${this.classRoomInfo.classRoomName}
                             ${this.classRoomInfo.classDivision}-${this.classRoomInfo.students.length + 1}`;
       this.f.enrolmentNo.reset();
       this.f.enrolmentNo.setValue(enrolmentNo.replace(/\s+/g, ''));
-    });
   }
 
   private async presentToast() {

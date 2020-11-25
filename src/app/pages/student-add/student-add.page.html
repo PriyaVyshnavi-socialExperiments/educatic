@@ -16,7 +16,7 @@
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label>Class Division</mat-label>
-                <mat-select formControlName="classId" >
+                <mat-select formControlName="classId" (selectionChange)="onChangeClass($event)">
                   <mat-option *ngFor="let classRoom of classInfo; let i = index" value="{{classRoom.classId}}">
                     {{ classRoom.classRoomName }} - {{ classRoom.classDivision }}
                   </mat-option>
@@ -178,7 +178,7 @@
                 Submit
               </button>
               <button mat-flat-button type="button" color="secondary"
-                class="login100-form-btn container-login100-form-btn" [routerLink]="['/students']">
+                class="login100-form-btn container-login100-form-btn" (click) ="Cancel()" >
                 Cancel
               </button>
               <button *ngIf="student?.id" mat-flat-button type="button" color="tertiary"

@@ -18,7 +18,7 @@ export class StudentsPage implements OnInit {
   schools: ISchool[] = [];
   classRooms: IClassRoom[] = [];
   schoolId: string;
-  classRoomId: string;
+  classRoomId='';
   currentUser: IUser;
   schoolName: string;
   classRoom: IClassRoom;
@@ -43,6 +43,9 @@ export class StudentsPage implements OnInit {
   async refresh() {
     if (this.classRoomId) {
       const classRoom = this.classRooms.find(c => c.classId === this.classRoomId);
+      if(!classRoom) {
+        return;
+      }
       this.classRoom = classRoom;
       this.students = new Array();
       classRoom.students.forEach(student => {
@@ -52,6 +55,8 @@ export class StudentsPage implements OnInit {
             const photos = JSON.parse(student.profileStoragePath)?.Photos;
             if (photos) {
               student.myProfile = [...photos];
+            } else {
+              student.myProfile.push(student.profileStoragePath);
             }
           }
         } catch (error) {
@@ -70,7 +75,7 @@ export class StudentsPage implements OnInit {
   }
 
   setClassRoom(selectedValue) {
-    this.classRoomId = selectedValue.detail.value;
+    //this.classRoomId = selectedValue.detail.value;
     this.router.navigateByUrl(`/students/${this.currentUser.defaultSchool.id}/${this.classRoomId}`);
   }
 
