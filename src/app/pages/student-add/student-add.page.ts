@@ -119,7 +119,6 @@ export class StudentAddPage implements OnInit, OnDestroy {
         this.getCountries();
       }
     });
-    this.onChanges();
   }
 
   ngOnDestroy(): void {
@@ -196,14 +195,12 @@ export class StudentAddPage implements OnInit, OnDestroy {
     }
   }
 
-  private onChanges() {
-    this.f.classId.valueChanges.subscribe(classId => {
-      this.classRoomInfo = this.classInfo.find((c) => c.classId === classId)
+  public onChangeClass(classRoom) {
+      this.classRoomInfo = this.classInfo.find((c) => c.classId === classRoom.value)
       const enrolmentNo = `${getInitials(this.currentUser.defaultSchool.name)}${this.classRoomInfo.classRoomName}
                             ${this.classRoomInfo.classDivision}-${this.classRoomInfo.students.length + 1}`;
       this.f.enrolmentNo.reset();
       this.f.enrolmentNo.setValue(enrolmentNo.replace(/\s+/g, ''));
-    });
   }
 
   private async presentToast() {
