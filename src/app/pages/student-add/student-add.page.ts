@@ -187,6 +187,15 @@ export class StudentAddPage implements OnInit, OnDestroy {
     this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.student.classId}/student/${this.student.id}/photos`);
   }
 
+  Cancel() {
+    if(this.student?.classId) {
+      this.router.navigateByUrl(`students/${this.currentUser.defaultSchool.id}/${this.student.classId}`);
+    } else {
+    this.router.navigateByUrl(`students/${this.currentUser.defaultSchool.id}`);
+
+    }
+  }
+
   private onChanges() {
     this.f.classId.valueChanges.subscribe(classId => {
       this.classRoomInfo = this.classInfo.find((c) => c.classId === classId)

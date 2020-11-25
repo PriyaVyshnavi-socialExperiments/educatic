@@ -1,16 +1,16 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { StudentService } from '../../_services/student/student.service';
 import { IStudentPhoto } from '../../_models/student-photos';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from '../../_services';
 import { IUser, ISchool, IStudent } from '../../_models';
 import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { IQueueMessage } from 'src/app/_models/queue-message';
 import { LocationService } from 'src/app/_services/location/location.service';
-import { RefreshServerService } from 'src/app/_services/refresh-server/refresh-server.service';
+import { SpinnerVisibilityService } from 'ng-http-loader';
 
 const { Camera } = Plugins;
 
@@ -37,6 +37,9 @@ export class StudentPhotoUploadPage implements OnInit {
     private authenticationService: AuthenticationService,
     public alertController: AlertController,
     public locationService: LocationService,
+    private toastController: ToastController,
+    private spinner: SpinnerVisibilityService,
+    public router: Router,
   ) { }
 
   ngOnInit() {
@@ -52,7 +55,7 @@ export class StudentPhotoUploadPage implements OnInit {
       const classRoom = this.school.classRooms.find(c => c.classId === this.classId);
       this.student = classRoom.students.find(student => student.id === this.studentId);
       for (let i = 0; i < 5; i++) {
-        const img =  this.student.myProfile? this.student.myProfile[i] : '';
+        const img = this.student.myProfile ? this.student.myProfile[i] : '';
         this.studentPhotos.push({ id: i, image: `${img ? img : 'default'}` });
       }
     });
@@ -77,9 +80,9 @@ export class StudentPhotoUploadPage implements OnInit {
 
     this.studentService.QueueBlobMessage(queueMessage).subscribe((res) => {
       this.student.myProfile = [...queueMessage.pictureURLs];
-      console.log("this.student.myProfile:", this.student.myProfile);
+      this.student.profileStoragePath = JSON.stringify({Photos:[...queueMessage.pictureURLs]});
       this.studentService.UpdateStudentOffline(this.student);
-     });
+    });
   }
 
   DisplayStudentPhotos() {
@@ -109,9 +112,17 @@ export class StudentPhotoUploadPage implements OnInit {
     const blobURL = `${schoolName}_${this.school.id}/${this.classId}/${studentName.replace(/\s/g, '')}/${id}_photo.${image.format}`;
 
     const imageFile = ContentHelper.blobToFile(blobData, blobURL);
-    this.studentService.UploadImageFile(imageFile).subscribe((res) => {
-      console.log("res: ", res)
-    }
+    this.spinner.show();
+    this.studentService.UploadImageFile(imageFile).subscribe(
+      (res) => {
+        if (res['progress'] === 100) {
+          this.uploadPhotos();
+          this.presentToast(`Student photo upload successfully!`, `success`)
+        }
+      },
+      (err) => {
+        this.presentToast('Unable to upload student photo, please try again.', 'danger');
+      }
     )
     this.studentBlobDataURLs = [...this.studentBlobDataURLs, blobURL]
     const studentPhoto = {
@@ -134,15 +145,33 @@ export class StudentPhotoUploadPage implements OnInit {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
-    // this.studentService.UploadImageFile(file).subscribe((newImage) => {
-    //   this.studentPhotos.push(newImage);
-    // });
   }
 
   deleteImage(image, index) {
     this.studentService.DeleteImage(image._id).subscribe(res => {
       this.studentPhotos.splice(index, 1);
     });
+  }
+
+  GoToStudents() {
+    this.router.navigateByUrl(`students/${this.currentUser.defaultSchool.id}/${this.student.classId}`);
+    // this.router.navigateByUrl(`students/${this.currentUser.defaultSchool.id}`);
+  }
+
+  private async presentToast(msg, type) {
+    this.spinner.hide();
+    const toast = await this.toastController.create({
+      message: msg,
+      position: 'bottom',
+      duration: 3000,
+      color: type,
+      buttons: [{
+        text: 'Close',
+        role: 'cancel',
+      }
+      ]
+    });
+    toast.present();
   }
 
   async uploadPhotoAlertConfirm() {

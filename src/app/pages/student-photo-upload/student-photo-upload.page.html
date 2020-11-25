@@ -4,13 +4,21 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
-    <ion-buttons *ngIf="studentBlobDataURLs.length" slot="end">
+    <!-- <ion-buttons *ngIf="studentBlobDataURLs.length" slot="end">
       <ion-button ion-button block (click)='uploadPhotoAlertConfirm()'>Process Profile</ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-item lines="none">
+    <ion-title class="content-title">Student Name: {{student.firstName}} {{student.lastName}}</ion-title>
+    <ion-buttons slot="end"> 
+      <ion-button ion-button block *ngIf="!studentBlobDataURLs.length"  (click)="GoToStudents()">Cancel</ion-button>
+      <ion-button ion-button *ngIf="studentBlobDataURLs.length"  block (click)="GoToStudents()">Confirmed</ion-button>
+    </ion-buttons>
+  </ion-item>
+
   <ion-grid class="grid" *ngIf="studentPhotos.length">
     <ion-row class="ion-justify-content-center">
       <ion-card class="item-card" *ngFor="let photo of studentPhotos">
@@ -18,7 +26,8 @@
           <div class="contact-grid" (click)="selectImageSource(photo.id)">
             <ion-icon class="header-dropdown m-r--5" (click)="selectImageSource(photo.id)" name="camera" slot="end">
             </ion-icon>
-            <img defaultImage="assets/images/image-wait.gif" errorImage="assets/images/avatar.svg" [lazyLoad]="photo.image"  offset="100"/>
+            <img defaultImage="assets/images/image-wait.gif" errorImage="assets/images/avatar.svg"
+              [lazyLoad]="photo.image" offset="100" />
           </div>
         </ion-card-content>
       </ion-card>

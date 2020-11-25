@@ -178,7 +178,7 @@
                 Submit
               </button>
               <button mat-flat-button type="button" color="secondary"
-                class="login100-form-btn container-login100-form-btn" [routerLink]="['/students']">
+                class="login100-form-btn container-login100-form-btn" (click) ="Cancel()" >
                 Cancel
               </button>
               <button *ngIf="student?.id" mat-flat-button type="button" color="tertiary"
