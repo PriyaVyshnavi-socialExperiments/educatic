@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { IUser, Role } from 'src/app/_models';
+import { AuthenticationService } from 'src/app/_services';
 
 @Component({
   selector: 'app-assessment-quizzes',
@@ -8,11 +10,21 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./assessment-quizzes.page.scss'],
 })
 export class AssessmentQuizzesPage implements OnInit {
-
+  currentUser: IUser;
+  isStudent: boolean;
+  
   constructor( private router: Router,
+    private authenticationService: AuthenticationService,
     private alertController: AlertController,) { }
 
   ngOnInit() {
+    this.authenticationService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.isStudent = this.currentUser.role === Role.Student;
+    });
   }
 
   AddNewCategory() {
@@ -45,7 +57,11 @@ export class AssessmentQuizzesPage implements OnInit {
   }
 
   NavigateToQuestions() {
-    this.router.navigate(['assessment/questions']);
+    if(this.isStudent) {
+      this.router.navigate([`assessment/1000/10001/student`]);
+    } else {
+      this.router.navigate(['assessment/questions']);
+    }
   }
 
 }

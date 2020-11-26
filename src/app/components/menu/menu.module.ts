@@ -192,14 +192,14 @@ const routes: Routes = [
       //   .then( m => m.AssessmentPageModule)
       // },
       {
-        path: 'assessment/quizzes',
-        loadChildren: () => import('../../pages/assessment/assessment-quizzes/assessment-quizzes.module')
-        .then( m => m.AssessmentQuizzesPageModule)
-      },
-      {
         path: 'assessments',
         loadChildren: () => import('../../pages/assessment/assessments/assessments.module')
         .then( m => m.AssessmentsPageModule)
+      },
+      {
+        path: 'assessment/quizzes',
+        loadChildren: () => import('../../pages/assessment/assessment-quizzes/assessment-quizzes.module')
+        .then( m => m.AssessmentQuizzesPageModule)
       },
       {
         path: 'assessment/:subject/:id/student',
