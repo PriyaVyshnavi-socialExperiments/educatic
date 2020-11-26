@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>train-cognitive-service</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+
+  <div>
+    <ion-card>
+      <ion-card-header>
+        Student JSON Data
+      </ion-card-header>
+      <ion-card-content>
+        <textarea placeholder="Student JSON Data" [(ngModel)]="studentData" value="" autocomplete="off" cols="100" rows="10">
+        </textarea> <br />
+        <ion-button (click)="ProcessData()"> Process Data</ion-button>
+      </ion-card-content>
+
+    </ion-card>
+
+  </div>
+</ion-content>
