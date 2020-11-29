@@ -5,7 +5,7 @@ import { SchoolService } from '../../_services/school/school.service';
 import { ISchool } from '../../_models/school';
 import { IClassRoom } from '../../_models/class-room';
 import { IStudent } from '../../_models/student';
-
+import { ChartService } from '../../_services/dashboard/chart.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,11 +27,12 @@ export class DashboardService {
     students: new Map()
   }
   url = "https://goofflinee.table.core.windows.net/";
-  attendanceSAS = "?sv=2018-03-28&si=Attentdance-175B9D5A6AE&tn=attentdance&sig=W4IcrVtXe80oksa%2BNCCkiPry0YKKiIa0L2X4ScyY6U4%3D";
+  attendanceSAS = "?sv=2018-03-28&si=Attentdance-1761217FECC&tn=attentdance&sig=QVmjYIYbHeldHrcjQ5W145al9AyszZoXC55VmnHhwho%3D";
 
   constructor(
     private http: HttpClient,
-    private schoolService: SchoolService
+    private schoolService: SchoolService,
+    private chartService: ChartService
   ) { }
 
   /**
@@ -123,6 +124,7 @@ export class DashboardService {
         let city = this.data.schools.get(entry.PartitionKey).school.city;
         let schoolId = entry.PartitionKey; 
         let classId = entry.ClassRoomId;
+        let gender = this.data.students.get(entry.StudentId).student.gender; 
 
         // Convert datetime to JavaScript Date and then convert into readable date format to ensure 
         // attendance taken at slightly different times of the same day still counts as the same day 
@@ -134,7 +136,6 @@ export class DashboardService {
           this.data.schools.get(schoolId).attendance.set(dateKey, {
             present: 0,
             total: 0,
-            false: 0,
             male: {
               present: 0,
               total: 0
@@ -155,7 +156,6 @@ export class DashboardService {
           this.data.cities.get(city).attendance.set(dateKey, {
             present: 0,
             total: 0,
-            false: 0,
             male: {
               present: 0,
               total: 0
@@ -177,8 +177,7 @@ export class DashboardService {
         if (this.data.classes.get(classId).attendance.get(dateKey) === undefined) {
           this.data.classes.get(classId).attendance.set(dateKey, {
             present: 0,
-            total: this.data.classes.get(classId).classRoom.students.length,
-            false: 0,
+            total: 0,
             studentData: [],
             male: {
               present: 0,
@@ -193,46 +192,37 @@ export class DashboardService {
               total: 0
             }
           });
-          // Updates total number of students in each school/city
-          this.data.schools.get(schoolId).attendance.get(dateKey).total += this.data.classes.get(classId).attendance.get(dateKey).total;
-          this.data.cities.get(city).attendance.get(dateKey).total += this.data.classes.get(classId).attendance.get(dateKey).total;
         }
 
-        // Format indivudal student attendance data for each student
-        let attendanceData = {
-          present: entry.Present,
-          studentId: entry.StudentId,
-          gender: this.data.students.get(entry.StudentId).student.gender
+    
+        if (gender !== "male" && gender !== "female") {
+          gender = "nonBinary";
         }
 
-        if (attendanceData.gender !== "male" && attendanceData.gender !== "female") {
-          attendanceData.gender = "nonBinary";
-        }
+        // Update total number of students in class for cities, schools, classes 
+        this.data.schools.get(schoolId).attendance.get(dateKey).total++;
+        this.data.cities.get(city).attendance.get(dateKey).total++;
+        this.data.classes.get(classId).attendance.get(dateKey).total++; 
 
-        // Update cumulative attendance for cities, schools, and classes 
-        if (attendanceData.present) {
+        // Update present attendance for cities, schools, and classes 
+        if (entry.present) {
           this.data.cities.get(city).attendance.get(dateKey).present++;
           this.data.schools.get(schoolId).attendance.get(dateKey).present++;
           this.data.classes.get(classId).attendance.get(dateKey).present++;
-        } else {
-          this.data.cities.get(city).attendance.get(dateKey).false++;
-          this.data.schools.get(schoolId).attendance.get(dateKey).false++;
-          this.data.classes.get(classId).attendance.get(dateKey).false++;
-        }
+        } 
 
         // Update cumulative gender attendance for cities, schools, and classes
-        this.data.cities.get(city).attendance.get(dateKey)[attendanceData.gender].total++;
-        this.data.schools.get(schoolId).attendance.get(dateKey)[attendanceData.gender].total++;
-        this.data.classes.get(classId).attendance.get(dateKey)[attendanceData.gender].total++;
-        if (attendanceData.present) {
-          this.data.cities.get(city).attendance.get(dateKey)[attendanceData.gender].present++;
-          this.data.schools.get(schoolId).attendance.get(dateKey)[attendanceData.gender].present++;
-          this.data.classes.get(classId).attendance.get(dateKey)[attendanceData.gender].present++;
+        this.data.cities.get(city).attendance.get(dateKey)[gender].total++;
+        this.data.schools.get(schoolId).attendance.get(dateKey)[gender].total++;
+        this.data.classes.get(classId).attendance.get(dateKey)[gender].total++;
+        if (entry.present) {
+          this.data.cities.get(city).attendance.get(dateKey)[gender].present++;
+          this.data.schools.get(schoolId).attendance.get(dateKey)[gender].present++;
+          this.data.classes.get(classId).attendance.get(dateKey)[gender].present++;
         }
       }
     })
   }
-
 
   private getAttendanceTable() {
     let endpoint = this.url + "Attentdance()" + this.attendanceSAS;
@@ -262,5 +252,41 @@ export class DashboardService {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  getBarChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string) {
+    return this.chartService.getBarChart(id, xAxisTitle, yAxisTitle, title); 
+  }
+
+  getLineChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string) {
+    return this.chartService.getLineChart(id, xAxisTitle, yAxisTitle, title); 
+  }
+
+  updateSchoolBarChart(schools: ISchool[]) {
+    return this.chartService.updateBarChart(this.data, schools, 'schools'); 
+  }
+
+  updateSchoolLineChart(schools: ISchool[]) {
+    return this.chartService.updateLineChart(this.data, schools, 'schools');
+  }
+
+  updateClassLineChart(classes: any[]) {
+    return this.chartService.updateLineChart(this.data, classes, 'classes');
+  }
+
+  updateClassBarChart(classes: any[]) {
+    return this.chartService.updateBarChart(this.data, classes, 'classes');
+  }
+
+  updateCityBarChart(cities: any[]) {
+    return this.chartService.updateBarChart(this.data, cities, 'cities');
+  }
+
+  updateCityLineBarChart(cities: any[]) {
+    return this.chartService.updateLineChart(this.data, cities, 'cities');
+  }
+
+  updateGenderBarChart(data: any[]) {
+    return this.chartService.updateGenderBarChart(data); 
   }
 }

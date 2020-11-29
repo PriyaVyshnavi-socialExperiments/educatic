@@ -30,7 +30,7 @@ import { FormsModule } from '@angular/forms';
     MatListModule,
     GraphModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyCaVheCmHHTlYi2vyi_lZhFZl6xu0GWm8Y'
+      apiKey: 'AIzaSyA-Y5rHI-031oKZilJ9DfMDGEU4qZ56-y4'
     }) 
   ],
   exports: [

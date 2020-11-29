@@ -16,6 +16,7 @@ export class ModalPage implements OnInit {
 
   loadGraph() {
     let temp = document.getElementById("chartss")
+    console.log(this.chart);
     this.chartVar = new Chart(temp, {
       type: this.type,
       data: this.chart.data,

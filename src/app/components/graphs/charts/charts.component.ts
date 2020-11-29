@@ -11,46 +11,38 @@ import { Aspect6 } from 'chartjs-plugin-colorschemes/src/colorschemes/colorschem
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss'],
 })
-export class ChartsComponent implements OnInit {
+export class ChartsComponent implements OnChanges {
   @Input() graphType: string = "";
-  @Input() data: any[] = [];
-  @Input() set changed(changed: any[]) {
-    if (changed) {
-      this.isChanged = changed;
-      this.update();
-    }
-  };
+  @Input() data: any = {};
+  @Input() id: string = "";
+  @Input() charts: any = {};
   graphData = []
-  isChanged = [];
   labels = []
-  chart : Chart;
+  chart: any = {};
 
   constructor() { }
-  ngOnInit() {
-    this.loadGraph();
-    this.update();
+
+  ngAfterViewInit() {
+    // this.loadGraph();
+    // this.update();
   }
 
+  ngOnChanges() {
+    //this.update();
+  }
 
   update() {
-    if (this.chart) {
-      this.chart.data.datasets = []
-      if (this.isChanged) {
-        this.data.forEach((d) => {
-          this.chart.data.datasets.push({
-            data: d.data,
-            label: d.title,
-            fill: false
-          })
-        })
-      }
-      this.chart.update();
+    if (this.charts[this.id]) {
+      this.charts[this.id].data.datasets = [];
+      this.charts[this.id].data.datasets = this.data.datasets;
+      this.charts[this.id].data.labels = this.data.labels; 
+      this.charts[this.id].update();
     }
   }
 
   loadGraph() { 
-    let temp = document.getElementById("class-chart-canvas")
-    this.chart = new Chart(temp, {
+    let temp = document.getElementById("" + this.id); 
+    this.charts[this.id] = new Chart(temp, {
       type: this.graphType,
       data: {
           labels: null,

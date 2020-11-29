@@ -2,12 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ModalPage } from '../graphs/modal/modal.page';
 import { DashboardService } from '../../_services/dashboard/dashboard.service';
-import { ChartsComponent } from '../graphs/charts/charts.component';
 import { Chart } from 'chart.js';
-import { BarChartComponent } from '../graphs/bar-chart/bar-chart.component';
 import { ISchool } from '../../_models/school';
 import { IClassRoom } from '../../_models/class-room';
 import { IStudent } from '../../_models/student';
+import { AnyNsRecord } from 'dns';
 
 
 @Component({
@@ -16,24 +15,40 @@ import { IStudent } from '../../_models/student';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit { 
-  @ViewChild(ChartsComponent) chartComponent : ChartsComponent;
-  @ViewChild(BarChartComponent) barChartComponent : BarChartComponent;
-  data;
+  data: any;
+  start: Date; 
+  end: Date;
   cities = [];
   schools: ISchool[] = [];
-  classes: IClassRoom[] = [];
+  classes: any[] = [];
   allCities = []; 
   allSchools: ISchool[] = [];
-  allClasses: IClassRoom[] = [];
+  allClasses: any[] = [];
+  charts: any = {
+    'city-attendance': undefined, 
+    'school-attendance': undefined,
+    'class-attendance': undefined,
+    'gender-attendance': undefined,
+  };
 
-  classChartData = [];
+  classChartData = {
+    labels: null,
+    datasets: []
+  };
+
   schoolChartData = {
     labels: [],
-    data: []
+    datasets: []
   };
+
   cityChartData = {
     labels: [],
-    data: []
+    datasets: []
+  }
+
+  genderChartData = { 
+    labels: [],
+    datasets: []
   }
 
   constructor
@@ -59,9 +74,16 @@ export class DashboardComponent implements OnInit {
     this.dash.getTables().subscribe((result) => {
       this.data = this.dash.processData(result[0], result[1]);
       this.cities = [];
-      console.log(this.data);
       for (let city of this.data.cities.keys()) {
-        this.cities.push(city); 
+        this.cities.push({
+          id: city,
+          name: city
+        }); 
+      }
+      if (!this.charts['city-attendance'] && !this.charts['school-attendance'] && !this.charts['class-attendance']) {
+        this.charts['city-attendance'] = this.dash.getBarChart('city-attendance','Cities', 'Percent Attendance', 'City Attendance'); 
+        this.charts['school-attendance'] = this.dash.getBarChart('school-attendance', 'Schools', 'Percent Attendance', 'School Attendance');
+        this.charts['class-attendance'] = this.dash.getLineChart('class-attendance', 'Days', 'Percent Attendance', 'Class Attendance');
       }
       this.allCities = this.cities;
       this.changeCities();
@@ -76,7 +98,7 @@ export class DashboardComponent implements OnInit {
     this.allSchools = [];
     if (this.cities) {
       this.cities.forEach((city) => {
-        for (let school of this.data.cities.get(city).schools) {
+        for (let school of this.data.cities.get(city.id).schools) {
           this.allSchools.push(school);
         }
       })
@@ -91,7 +113,10 @@ export class DashboardComponent implements OnInit {
       this.schools.forEach((school) => {
         if (school && school.classRooms) {
           for (let classRoom of school.classRooms) {
-            this.allClasses.push(classRoom);
+            let temp: any = classRoom; 
+            temp.name = classRoom.classRoomName;
+            temp.id = classRoom.classId; 
+            this.allClasses.push(temp);
           }
         }
       });
@@ -100,65 +125,30 @@ export class DashboardComponent implements OnInit {
   }
 
   changeClasses() {
-    this.classChartData = [];
-    if (this.classes) {
-      for (let entry of this.classes) {
-        if (this.data.classes.get(entry.classId).attendance.size > 0) {
-          let entryData = [];
-          for (let dateEntry of this.data.classes.get(entry.classId).attendance.keys()) {
-            let total: number = this.data.classes.get(entry.classId).attendance.get(dateEntry).total;
-            let present: number = this.data.classes.get(entry.classId).attendance.get(dateEntry).present;
-            console.log(total);
-            console.log(present);
-            let attendance = (present / total) * 100;
-            let data = {
-              x: new Date(dateEntry),
-              y: attendance
-            }
-            entryData.push(data);
-          }
-          let graphDataEntry = {
-            title: entry.classRoomName, 
-            data: entryData
-          }
-          this.classChartData.push(graphDataEntry);
-        }
-      }
-    }
+    this.classChartData = this.dash.updateClassLineChart(this.classes);
+    this.updateChart('class-attendance', this.classChartData); 
   }
 
   updateSchoolChartData() {
-    this.schoolChartData.data = [];
-    this.schoolChartData.labels = [];
-    for (let entry of this.schools) {
-      if (this.data.schools.get(entry.id).attendance.size > 0) {
-        let total = 0;
-        let present = 0;
-        for (let dateEntry of this.data.schools.get(entry.id).attendance.keys()) {
-          total += this.data.schools.get(entry.id).attendance.get(dateEntry).total;
-          present += this.data.schools.get(entry.id).attendance.get(dateEntry).present;        
-        }
-        let attendance = present/total * 100;
-        this.schoolChartData.data.push(attendance);
-        this.schoolChartData.labels.push(entry.name);
-      }
-      
-    }
+    this.schoolChartData = this.dash.updateSchoolBarChart(this.schools);
+    this.updateChart('school-attendance', this.schoolChartData); 
   }
 
   updateCityChartData() {
-    this.cityChartData.data = [];
-    this.cityChartData.labels = [];
-    for (let entry of this.cities) {
-      let total = 0;
-      let present = 0;
-      for (let dateEntry of this.data.cities.get(entry).attendance.keys()) {
-        total += this.data.cities.get(entry).attendance.get(dateEntry).total;
-        present += this.data.cities.get(entry).attendance.get(dateEntry).present;
-      }
-      let attendance = present / total * 100;
-      this.cityChartData.data.push(attendance);
-      this.cityChartData.labels.push(entry); 
+    this.cityChartData = this.dash.updateCityBarChart(this.cities); 
+    this.updateChart('city-attendance', this.cityChartData);
+  }
+
+  // updateGenderChartData(id: string) {
+  //   this.genderChartData = this.dash.updateGenderBarChart(this[id]);
+  //   this.updateChart('gender-attendance', this.genderChartData); 
+  // }
+
+  updateChart(id: string, chartData: any) {
+    if (this.charts[id]) {
+      this.charts[id].data.datasets = chartData.datasets; 
+      this.charts[id].data.labels = chartData.labels;
+      this.charts[id].update();
     }
   }
 

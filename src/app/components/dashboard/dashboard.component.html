@@ -6,7 +6,7 @@
                     <ion-item>
                         <ion-label>City</ion-label>
                         <ion-select placeholder="Select One" multiple="true" [(ngModel)]="this.cities" (ionChange)="changeCities()">
-                        <ion-select-option *ngFor="let city of this.allCities">{{city}}</ion-select-option>
+                        <ion-select-option *ngFor="let city of this.allCities" [value]="city">{{city.name}}</ion-select-option>
                         </ion-select>
                     </ion-item>
                     
@@ -39,7 +39,9 @@
                 <ion-card>
                     #Total Schools
                     <br>
-                    #Active Schools
+                    <span>{{this.allSchools.length}}</span>
+                    <br>
+                    #Active Schools 
                 </ion-card>
             </ion-col>
             <ion-col size="6" size-sm="3">
@@ -60,17 +62,14 @@
                 <ion-card>
                     #Total Classes
                     <br>
+                    <span>{{this.allClasses.length}}</span>
+                    <br>
                     #Active Classes
                 </ion-card>
             </ion-col>
             <ion-col size="12">
-                <ion-card (click)="presentModal(this.chartComponent.chart, 'line')" >
-                    <app-charts 
-                                [graphType]="'line'"
-                                [data]="this.classChartData"
-                                [changed]="this.classChartData"
-                                >
-                    </app-charts>
+                <ion-card (click)="presentModal(this.charts['class-attendance'], 'line')" >
+                    <canvas id="class-attendance"></canvas>
                 </ion-card>
             </ion-col>
         </ion-row>
@@ -90,57 +89,65 @@
         </ion-row>
         <ion-row class="bottom-row">
             <ion-col size="12" size-sm="4">
-                <ion-card (click)="presentModal(this.barChartComponent.chart, 'bar')" >
-                    City Attendance
-                    <!-- <bar-chart 
-                    [graphType]="'bar'"
-                    [data]="this.cityChartData"
-                    [changed]="this.cityChartData.data"
-                    [Title] = "'Cumulative City Attendance'"
-                    [xAxisTitle] = "'Cities'"
-                    >
-        </bar-chart> -->
+                <ion-card (click)="presentModal(this.charts['city-attendance'], 'bar')" >
+                   <canvas id="city-attendance"></canvas>
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="4">
-                <ion-card (click)="presentModal(this.barChartComponent.chart, 'bar')" >
-                    <bar-chart 
-                                [graphType]="'bar'"
-                                [data]="this.schoolChartData"
-                                [changed]="this.schoolChartData.data"
-                                [Title] = "'Cumulative School Attendance'"
-                                [xAxisTitle] = "'Schools'"
-                                >
-                    </bar-chart>
+                <ion-card (click)="presentModal(this.charts['school-attendance'], 'bar')" >
+                    <canvas id="school-attendance"></canvas>
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="4">
-                <ion-card>
-                    attendance By Gender
+                <ion-card (click)="presentModal(this.charts['gender-attendance'], 'bar')" >
+                    <canvas id="gender-attendance"></canvas>
                 </ion-card>
             </ion-col>
         </ion-row>
         <ion-row class="bottom-row">
             <ion-col size="12" size-sm="6">
-                <ion-card>
+                <ion-card style="overflow: scroll">
                     Classes by #attendance 
                     <ion-grid>
                         <ion-row>
-                          <ion-col>
-                            <div>
-                              1 of 3
-                            </div>
-                          </ion-col>
-                          <ion-col>
-                            <div>
-                              2 of 3
-                            </div>
-                          </ion-col>
-                          <ion-col>
-                            <div>
-                              3 of 3
-                            </div>
-                          </ion-col>
+                            <ion-col>
+                                City
+                            </ion-col>
+                            <ion-col>
+                                School
+                            </ion-col>
+                            <ion-col>
+                                Class
+                            </ion-col>
+                            <ion-col>
+                                Attendance 
+                            </ion-col>
+                            <ion-col>
+                                #Students 
+                            </ion-col>
+                            <ion-col>
+                                #Teachers
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngFor="let class of this.classes">
+                            <ion-col>
+                                {{this.data.schools.get(class.schoolId).school.city}}
+                            </ion-col>
+                            <ion-col>
+                                {{this.data.schools.get(class.schoolId).school.name}}
+                            </ion-col>
+                            <ion-col>
+                                {{class.classRoomName}}
+                            </ion-col>
+                            <ion-col>
+                                Cumulative Attendance 
+                            </ion-col>
+                            <ion-col>
+                                {{class.students.length}}
+                            </ion-col>
+                            <ion-col>
+                                {{this.data.schools.get(class.schoolId).school.teachers.length}}
+                            </ion-col>
                         </ion-row>
                       </ion-grid>
                 </ion-card>
