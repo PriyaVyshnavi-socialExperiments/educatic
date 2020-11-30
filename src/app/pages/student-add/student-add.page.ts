@@ -8,6 +8,7 @@ import { ClassRoomService } from 'src/app/_services/class-room/class-room.servic
 import { AuthenticationService } from '../../_services';
 import { CustomEmailValidator } from 'src/app/_helpers/custom-email-validator';
 import { CountryStateCityService } from 'src/app/_services/country-state-city/country-state-city.service';
+import { getInitials } from 'src/app/_helpers';
 
 @Component({
   selector: 'app-student-add',
@@ -183,6 +184,23 @@ export class StudentAddPage implements OnInit, OnDestroy {
 
   UploadPhoto() {
     this.router.navigateByUrl(`${this.currentUser.defaultSchool.id}/${this.student.classId}/student/${this.student.id}/photos`);
+  }
+
+  Cancel() {
+    if(this.student?.classId) {
+      this.router.navigateByUrl(`students/${this.currentUser.defaultSchool.id}/${this.student.classId}`);
+    } else {
+    this.router.navigateByUrl(`students/${this.currentUser.defaultSchool.id}`);
+
+    }
+  }
+
+  public onChangeClass(classRoom) {
+      this.classRoomInfo = this.classInfo.find((c) => c.classId === classRoom.value)
+      const enrolmentNo = `${getInitials(this.currentUser.defaultSchool.name)}${this.classRoomInfo.classRoomName}
+                            ${this.classRoomInfo.classDivision}-${this.classRoomInfo.students.length + 1}`;
+      this.f.enrolmentNo.reset();
+      this.f.enrolmentNo.setValue(enrolmentNo.replace(/\s+/g, ''));
   }
 
   private async presentToast() {

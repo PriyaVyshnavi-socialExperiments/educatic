@@ -65,7 +65,8 @@ export class CourseAddPage implements OnInit {
       courseCategory: new FormControl('', [
         Validators.required,
       ]),
-      courseLevel: new FormControl('', [])
+      courseLevel: new FormControl('', []),
+      courseAssessment: new FormControl('', []),
     });
     this.contentHelper = ContentHelper;
   }
@@ -150,7 +151,7 @@ export class CourseAddPage implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
     const fileExt = file.type.split('/').pop();
-    if ((ContentHelper.ImgSupported.indexOf(fileExt) > -1)) {
+    if ((ContentHelper.ImgSupported.indexOf(fileExt.toLowerCase()) > -1)) {
       this.UploadCourseContent(null, file);
     } else {
       this.presentToast(`This file type is not supported.`, 'danger');
@@ -167,6 +168,7 @@ export class CourseAddPage implements OnInit {
       courseLevel: this.f.courseLevel.value,
       courseName: this.f.courseName.value,
       courseDescription: this.f.courseDescription.value,
+      courseAssessment: this.f.courseAssessment.value,
       schoolId: this.currentUser.defaultSchool.id,
     } as ICourseContent;
 
@@ -183,7 +185,6 @@ export class CourseAddPage implements OnInit {
       file = ContentHelper.blobToFile(blobData, blobDataURL);
       courseContent.courseURL = blobDataURL;
       this.contentService.SubmitCourseContent(courseContent, file).subscribe((res) => {
-        console.log("cameraImage res: ", res);
         if (res['message']) {
           this.presentToast(res['message'], 'success');
           this.router.navigateByUrl(`courses`);
@@ -200,7 +201,6 @@ export class CourseAddPage implements OnInit {
         const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
         courseContent.courseURL = blobDataURL;
         this.contentService.SubmitCourseContent(courseContent, fileData).subscribe((res) => {
-          console.log("File Upload res: ", res);
           if (res['message']) {
             this.presentToast(res['message'], 'success');
             this.router.navigateByUrl(`courses`);
@@ -225,6 +225,7 @@ export class CourseAddPage implements OnInit {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: CourseCategoryPage,
+        mode: 'ios',
         componentProps: { title: 'Course category(subject)' }
       });
     modal.onDidDismiss()
@@ -246,6 +247,7 @@ export class CourseAddPage implements OnInit {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: CourseCategoryPage,
+        mode: 'ios',
         componentProps: { title: 'Subject Level' }
       });
     modal.onDidDismiss()

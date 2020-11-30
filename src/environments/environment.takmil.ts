@@ -6,6 +6,6 @@ export const environment = {
   offlineWebsiteURL: 'https://goofflinee.azureedge.net',
   appInsightsKey: 'd17999d5-f224-430e-8673-7a549dd41010',
   sqlLiteDBName: 'takmil',
-  ImageSource: 'takmil',
+  StaticSourcePath: 'takmil',
   PageTitle: 'Takmil',
 };

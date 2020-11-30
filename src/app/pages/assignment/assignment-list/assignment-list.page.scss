@@ -1,13 +1,30 @@
-ion-card {
-  ion-item {
-    cursor       : pointer;
-    border-radius: 5px;
 
-    ion-button {
-      height: 35px;
-    }
+.grid {
+  .grid-items {
+      margin-bottom: 20px;
+  }
+
+  .item-card {
+      cursor: pointer;
+      height: 100%;
+      width: 400px;
+  }
+  ion-button {
+    height: 35px;
   }
 }
+
+
+// ion-card {
+//   ion-item {
+//     cursor       : pointer;
+//     border-radius: 5px;
+
+//     ion-button {
+//       height: 35px;
+//     }
+//   }
+// }
 
 .number-circle {
   --padding-top   : 12px;

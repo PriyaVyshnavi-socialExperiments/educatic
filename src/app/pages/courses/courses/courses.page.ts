@@ -66,6 +66,7 @@ export class CoursesPage implements OnInit {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: CourseSharePage,
+        mode: 'ios',
         componentProps: { contentId }
       });
     await modal.present();
@@ -86,16 +87,21 @@ export class CoursesPage implements OnInit {
       this.router.navigateByUrl(`content/${content.id}/pdf-viewer`, { state: content });
     } else if (ContentHelper.AudioVideoSupported.indexOf(contentType) > -1) {
       this.router.navigateByUrl(`content/${content.id}/video-viewer`, { state: content });
-    } else if (ContentHelper.ImgSupported.indexOf(contentType) > -1) {
+    } else if (ContentHelper.ImgSupported.indexOf(contentType.toLowerCase()) > -1) {
       this.contentService.GetAzureContentURL(content.courseURL).subscribe((url) => {
         this.openViewer(url, content);
       })
     }
   }
 
+  TakeAssessment ( content: ICourseContent) {
+    this.router.navigateByUrl(`assessment/${content.id}`, { state: content });
+  }
+
   async openViewer(imgContentURL: string, content: ICourseContent) {
     const modal = await this.modalController.create({
       component: ViewerModalComponent,
+      mode: 'ios',
       componentProps: {
         src: imgContentURL,
         title: `${content.courseCategory} - ${content.courseName}`

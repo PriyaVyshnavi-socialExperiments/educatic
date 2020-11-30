@@ -8,15 +8,17 @@
 </ion-header>
 
 <ion-content>
-  <ion-card (click)="openWebContent(website.url)" *ngFor="let website of offlineWebsites">
+  <ion-grid class="grid">
+    <ion-row class="ion-justify-content-center">
+  <ion-card class="item-card" (click)="openWebContent(website.url)" *ngFor="let website of offlineWebsites">
+    <img src="{{website.img}}" alt="assets/images/educate.jpg">
+    <ion-card-header>
+      <ion-card-title>{{ website.title}}</ion-card-title>
+    </ion-card-header>
     <ion-card-content>
-      <ion-item lines="none">
-        <ion-badge slot="start" color="danger" class="date-circle">{{ website.id}}</ion-badge>
-        <ion-label>
-          <h2>{{ website.title}}</h2>
-          <p>{{ website.description}} </p>
-        </ion-label>
-      </ion-item>
+      {{ website.description}} 
     </ion-card-content>
   </ion-card>
+    </ion-row>
+  </ion-grid>
 </ion-content>

@@ -14,8 +14,8 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./signin.component.scss']
 })
 export class SigninComponent implements OnInit, OnDestroy {
-  background = `assets/${environment.ImageSource}/background-image.png`;
-  logo = `assets/${environment.ImageSource}/logo.png`;
+  background = `assets/${environment.StaticSourcePath}/background-image.png`;
+  logo = `assets/${environment.StaticSourcePath}/logo.png`;
   currentApplicationVersion = environment.appVersion;
   loginForm: FormGroup;
   submitted = false;
@@ -87,7 +87,7 @@ export class SigninComponent implements OnInit, OnDestroy {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: StudentSigninPage,
-        //mode: 'ios',
+        mode: 'ios',
         componentProps: {
         }
       });

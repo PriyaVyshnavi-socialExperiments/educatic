@@ -30,12 +30,14 @@
 @import '../node_modules/@swimlane/ngx-datatable/themes/material';
 @import '../node_modules/@swimlane/ngx-datatable/assets/icons';
 
-  ion-popover {
-	--width: 520px;
+@import '../node_modules/tui-image-editor/dist/tui-image-editor.min.css';
+
+ion-popover {
+  --width: 520px;
 }
 
 ion-label {
-   white-space: normal !important;
+  white-space: normal !important;
 }
 
 ion-content {
@@ -50,16 +52,16 @@ ion-content {
 
 .file-picker {
   .file-drop-wrapper {
-      background : unset !important;
-      padding-top: 0px !important;
+    background : unset !important;
+    padding-top: 0px !important;
   }
 
   .files-preview-wrapper {
-      width: 93% !important;
+    width: 93% !important;
   }
 
-  .custom-drag{
-      padding: 28px 0 !important;
+  .custom-drag {
+    padding: 28px 0 !important;
   }
 
 }
@@ -67,5 +69,89 @@ ion-content {
 .swiper-slide {
   img {
     max-height: 80% !important;
+  }
+}
+
+.tui-image-editor-header {
+  visibility: hidden !important;
+}
+
+.tui-image-editor-main-container,
+.tui-image-editor-controls {
+  position: fixed !important;
+}
+
+.color-picker-control {
+  ul {
+    list-style-type: disc !important;
+
+    li {
+      display   : list-item;
+      text-align: -webkit-match-parent;
+    }
+  }
+}
+
+.tui-colorpicker-palette-container {
+  li {
+    float     : left;
+    margin    : 0;
+    padding   : 0 3px 3px 0;
+    list-style: none;
+
+    .tui-colorpicker-palette-button {
+      border         : 0;
+      border-radius  : 100%;
+      margin         : 2px;
+      background-size: cover;
+      font-size      : 1px;
+    }
+  }
+}
+
+.tui-colorpicker-palette-button {
+  display : block;
+  border  : none;
+  overflow: hidden;
+  outline : none;
+  margin  : 0px;
+  padding : 0px;
+  width   : 16px;
+  height  : 16px;
+  border  : 1px solid #ccc;
+  cursor  : pointer;
+}
+
+.tui-colorpicker-palette-preview {
+  display       : inline-block;
+  display       : inline;
+  zoom          : 1;
+  width         : 12px;
+  height        : 12px;
+  border        : 1px solid #ccc;
+  border        : 1px solid #ccc;
+  vertical-align: middle;
+  overflow      : hidden;
+}
+
+@media (max-width: 768px) {
+  .tui-image-editor {
+    width: 100% !important;
+  }
+}
+
+
+@media (max-width: 650px) {
+  .grid {
+      .item-card {
+          width: 100% !important;
+      }
+  }
+}
+
+
+iframe {
+  .freebirdFormviewerViewFooterEmbeddedBackground {
+    visibility: hidden;
   }
 }

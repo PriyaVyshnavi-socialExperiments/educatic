@@ -57,6 +57,7 @@ export class AssignmentSubjectsPage implements OnInit {
     const modal: HTMLIonModalElement =
       await this.modalController.create({
         component: CourseCategoryPage,
+        mode: 'ios',
         componentProps: { title: 'Subject' }
       });
 

@@ -181,6 +181,51 @@ const routes: Routes = [
         loadChildren: () => import('../../pages/assignment/upload/assignment-upload.module')
           .then(m => m.AssignmentUploadPageModule)
       },
+      {
+        path: 'content/:id/image-viewer',
+        loadChildren: () => import('../../pages/viewer/image-edit-viewer/image-edit-viewer.module')
+        .then( m => m.ImageEditViewerPageModule)
+      },
+      // {
+      //   path: 'assessment/:id',
+      //   loadChildren: () => import('../../pages/assessment/assessment.module')
+      //   .then( m => m.AssessmentPageModule)
+      // },
+      {
+        path: 'assessment/quizzes',
+        loadChildren: () => import('../../pages/assessment/assessment-quizzes/assessment-quizzes.module')
+        .then( m => m.AssessmentQuizzesPageModule)
+      },
+      {
+        path: 'assessments',
+        loadChildren: () => import('../../pages/assessment/assessments/assessments.module')
+        .then( m => m.AssessmentsPageModule)
+      },
+      {
+        path: 'assessment/:subject/:id/student',
+        loadChildren: () => import('../../pages/assessment/assessment/assessment.module')
+        .then( m => m.AssessmentPageModule)
+      },
+      {
+        path: 'assessment/quiz/add',
+        loadChildren: () => import('../../pages/assessment/assessment-quiz-add/assessment-quiz-add.module')
+        .then( m => m.AssessmentQuizAddPageModule)
+      },
+      {
+        path: 'assessment/questions',
+        loadChildren: () => import('../../pages/assessment/assessment-questions/assessment-questions.module')
+        .then( m => m.AssessmentQuestionsPageModule)
+      },
+      {
+        path: 'assessment/question/add',
+        loadChildren: () => import('../../pages/assessment/assessment-question-add/assessment-question-add.module')
+        .then( m => m.AssessmentQuestionAddPageModule)
+      },
+      {
+        path: 'assessment/share',
+        loadChildren: () => import('../../pages/assessment/assessment-share/assessment-share.module')
+        .then( m => m.AssessmentSharePageModule)
+      }
     ],
     runGuardsAndResolvers: 'always',
   }

@@ -144,7 +144,7 @@ export class AssignmentUploadPage implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
     const fileExt = file.type.split('/').pop();
-    if ((ContentHelper.ImgSupported.indexOf(fileExt) > -1)) {
+    if ((ContentHelper.ImgSupported.indexOf(fileExt.toLowerCase()) > -1)) {
       this.UploadAssignment(null, file);
     } else {
       this.presentToast(`This file type is not supported.`, 'danger');
