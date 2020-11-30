@@ -13,14 +13,14 @@
                     <ion-item>
                         <ion-label>School</ion-label>
                         <ion-select [interfaceOptions]="{'cssClass': 'filter-wider-popover'}" placeholder="Select One" multiple="true" [(ngModel)]="this.schools" (ionChange)="changeSchools()">
-                        <ion-select-option *ngFor="let school of allSchools" [value]="school" >{{school.name}}</ion-select-option>
+                        <ion-select-option *ngFor="let school of allSchools" [value]="school" >{{school.name}} - {{school.city}}</ion-select-option>
                         </ion-select>
                     </ion-item>
                     
                     <ion-item>
                         <ion-label>Class</ion-label>
                         <ion-select [interfaceOptions]="{'cssClass': 'filter-wider-popover'}" placeholder="Select One" multiple="true" [(ngModel)]="this.classes" (ionChange)="changeClasses()">
-                        <ion-select-option *ngFor="let class of allClasses" [value]="class">{{class.classRoomName}} - {{this.data.schools.get(class.schoolId).school.name}}</ion-select-option>
+                        <ion-select-option *ngFor="let class of allClasses" [value]="class">{{class.name}} - {{class.school}}</ion-select-option>
                         </ion-select>
                     </ion-item>
                     <ion-item>

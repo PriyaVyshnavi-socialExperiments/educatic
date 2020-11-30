@@ -6,6 +6,24 @@ import { ISchool } from '../../_models/school';
 import { IClassRoom } from '../../_models/class-room';
 import { IStudent } from '../../_models/student';
 import { ChartService } from '../../_services/dashboard/chart.service';
+import { ThrowStmt } from '@angular/compiler';
+
+interface IAttendance {
+  present: number,
+  total: number,
+  male: {
+    present: number,
+    total: number
+  },
+  female: {
+    present: number,
+    total: number
+  },
+  nonBinary: {
+    present: number,
+    total: number
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -20,10 +38,12 @@ export class DashboardService {
   classTable: IClassRoom[];
   schoolTable: ISchool[];
   attendanceTable;
+
+
   data = {
-    cities: new Map(),
-    schools: new Map(),
-    classes: new Map(),
+    cities: new Map<string, { schools: Set<ISchool>, attendance: Map<string, IAttendance>}>(),
+    schools: new Map<string, { school: ISchool, attendance: Map<string, IAttendance>}>(),
+    classes: new Map<string, { classRoom: any, attendance: Map<string, IAttendance>}>(),
     students: new Map()
   }
   url = "https://goofflinee.table.core.windows.net/";
@@ -39,26 +59,33 @@ export class DashboardService {
    * Make Get requests to the azure table subscription to load in the correct Tables. T
    */
   public getTables() {
-    let schoolTable = this.getSchoolTable(); // Will contain classes and students within individual school entries
-    let attendanceTable = this.getAttendanceTable() // No backend set up, so done manually 
-    return forkJoin([schoolTable, attendanceTable]);
+    try {
+      let schoolTable = this.getSchoolTable(); // Will contain classes and students within individual school entries
+      let attendanceTable = this.getAttendanceTable() // No backend set up, so done manually 
+      return forkJoin([schoolTable, attendanceTable]);
+    } catch (error) {
+      return error("Failed to get data"); 
+    }
+    
   }
 
   public processData(schoolTable: ISchool[], attendanceTable) {
     this.data = {
-      cities: new Map(),
-      schools: new Map(),
-      classes: new Map(),
+      cities: new Map<string, { schools: Set<ISchool>, attendance: Map<string, IAttendance>}>(),
+      schools: new Map<string, { school: ISchool, attendance: Map<string, IAttendance>}>(),
+      classes: new Map<string, { classRoom: any, attendance: Map<string, IAttendance>}>(),
       students: new Map()
     }
+
     this.schoolTable = schoolTable;
     this.attendanceTable = attendanceTable.value;
     this.processSchoolTable();
     this.processAttendanceTable();
     this.data.classes = new Map([...this.data.classes.entries()].sort());
+
     return this.data;
   }
-
+  
   private processSchoolTable() {
     // Map schoolId to city, will likely want to map schoolId to school so that 
     // all student information could be accessed. This is done in order to decrease database calls
@@ -66,8 +93,8 @@ export class DashboardService {
     this.schoolTable.forEach((school: ISchool) => {
       if (this.data.cities.get(school.city) === undefined) {
         this.data.cities.set(school.city, {
-          schools: new Set(),
-          attendance: new Map()
+          attendance: new Map<string, IAttendance>(),
+          schools: new Set<ISchool>()
         })
       }
       this.data.cities.get(school.city).schools.add(school);
@@ -75,7 +102,7 @@ export class DashboardService {
       if (this.data.schools.get(school.id) === undefined) {
         this.data.schools.set(school.id, { 
           school: school,
-          attendance: new Map()
+          attendance: new Map<string, IAttendance>()
         });
       }
       this.processClassRooms(school.classRooms);
@@ -87,7 +114,7 @@ export class DashboardService {
       if (this.data.classes.get(classRoom.classId) == undefined) {
         this.data.classes.set(classRoom.classId, {
           classRoom: classRoom,
-          attendance: new Map()
+          attendance: new Map<string, IAttendance>()
         })
         this.processStudents(classRoom.students);
       }
@@ -125,6 +152,9 @@ export class DashboardService {
         let schoolId = entry.PartitionKey; 
         let classId = entry.ClassRoomId;
         let gender = this.data.students.get(entry.StudentId).student.gender; 
+        if (gender !== "male" && gender !== "female") {
+          gender = "nonBinary";
+        }
 
         // Convert datetime to JavaScript Date and then convert into readable date format to ensure 
         // attendance taken at slightly different times of the same day still counts as the same day 
@@ -178,7 +208,6 @@ export class DashboardService {
           this.data.classes.get(classId).attendance.set(dateKey, {
             present: 0,
             total: 0,
-            studentData: [],
             male: {
               present: 0,
               total: 0
@@ -192,11 +221,6 @@ export class DashboardService {
               total: 0
             }
           });
-        }
-
-    
-        if (gender !== "male" && gender !== "female") {
-          gender = "nonBinary";
         }
 
         // Update total number of students in class for cities, schools, classes 
@@ -254,6 +278,30 @@ export class DashboardService {
     }
   }
 
+  getCities(): {name: string, id: string}[] {
+    let cities: {name: string, id: string}[] = []; 
+    for (let city of this.data.cities.keys()) {
+      cities.push({name: city, id: city}); 
+    } 
+    return cities; 
+  }
+
+  getSchools(city: {name: string, id: string}): {name: string, id: string, city: string}[] {
+    let schools: {name: string, id: string, city: string}[] = []; 
+    for (let school of this.data.cities.get(city.id).schools) {
+      schools.push({name: school.name, id: school.id, city: city.name})
+    }
+    return schools; 
+  }
+
+  getClasses(school: {name: string, id: string, city: string}): {name: string, id: string, school: string}[] {
+    let classes: {name: string, id: string, school: string}[] = []; 
+    for (let classRoom of this.data.schools.get(school.id).school.classRooms) {
+      classes.push({name: classRoom.classRoomName, id: classRoom.classId, school: school.name});
+    }
+    return classes; 
+  }
+
   getBarChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string) {
     return this.chartService.getBarChart(id, xAxisTitle, yAxisTitle, title); 
   }
@@ -262,31 +310,32 @@ export class DashboardService {
     return this.chartService.getLineChart(id, xAxisTitle, yAxisTitle, title); 
   }
 
-  updateSchoolBarChart(schools: ISchool[]) {
-    return this.chartService.updateBarChart(this.data, schools, 'schools'); 
+  updateAttendanceLineChart(data: {name: string, id: string, city?: string, school?: string}[], id: "classes" | "cities" | "schools") {
+    let attendance: {name: string, attendance: [string, IAttendance][]}[] = this.getAttendance(data, id); 
+    return this.chartService.updateLineChart(attendance); 
   }
 
-  updateSchoolLineChart(schools: ISchool[]) {
-    return this.chartService.updateLineChart(this.data, schools, 'schools');
-  }
-
-  updateClassLineChart(classes: any[]) {
-    return this.chartService.updateLineChart(this.data, classes, 'classes');
-  }
-
-  updateClassBarChart(classes: any[]) {
-    return this.chartService.updateBarChart(this.data, classes, 'classes');
-  }
-
-  updateCityBarChart(cities: any[]) {
-    return this.chartService.updateBarChart(this.data, cities, 'cities');
-  }
-
-  updateCityLineBarChart(cities: any[]) {
-    return this.chartService.updateLineChart(this.data, cities, 'cities');
+  updateAttendanceBarChart(data: any[], id: "classes" | "cities" | "schools") {
+    let attendance: {name: string, attendance: [string, IAttendance][]}[] = this.getAttendance(data, id); 
+    return this.chartService.updateBarChart(attendance); 
   }
 
   updateGenderBarChart(data: any[]) {
     return this.chartService.updateGenderBarChart(data); 
+  }
+
+  getAttendance(data: {name: string, id: string, city?: string, school?: string}[], id: "classes" | "cities" | "schools"): {name: string, attendance: [string, IAttendance][]}[] {
+    let attendanceData: {name: string, attendance: [string, IAttendance][]}[] = [];
+    for (let item of data) {
+      let attendance: {name: string, attendance: [string, IAttendance][]} = {
+        name: item.name,
+        attendance: []
+      }
+      for (let entry of this.data[id].get(item.id).attendance.entries()) {
+        attendance.attendance.push(entry); 
+      }
+      attendanceData.push(attendance); 
+    }
+    return attendanceData; 
   }
 }

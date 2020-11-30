@@ -18,12 +18,12 @@ export class DashboardComponent implements OnInit {
   data: any;
   start: Date; 
   end: Date;
-  cities = [];
-  schools: ISchool[] = [];
-  classes: any[] = [];
-  allCities = []; 
-  allSchools: ISchool[] = [];
-  allClasses: any[] = [];
+  cities: {name: string, id: string}[] = [];
+  schools: {name: string, id: string, city: string}[] = [];
+  classes: {name: string, id: string, school: string}[] = [];
+  allCities: {name: string, id: string}[] = []; 
+  allSchools: {name: string, id: string, city: string}[] = [];
+  allClasses: {name: string, id: string, school: string}[] = [];
   charts: any = {
     'city-attendance': undefined, 
     'school-attendance': undefined,
@@ -72,20 +72,14 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.dash.getTables().subscribe((result) => {
-      this.data = this.dash.processData(result[0], result[1]);
-      this.cities = [];
-      for (let city of this.data.cities.keys()) {
-        this.cities.push({
-          id: city,
-          name: city
-        }); 
-      }
+      this.dash.processData(result[0], result[1]);
       if (!this.charts['city-attendance'] && !this.charts['school-attendance'] && !this.charts['class-attendance']) {
         this.charts['city-attendance'] = this.dash.getBarChart('city-attendance','Cities', 'Percent Attendance', 'City Attendance'); 
         this.charts['school-attendance'] = this.dash.getBarChart('school-attendance', 'Schools', 'Percent Attendance', 'School Attendance');
         this.charts['class-attendance'] = this.dash.getLineChart('class-attendance', 'Days', 'Percent Attendance', 'Class Attendance');
       }
-      this.allCities = this.cities;
+      this.allCities = this.dash.getCities();
+      this.cities = this.allCities; 
       this.changeCities();
       this.schools = this.allSchools;
       this.changeSchools();
@@ -98,7 +92,8 @@ export class DashboardComponent implements OnInit {
     this.allSchools = [];
     if (this.cities) {
       this.cities.forEach((city) => {
-        for (let school of this.data.cities.get(city.id).schools) {
+        let schools: {name: string, id: string, city: string}[] = this.dash.getSchools(city); 
+        for (let school of schools) {
           this.allSchools.push(school);
         }
       })
@@ -111,13 +106,9 @@ export class DashboardComponent implements OnInit {
     this.allClasses = [];
     if (this.schools) {
       this.schools.forEach((school) => {
-        if (school && school.classRooms) {
-          for (let classRoom of school.classRooms) {
-            let temp: any = classRoom; 
-            temp.name = classRoom.classRoomName;
-            temp.id = classRoom.classId; 
-            this.allClasses.push(temp);
-          }
+        let classRooms: {name: string, id: string, school: string}[] = this.dash.getClasses(school);
+        for (let classRoom of classRooms) {
+          this.allClasses.push(classRoom); 
         }
       });
     }
@@ -125,17 +116,17 @@ export class DashboardComponent implements OnInit {
   }
 
   changeClasses() {
-    this.classChartData = this.dash.updateClassLineChart(this.classes);
+    this.classChartData = this.dash.updateAttendanceLineChart(this.classes, 'classes');
     this.updateChart('class-attendance', this.classChartData); 
   }
 
   updateSchoolChartData() {
-    this.schoolChartData = this.dash.updateSchoolBarChart(this.schools);
+    this.schoolChartData = this.dash.updateAttendanceBarChart(this.schools, 'schools');
     this.updateChart('school-attendance', this.schoolChartData); 
   }
 
   updateCityChartData() {
-    this.cityChartData = this.dash.updateCityBarChart(this.cities); 
+    this.cityChartData = this.dash.updateAttendanceBarChart(this.cities, 'cities'); 
     this.updateChart('city-attendance', this.cityChartData);
   }
 
@@ -154,9 +145,23 @@ export class DashboardComponent implements OnInit {
 
   changeStartDate($event) {
     console.log((<HTMLTextAreaElement>event.target).value);
+    let start = new Date((<HTMLTextAreaElement>event.target).value); 
+    if (this.end && start >= this.end) {
+      alert("Start date must be before end date"); 
+    } else {
+      this.start = start; 
+    }
+    this.changeCities();
   }
 
   changeEndDate($event) {
     console.log((<HTMLTextAreaElement>event.target).value);
+    let end = new Date((<HTMLTextAreaElement>event.target).value); 
+    if (this.start && end <= this.start) {
+      alert("End date must be after start date"); 
+    } else {
+      this.end = end; 
+    }
+    this.changeCities(); 
   }
 }

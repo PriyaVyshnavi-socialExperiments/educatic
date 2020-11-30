@@ -12,7 +12,22 @@ import 'chartjs-plugin-colorschemes/src/plugins/plugin.colorschemes';
 // import a particular color scheme
 import { Aspect6 } from 'chartjs-plugin-colorschemes/src/colorschemes/colorschemes.office';
 
-
+interface IAttendance {
+  present: number,
+  total: number,
+  male: {
+    present: number,
+    total: number
+  },
+  female: {
+    present: number,
+    total: number
+  },
+  nonBinary: {
+    present: number,
+    total: number
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -154,23 +169,23 @@ export class ChartService {
     return tempChartData
   }
 
-  updateBarChart(table: any, dataset: any[], id: string) {
+  updateBarChart(attendance: {name: string, attendance: [string, IAttendance][]}[]) {
     let chart = {
       datasets: [],
       labels: []
     }
     let data = [];
-    for (let entry of dataset) {
+    for (let entity of attendance) {
       let total = 0;
       let present = 0;
-      if (table[id].get(entry.id).attendance.size > 0) {
-        for (let dateEntry of table[id].get(entry.id).attendance.keys()) {
-          total += table[id].get(entry.id).attendance.get(dateEntry).total;
-          present += table[id].get(entry.id).attendance.get(dateEntry).present;
+      if (entity.attendance.length > 0) {
+        for (let entry of entity.attendance) {
+          total += entry[1].total;
+          present += entry[1].present;
         }
         let attendance = present / total * 100;
         data.push(attendance); 
-        chart.labels.push(entry.name); 
+        chart.labels.push(entity.name); 
       }
     }
     chart.datasets.push({
@@ -180,32 +195,30 @@ export class ChartService {
     return chart; 
   }
 
-  updateLineChart(table: any, dataset: any[], id: string) {
+  updateLineChart(attendance: {name: string, attendance: [string, IAttendance][]}[]) {
     let chart = {
       labels: null,
       datasets: []
     }
-    if (dataset) {
-      for (let entry of dataset) {
-        if (table[id].get(entry.id).attendance.size > 0) {
-          let entryData = [];
-          for (let dateEntry of table[id].get(entry.id).attendance.keys()) {
-            let total: number = table[id].get(entry.id).attendance.get(dateEntry).total;
-            let present: number = table[id].get(entry.id).attendance.get(dateEntry).present;
-            let attendance = Math.round((present / total) * 100);
-            let data = {
-              x: new Date(dateEntry),
-              y: attendance
-            }
-            entryData.push(data);
+    for (let entity of attendance) {
+      if (entity.attendance.length > 0) {
+        let entryData = [];
+        for (let entry of entity.attendance) {
+          let total: number = entry[1].total;
+          let present: number = entry[1].present;
+          let attendance = Math.round((present / total) * 100);
+          let data = {
+            x: new Date(entry[0]),
+            y: attendance
           }
-          let graphDataEntry = {
-            data: entryData,
-            label: entry.name,
-            fill: false
-          }
-          chart.datasets.push(graphDataEntry);
+          entryData.push(data);
         }
+        let graphDataEntry = {
+          data: entryData,
+          label: entity.name,
+          fill: false
+        }
+        chart.datasets.push(graphDataEntry);
       }
     }
     return chart; 
