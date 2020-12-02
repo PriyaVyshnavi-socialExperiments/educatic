@@ -140,11 +140,11 @@ export class CoursesPage implements OnInit {
           handler: () => {
             course.active = false;
             this.contentService.UpdateCourse(course, course.id).subscribe(() => {
-              this.refreshContent();
-              setTimeout(() => {
-              this.courseContentDisplay = false;
-            }, 10);
               this.presentToast('Course content delete successfully.', 'success');
+              setTimeout(() => {
+                this.refreshContent();
+                this.courseContentDisplay = false;
+              }, 10);
             });
           }
         }
