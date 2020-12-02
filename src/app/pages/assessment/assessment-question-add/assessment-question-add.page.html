@@ -20,13 +20,13 @@
             <mat-form-field class="example-full-width mb-3" appearance="outline">
               <mat-label>Question Type</mat-label>
               <mat-select formControlName="questionType" required (selectionChange)="onChangeQuestionType($event)">
-                <mat-option [value]="'multiplechoice'">
+                <mat-option [value]="'Objective'">
                   Multiple Choice
                 </mat-option>
-                <mat-option [value]="'truefalse'">
+                <mat-option [value]="'TrueFalse'">
                   True/False
                 </mat-option>
-                <mat-option [value]="'short'">
+                <mat-option [value]="'ShortAnswer'">
                   Short Answer
                 </mat-option>
               </mat-select>

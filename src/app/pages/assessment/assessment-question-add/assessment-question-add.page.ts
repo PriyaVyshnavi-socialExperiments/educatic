@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { QuestionType } from 'src/app/_models/question-type';
 
 @Component({
   selector: 'app-assessment-question-add',
@@ -46,20 +47,22 @@ export class AssessmentQuestionAddPage implements OnInit {
   onChangeQuestionType(questionType) {
     this.t.clear();
     switch (questionType.value) {
-      case 'multiplechoice':
+      case QuestionType.Objective:
         for (let i = this.t.length; i < 4; i++) {
           this.t.push(this.formBuilder.group({
             answerOption: [`${48 - i}`, Validators.required]
           }));
         }
         break;
-      case 'truefalse':
+      case QuestionType.TrueFalse:
         this.t.push(this.formBuilder.group({
-          answerOption: [{value: `True`, disabled: true}, Validators.required]
+          answerOption: [{ value: `True`, disabled: true }, Validators.required]
         }));
         this.t.push(this.formBuilder.group({
-          answerOption: [{value: `False`, disabled: true}, Validators.required]
+          answerOption: [{ value: `False`, disabled: true }, Validators.required]
         }));
+        break;
+      case QuestionType.ShortAnswer:
         break;
       default:
         break;
