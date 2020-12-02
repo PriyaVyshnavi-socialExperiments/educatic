@@ -34,18 +34,23 @@ export class CourseContentService extends OfflineService {
     if (!courseContent.id) {
       courseContent.id = Guid.create().toString();
     }
+    return concat(this.UploadCourseFileContent(file), this.UpdateCourse(courseContent));
+  }
 
-    const courseContentDetails =   this.http.Post<any>('/content/create', courseContent)
+  public UpdateCourse(courseContent: ICourseContent, contentId?: string) {
+    return this.http.Post<any>('/content/create', courseContent)
       .pipe(
         map(response => {
           return response;
         }),
         finalize(() => {
-          this.UpdateCourseContentOfflineList(courseContent);
+          if(contentId) {
+            this.UpdateCourseContentOfflineList(undefined, contentId);
+          } else {
+            this.UpdateCourseContentOfflineList(courseContent);
+          }
         })
       );
-
-      return concat(this.UploadCourseFileContent(file), courseContentDetails);
   }
 
   private UploadCourseFileContent(courseFile: File) {
@@ -91,7 +96,7 @@ export class CourseContentService extends OfflineService {
   public GetCategoryWiseContent(CourseContent: ICourseContent[]) {
     return from(CourseContent)
       .pipe(
-        groupBy(course => course.courseCategory),
+        groupBy(course => course.courseCategory.toLowerCase()),
         mergeMap(group => group
           .pipe(
             reduce((acc, cur) => {
@@ -110,7 +115,7 @@ export class CourseContentService extends OfflineService {
   public GetLevelWiseContent(courseContent: ICourseContent[]) {
     return from(courseContent)
       .pipe(
-        groupBy(course => course.courseLevel?.length ? course.courseLevel : null),
+        groupBy(course => course.courseLevel?.length ? course.courseLevel.toLowerCase() : null),
         mergeMap(group => group
           .pipe(
             reduce((acc, cur) => {
@@ -144,12 +149,11 @@ export class CourseContentService extends OfflineService {
     );
   }
 
-  private async UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string) {
+  private async  UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string) {
     const data = await this.GetOfflineData('CourseContent', 'course-content');
     const courseContents = data ? data as ICourseContent[] : [];
-    const courseContent = courseContents.find((s) => s.id === content.id);
     const courseContentList = courseContents.filter((cc) => {
-      return cc.id !== (courseContent ? courseContent.id : contentId);
+      return  cc.id !== (content ? content.id : contentId);
     });
     if (content) {
       courseContentList.unshift(content);
