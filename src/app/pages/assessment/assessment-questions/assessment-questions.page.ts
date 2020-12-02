@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ModalController } from '@ionic/angular';
+import { IAssessment } from 'src/app/_models/assessment';
 import { AssessmentSharePage } from '../assessment-share/assessment-share.page';
 
 @Component({
@@ -9,16 +10,21 @@ import { AssessmentSharePage } from '../assessment-share/assessment-share.page';
   styleUrls: ['./assessment-questions.page.scss'],
 })
 export class AssessmentQuestionsPage implements OnInit {
+  assessment: IAssessment;
 
   constructor(private alertController: AlertController,
     private modalController: ModalController,
     private router: Router) { }
 
   ngOnInit() {
+    this.assessment = history.state.assessment as IAssessment;
+    if(!this.assessment) {
+      this.router.navigateByUrl('/assessments');
+    }
   }
 
   AddNewQuestion() {
-    this.router.navigate(['assessment/question/add']);
+    this.router.navigateByUrl('assessment/question/add', { state: { assessment: this.assessment } });
   }
 
   async confirmQuestionDelete() {

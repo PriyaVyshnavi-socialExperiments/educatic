@@ -18,8 +18,8 @@
       <ion-row class="ion-justify-content-center">
         <ion-card class="item-card">
           <ion-item-divider color="warning">
-            <ion-label>Title: 2nd Class Mathematics Addition and Subtraction</ion-label>
-            <ion-chip outline="true" slot="end" color="dark" (click)="ShareQuestions(12)">
+            <ion-label>Title: {{assessment.assessmentTitle}}</ion-label>
+            <ion-chip outline="true" slot="end" color="dark" (click)="ShareQuestions(assessment)">
               <ion-label>Share</ion-label>
               <ion-icon name="share-social-sharp"></ion-icon>
             </ion-chip>
@@ -29,7 +29,9 @@
               <ion-chip color="primary">
                 1
               </ion-chip>
-              <ion-label style="margin-left: 5px;" (click)="AddNewQuestion()">A book has 98 pages. Gauri has read 59 pages out of them. How many more pages does she has to read to finish the book?</ion-label>
+              <ion-label style="margin-left: 5px;" (click)="AddNewQuestion()">
+                {{assessment.assessmentDescription}}
+              </ion-label>
               <ion-icon name="create" color="success" slot="end" (click)="AddNewQuestion()"></ion-icon>
               <ion-icon name="trash" color="danger" slot="end" (click)="confirmQuestionDelete()" ></ion-icon>
             </ion-item>
