@@ -58,6 +58,7 @@ export class AssessmentService extends OfflineService {
         );
     // }
   }
+  
   public GetSubjectWiseAssessments(assessments: IAssessment[]) {
     return from(assessments)
       .pipe(

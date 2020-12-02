@@ -20,7 +20,7 @@ export class AssessmentQuizAddPage implements OnInit {
   courseCategory: ICourseContentCategory[] = [];
   quizForm: FormGroup;
   currentUser: IUser;
-
+  quizAssessment: IAssessment;
 
   constructor(private formBuilder: FormBuilder,
     private modalController: ModalController,
@@ -30,6 +30,8 @@ export class AssessmentQuizAddPage implements OnInit {
     private toastController: ToastController) { }
 
   ngOnInit() {
+    this.quizAssessment = history.state.assessmentQuiz as IAssessment;
+    
     this.quizForm = this.formBuilder.group({
       quizTitle: new FormControl('', [
         Validators.required,
@@ -49,9 +51,16 @@ export class AssessmentQuizAddPage implements OnInit {
         return;
       }
       this.currentUser = user;
-      this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((list) => {
-        
-      })
+      if(this.quizAssessment) {
+        this.quizForm.setValue({
+          quizTitle: this.quizAssessment.assessmentTitle,
+          quizDescription: this.quizAssessment.assessmentDescription,
+          quizCategory: this.quizAssessment.subjectName
+        });
+      }
+      this.assessmentService.GetOfflineData('Assessment', 'category').then((data) => {
+        this.courseCategory = data as ICourseContentCategory[];
+      });
     });
   }
 
@@ -70,6 +79,11 @@ export class AssessmentQuizAddPage implements OnInit {
         subjectName: this.f.quizCategory.value,
         createdBy: this.currentUser.id,
       } as IAssessment;
+
+      if(this.quizAssessment) {
+        assessment.id = this.quizAssessment.id;
+        assessment.active = true;
+      }
       this.assessmentService.CreateUpdateAssessment(assessment).subscribe((res) => {
         this.presentToast('Assessment quiz update successfully.', 'success');
       });
@@ -79,11 +93,6 @@ export class AssessmentQuizAddPage implements OnInit {
   onChangeCategory($event) {
 
   }
-
-  confirmQuizDelete() {
-
-  }
-
 
   async AddNewCategory() {
     const modal: HTMLIonModalElement =
@@ -100,7 +109,11 @@ export class AssessmentQuizAddPage implements OnInit {
           const selectedCategory = modalData.data.selectedCategory;
           this.f.quizCategory.setValue(selectedCategory.name);
           this.courseCategory = [...this.courseCategory, ...categoryList];
-          this.courseCategory = [...new Map(this.courseCategory.map(item => [item.name, item])).values()]
+          // this.courseCategory = [...new Map(this.courseCategory.map(item => [item.name, item])).values()]
+          this.courseCategory = this.courseCategory.map((cat, index) => {
+            return { id: index.toString(), name: cat.name.toLowerCase() } as ICourseContentCategory;
+          })
+          this.assessmentService.SetOfflineData('Assessment', 'category', this.courseCategory);
         }
       });
     await modal.present();

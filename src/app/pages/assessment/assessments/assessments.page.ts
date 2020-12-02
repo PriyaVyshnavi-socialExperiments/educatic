@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IUser, Role } from 'src/app/_models';
 import { IAssessment, ISubjectAssessment } from 'src/app/_models/assessment';
+import { ICourseContentCategory } from 'src/app/_models/course-content-category';
 import { AuthenticationService } from 'src/app/_services';
 import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
 
@@ -15,6 +16,7 @@ export class AssessmentsPage implements OnInit {
   currentUser: IUser;
   isStudent: boolean;
   assessments: ISubjectAssessment[] = [];
+  courseCategory: ICourseContentCategory[] = [];
 
   constructor(private router: Router,
     private authenticationService: AuthenticationService,
@@ -33,14 +35,19 @@ export class AssessmentsPage implements OnInit {
       this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((subjectWise) => {
         subjectWise.subscribe((assessments) => {
           this.assessments = [...assessments];
-          console.log("list: ", this.assessments);
+          this.courseCategory = this.assessments.map((cat, index) => {
+            return { id: index.toString(), name: cat.key.toLowerCase() } as ICourseContentCategory;
+          })
+          this.assessmentService.SetOfflineData('Assessment', 'category', this.courseCategory);
         })
       })
     });
   }
 
   selectAssessment(assessment: ISubjectAssessment) {
-    this.router.navigateByUrl(`assessment/quizzes`, { state: {SubjectAssessments: assessment } });
+    setTimeout(() => {
+      this.router.navigateByUrl(`assessment/quizzes`, { state: {SubjectAssessments: assessment } });
+    }, 10);
   }
 
 }
