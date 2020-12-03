@@ -1,6 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { from, of } from 'rxjs';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
 import { IAssessment, IQuestion, ISubjectAssessment } from 'src/app/_models/assessment';
 import { HttpService } from '../http-client/http.client';
@@ -54,23 +54,23 @@ export class AssessmentService extends OfflineService {
 
   public GetAssessments(schoolId: string) {
     if (!this.network.IsOnline()) {
-      return  this.getOfflineAssessmentsSubjectWise();
+      return this.getOfflineAssessmentsSubjectWise();
     } else {
 
-    return this.http.Get<IAssessment[]>(`/assessments/${schoolId}`)
-      .pipe(
-        map(res => this.GetSubjectWiseAssessments(res)),
-        tap(response => {
-          if (response) {
-            response.subscribe((data) => {
-              this.SetOfflineData('Assessment', 'assessments', data);
-            });
-          }
-        }),
-        catchError(() => {
-          return this.getOfflineAssessmentsSubjectWise();
-        })
-      );
+      return this.http.Get<IAssessment[]>(`/assessments/${schoolId}`)
+        .pipe(
+          map(res => this.GetSubjectWiseAssessments(res)),
+          tap(response => {
+            if (response) {
+              response.subscribe((data) => {
+                this.SetOfflineData('Assessment', 'assessments', data);
+              });
+            }
+          }),
+          catchError(() => {
+            return this.getOfflineAssessmentsSubjectWise();
+          })
+        );
     }
   }
 
@@ -93,36 +93,58 @@ export class AssessmentService extends OfflineService {
       );
   }
 
-  public async getAssessment(assessmentId: string) {
-    const data = await this.GetOfflineData('Assessment', 'assessments');
-    const assessments = data ? data as IAssessment[] : [];
-    return assessments.find((s) => s.id === assessmentId);
-  }
+  // public async getAssessment(assessmentId: string) {
+  //   const data = await this.GetOfflineData('Assessment', 'assessments');
+  //   const assessments = data ? data as ISubjectAssessment[] : [];
+  //   return assessments.find((s) => s.id === assessmentId);
+  // }
 
-  private async UpdateAssessmentOfflineList(assessment: IAssessment, assessmentId?: string) {
+  private async UpdateAssessmentOfflineList(assessment: IAssessment) {
     const data = await this.GetOfflineData('Assessment', 'assessments');
-    const assessments = data ? data as IAssessment[] : [];
-    const assessmentStored = assessments.find((s) => s.id === assessment.id);
-    const assessmentList = assessments.filter((cc) => {
-      return cc.id !== (assessmentStored ? assessmentStored.id : assessmentId);
+    const subjectWiseAssessments = data ? data as ISubjectAssessment[] : [];
+
+    const filterSubjectAssessments = subjectWiseAssessments.filter((cc) => {
+      return cc.subjectName !== assessment.subjectName;
     });
-    if (assessmentStored) {
-      assessmentList.unshift(assessmentStored);
+
+    const filterSubjectAssessment = subjectWiseAssessments.find(
+      (s) => s.subjectName.toLowerCase() === assessment.subjectName.toLowerCase());
+
+    if (filterSubjectAssessment) {
+      const filterAssessment = filterSubjectAssessment.assessments.find((s) => s.id === assessment.id);
+      const filteredAssessments = filterSubjectAssessment.assessments.filter((cc) => {
+        return cc.id !== assessment.id;
+      });
+
+      filteredAssessments.unshift(assessment);
+      const subjectWise = {
+        subjectName: assessment.subjectName,
+        length: filteredAssessments.length + 1
+      } as ISubjectAssessment
+      subjectWise.assessments = [...filteredAssessments];
+      filterSubjectAssessments.unshift(subjectWise);
+    } else {
+      const subjectWise = {
+        subjectName: assessment.subjectName,
+        length: 1
+      } as ISubjectAssessment
+      subjectWise.assessments.unshift(assessment);
+      filterSubjectAssessments.unshift(subjectWise);
     }
-    await this.SetOfflineData('Assessment', 'assessments', assessmentList);
+    await this.SetOfflineData('Assessment', 'assessments', filterSubjectAssessments);
   }
 
   private async UpdateAssessmentQuestionOffline(question: IQuestion, assessmentId: string) {
-    const data = await this.GetOfflineData('Assessment', 'assessments');
-    const assessments = data ? data as IAssessment[] : [];
-    const assessmentStored = assessments.find((s) => s.id === assessmentId);
-    
-    const assessmentQuestionList = assessmentStored.assessmentQuiz.filter((cc) => {
-      return cc.id !== question.id;
-    });
-    assessmentQuestionList.unshift(question);
-    assessmentStored.assessmentQuiz = [...assessmentQuestionList];
-    await this.UpdateAssessmentOfflineList(assessmentStored);
+    // const data = await this.GetOfflineData('Assessment', 'assessments');
+    // const assessments = data ? data as ISubjectAssessment[] : [];
+    // const assessmentStored = assessments.find((s) => s.id === assessmentId);
+
+    // const assessmentQuestionList = assessmentStored.assessmentQuiz.filter((cc) => {
+    //   return cc.id !== question.id;
+    // });
+    // assessmentQuestionList.unshift(question);
+    // assessmentStored.assessmentQuiz = [...assessmentQuestionList];
+    // await this.UpdateAssessmentOfflineList(assessmentStored);
   }
 
   private getOfflineAssessmentsSubjectWise() {

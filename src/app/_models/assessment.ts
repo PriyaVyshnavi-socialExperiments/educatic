@@ -10,7 +10,7 @@ export interface IAssessment {
   assessmentTitle: string;
   assessmentDescription: string;
   active: boolean;
-  assessmentQuiz: IQuestion[];
+  assessmentQuestions: IQuestion[];
 }
 
 export interface IStudentAssessment {

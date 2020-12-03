@@ -94,7 +94,7 @@ export class AssessmentQuizzesPage implements OnInit {
     if (this.isStudent) {
       this.router.navigate([`assessment/1000/10001/student`]);
     } else {
-      this.router.navigateByUrl('assessment/questions', { state: { assessment } });
+      this.router.navigateByUrl(`assessment/${this.subjectName}/${assessment.id}/questions`);
     }
   }
 
