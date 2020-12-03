@@ -20,6 +20,7 @@ import { AuthenticationModule } from './components/authentication/authentication
 import { BLOB_STORAGE_TOKEN, azureBlobStorageFactory } from './_services/azure-blob/token';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { WebStorageModule } from 'ngx-web-storage';
 import { CacheInterceptor } from './_helpers/cache.interceptor';
 import { AppConfigService, initConfig } from './_services/configurations/app-config.service';
 import { CategoryFilterPipe } from './pages/courses/category-filter.pipe';
@@ -33,6 +34,7 @@ import { CategoryFilterPipe } from './pages/courses/category-filter.pipe';
     HttpClientModule,
     BrowserAnimationsModule,
     NgHttpLoaderModule.forRoot(),
+    WebStorageModule.forRoot(),
     AuthenticationModule,
     MenuPageModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })

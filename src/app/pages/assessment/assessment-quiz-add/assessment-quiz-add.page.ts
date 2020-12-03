@@ -86,6 +86,7 @@ export class AssessmentQuizAddPage implements OnInit {
       }
       this.assessmentService.CreateUpdateAssessment(assessment).subscribe((res) => {
         this.presentToast('Assessment quiz update successfully.', 'success');
+        this.router.navigateByUrl(`/assessment/quizzes`);
       });
     }
   }

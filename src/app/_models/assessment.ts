@@ -25,7 +25,7 @@ export interface IStudentAssessment {
 }
 
 export interface ISubjectAssessment {
-  key: string;
+  subjectName: string;
   assessments: IAssessment[];
   length: number;
 }
@@ -35,7 +35,7 @@ export interface IQuestion {
   questionDescription: string;
   questionOptions: {
     [key: number]: string;
-  }[];
+  };
   questionType: QuestionType;
   answer: string;
 }

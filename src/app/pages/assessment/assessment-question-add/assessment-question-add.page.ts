@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
+import { IUser } from 'src/app/_models';
+import { IAssessment, IQuestion } from 'src/app/_models/assessment';
 import { QuestionType } from 'src/app/_models/question-type';
+import { AuthenticationService } from 'src/app/_services';
+import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
 
 @Component({
   selector: 'app-assessment-question-add',
@@ -11,11 +17,20 @@ export class AssessmentQuestionAddPage implements OnInit {
 
   questionForm: FormGroup;
   answerIndex = false;
-  constructor(private formBuilder: FormBuilder,) { }
+  currentUser: IUser; 
+  quizAssessment: IAssessment;  
+  
+  constructor(private formBuilder: FormBuilder,
+    private assessmentService: AssessmentService,
+    private authenticationService: AuthenticationService,
+    public router: Router,
+    private toastController: ToastController) { }
 
   ngOnInit() {
+    this.quizAssessment = history.state.assessment as IAssessment;
+
     this.questionForm = this.formBuilder.group({
-      question: new FormControl(`22 students out of 50 from Class 2 (Section A) are selected for a quiz. 27 students out of 50 students from Class 2 (Section B) are selected for the same quiz. How many total number of students are selected from section A and B for the quiz?`, [
+      question: new FormControl('', [
         Validators.required,
         Validators.maxLength(100),
       ]),
@@ -23,6 +38,13 @@ export class AssessmentQuestionAddPage implements OnInit {
         Validators.required,
       ]),
       answerOptions: new FormArray([])
+    });
+
+    this.authenticationService.currentUser?.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
     });
   }
 
@@ -33,6 +55,26 @@ export class AssessmentQuestionAddPage implements OnInit {
   get t() { return this.f.answerOptions as FormArray; }
 
   SubmitQuestion() {
+
+    if (this.questionForm.invalid) {
+      return;
+    } else {
+      const question = {
+       questionDescription: this.f.question.value,
+       questionType: this.f.questionType.value
+      } as IQuestion;
+
+      const option = {};
+      option[1] = this.t.value[0].answerOption;
+      option[2] = this.t.value[1].answerOption;
+      option[3] = this.t.value[2].answerOption;
+      option[4] = this.t.value[3].answerOption;
+      question.questionOptions = option;
+
+      this.assessmentService.CreateUpdateAssessmentQuestion(question, this.quizAssessment.id).subscribe((res) => {
+        this.router.navigateByUrl(`/assessment/quizzes`);
+      });
+    }
 
   }
 

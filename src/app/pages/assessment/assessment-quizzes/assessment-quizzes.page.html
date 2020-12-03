@@ -16,7 +16,7 @@
   <div class="main-card ion-justify-content-center">
     <ion-grid class="grid">
       <ion-row class="ion-justify-content-center">
-      <ion-card class="item-card" *ngFor="let data of subjectAssessment?.assessments">
+      <ion-card class="item-card" *ngFor="let data of assessments">
         <ion-item lines="none">
           <ion-label>{{data.assessmentTitle | titlecase}}</ion-label>
           <ion-icon *ngIf="!isStudent" name="create" color="success" slot="end" (click)="UpdateQuiz(data)"></ion-icon>
@@ -24,7 +24,7 @@
         </ion-item>
         <ion-card-content (click)="NavigateToQuestions(data)">
           <ion-card-subtitle>
-            <b>Category(Subject):</b> {{subjectAssessment?.key | titlecase}}
+            <b>Category(Subject):</b> {{subjectName | titlecase}}
           </ion-card-subtitle>
         <b>Description:</b>  {{data.assessmentDescription}} 
         </ion-card-content>

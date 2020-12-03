@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 import { IUser, Role } from 'src/app/_models';
 import { IAssessment, ISubjectAssessment } from 'src/app/_models/assessment';
@@ -14,15 +14,18 @@ import { AssessmentService } from 'src/app/_services/assessment/assessment.servi
 })
 export class AssessmentQuizzesPage implements OnInit {
   currentUser: IUser;
+  subjectName: string;
   isStudent: boolean;
-  subjectAssessment: ISubjectAssessment;
+  assessments: IAssessment[] = [];
+  subjectAssessment: ISubjectAssessment[] = [];
 
   constructor(private router: Router,
     private authenticationService: AuthenticationService,
     private assessmentService: AssessmentService,
+    private activatedRoute: ActivatedRoute,
     private toastController: ToastController,
     private alertController: AlertController,
-    ) { }
+  ) { }
 
   ngOnInit() {
     this.authenticationService.currentUser.subscribe((user) => {
@@ -31,8 +34,19 @@ export class AssessmentQuizzesPage implements OnInit {
       }
       this.currentUser = user;
       this.isStudent = this.currentUser.role === Role.Student;
-      this.subjectAssessment = history.state.SubjectAssessments as ISubjectAssessment;
-      console.log("this.subjectAssessment: ", this.subjectAssessment);
+      this.subjectName = this.activatedRoute.snapshot.paramMap.get('subject');
+
+      this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((subjectWise) => {
+        subjectWise.subscribe((assessments) => {
+          this.subjectAssessment = [...assessments];
+          const subjectWiseAssessments = this.subjectAssessment.find((a) => a.subjectName.toLowerCase() === this.subjectName);
+          if(subjectWiseAssessments) {
+            this.subjectName = subjectWiseAssessments.subjectName;
+            this.assessments = [...subjectWiseAssessments.assessments];
+          }
+        })
+      })
+
       if (!this.subjectAssessment) {
         this.router.navigateByUrl('/assessments');
       }
@@ -57,7 +71,7 @@ export class AssessmentQuizzesPage implements OnInit {
           text: 'Okay',
           handler: () => {
             assessment.active = false;
-            this.assessmentService.CreateUpdateAssessment(assessment).subscribe((res)=> {
+            this.assessmentService.CreateUpdateAssessment(assessment).subscribe((res) => {
               this.presentToast('Assessment quiz deleted successfully.', 'success');
             })
           }
@@ -69,11 +83,11 @@ export class AssessmentQuizzesPage implements OnInit {
   }
 
   AddNewQuiz() {
-    this.router.navigateByUrl(`assessment/quiz/add`);
+    this.router.navigateByUrl(`assessment/quiz/${this.subjectName}/add`);
   }
 
   UpdateQuiz(assessmentQuiz: IAssessment) {
-    this.router.navigateByUrl(`assessment/quiz/${assessmentQuiz.id}/update`, { state: { assessmentQuiz } } );
+    this.router.navigateByUrl(`assessment/quiz/${this.subjectName}/${assessmentQuiz.id}/update`, { state: { assessmentQuiz } });
   }
 
   NavigateToQuestions(assessment: IAssessment) {

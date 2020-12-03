@@ -10,14 +10,14 @@
 <ion-content>
   <ion-grid class="grid">
     <ion-row class="ion-justify-content-center">
-      <ion-card class="item-card" *ngFor="let assessment of assessments" (click)="selectAssessment(assessment)">
+      <ion-card class="item-card" *ngFor="let assessment of assessments" (click)="selectAssessment(assessment.subjectName)">
         <ion-card-content>
           <ion-item lines="none">
             <ion-avatar slot="start">
               <img src="../../../../assets/images/subject.svg">
             </ion-avatar>
             <ion-label>
-              <h2>{{ assessment.key | titlecase}}</h2>
+              <h2>{{ assessment.subjectName | titlecase}}</h2>
               <p> {{assessment.length}} Assessments</p>
             </ion-label>
           </ion-item>

@@ -1,8 +1,8 @@
 import { Injectable, Injector } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { from } from 'rxjs';
+import { from, of } from 'rxjs';
 import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
-import { IAssessment, ISubjectAssessment } from 'src/app/_models/assessment';
+import { IAssessment, IQuestion, ISubjectAssessment } from 'src/app/_models/assessment';
 import { HttpService } from '../http-client/http.client';
 import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
@@ -31,34 +31,49 @@ export class AssessmentService extends OfflineService {
           return response;
         }),
         finalize(() => {
-          //this.UpdateAssignmentOfflineList(assignment);
+          this.UpdateAssessmentOfflineList(assessment);
+        })
+      );
+  }
+
+  public CreateUpdateAssessmentQuestion(question: IQuestion, assessmentId: string) {
+    if (!question.id) {
+      question.id = Guid.create().toString();
+    }
+
+    return this.http.Post<Response>(`/assessment/question/${assessmentId}/update`, question)
+      .pipe(
+        map(response => {
+          return response;
+        }),
+        finalize(() => {
+          this.UpdateAssessmentQuestionOffline(question, assessmentId);
         })
       );
   }
 
   public GetAssessments(schoolId: string) {
-    // if (!this.network.IsOnline()) {
-    //   return this.getOfflineAssignments();
-    // } else {
+    if (!this.network.IsOnline()) {
+      return  this.getOfflineAssessmentsSubjectWise();
+    } else {
 
-      return this.http.Get<IAssessment[]>(`/assessments/${schoolId}`)
-        .pipe(
-          map(res => this.GetSubjectWiseAssessments(res)),
-          tap(response => {
-            if (response) {
-              //this.SetOfflineData('Assignments', 'assignments', response);
-              return response;
-            } else {
-              return null;
-            }
-          }),
-          // catchError(() => {
-          //   return this.getOfflineAssignments();
-          // })
-        );
-    // }
+    return this.http.Get<IAssessment[]>(`/assessments/${schoolId}`)
+      .pipe(
+        map(res => this.GetSubjectWiseAssessments(res)),
+        tap(response => {
+          if (response) {
+            response.subscribe((data) => {
+              this.SetOfflineData('Assessment', 'assessments', data);
+            });
+          }
+        }),
+        catchError(() => {
+          return this.getOfflineAssessmentsSubjectWise();
+        })
+      );
+    }
   }
-  
+
   public GetSubjectWiseAssessments(assessments: IAssessment[]) {
     return from(assessments)
       .pipe(
@@ -70,11 +85,56 @@ export class AssessmentService extends OfflineService {
               asm.length = asm.assessments.length;
               return asm;
             },
-              { key: group.key, assessments: [], length: 0 } as ISubjectAssessment
+              { subjectName: group.key, assessments: [], length: 0 } as ISubjectAssessment
             )
           )
         ),
         toArray()
-      )
+      );
   }
+
+  public async getAssessment(assessmentId: string) {
+    const data = await this.GetOfflineData('Assessment', 'assessments');
+    const assessments = data ? data as IAssessment[] : [];
+    return assessments.find((s) => s.id === assessmentId);
+  }
+
+  private async UpdateAssessmentOfflineList(assessment: IAssessment, assessmentId?: string) {
+    const data = await this.GetOfflineData('Assessment', 'assessments');
+    const assessments = data ? data as IAssessment[] : [];
+    const assessmentStored = assessments.find((s) => s.id === assessment.id);
+    const assessmentList = assessments.filter((cc) => {
+      return cc.id !== (assessmentStored ? assessmentStored.id : assessmentId);
+    });
+    if (assessmentStored) {
+      assessmentList.unshift(assessmentStored);
+    }
+    await this.SetOfflineData('Assessment', 'assessments', assessmentList);
+  }
+
+  private async UpdateAssessmentQuestionOffline(question: IQuestion, assessmentId: string) {
+    const data = await this.GetOfflineData('Assessment', 'assessments');
+    const assessments = data ? data as IAssessment[] : [];
+    const assessmentStored = assessments.find((s) => s.id === assessmentId);
+    
+    const assessmentQuestionList = assessmentStored.assessmentQuiz.filter((cc) => {
+      return cc.id !== question.id;
+    });
+    assessmentQuestionList.unshift(question);
+    assessmentStored.assessmentQuiz = [...assessmentQuestionList];
+    await this.UpdateAssessmentOfflineList(assessmentStored);
+  }
+
+  private getOfflineAssessmentsSubjectWise() {
+    return from(this.GetOfflineData('Assessment', 'assessments')).pipe(
+      map(response => {
+        if (response && response.length > 0) {
+          return of(response as ISubjectAssessment[]);
+        } else {
+          return of([]);
+        }
+      })
+    );
+  }
+
 }
