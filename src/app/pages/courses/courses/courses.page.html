@@ -18,7 +18,7 @@
       <ion-card class="item-card" *ngFor="let category of categoryWiseContent" (click)="ViewContent(category.content)">
         <ion-card-header>
           <ion-card-subtitle>Subject</ion-card-subtitle>
-          <ion-card-title>{{category.key}}</ion-card-title>
+          <ion-card-title>{{category.key | titlecase}}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
           {{category.length}} Courses
@@ -52,18 +52,32 @@
           <ion-footer *ngFor="let course of item.content">
             <ion-list>
               <ion-item lines="none">
-                <ion-label (click)="ContentViewer(course)">
-                  <h2>{{course.courseName}}</h2>
+                <ion-label style="min-width: 80%;" (click)="ContentViewer(course)">
+                  <h2>{{course.courseName | titlecase}}</h2>
                   <p> {{course.courseDescription}}</p>
                 </ion-label>
-                <ion-chip outline="true" *ngIf="isStudent && course.courseAssessment" slot="end" color="primary" (click)="TakeAssessment(course)">
-                  <ion-label>Assessment</ion-label>
-                  <ion-icon name="document-text-outline"></ion-icon>
-                </ion-chip>
-                <ion-chip outline="true" *ngIf="!isStudent" slot="end" color="primary" (click)="ShareCourse(course.id)">
-                  <ion-label>Share</ion-label>
-                  <ion-icon name="share-social-sharp"></ion-icon>
-                </ion-chip>
+                <ion-grid>
+                  <ion-row>
+                    <ion-col col-2 col-sm>
+                      <!-- <ion-button *ngIf="isStudent" color="primary" shape="round" fill="outline"
+                        (click)="TakeAssessment(course)">
+                        <ion-icon name="document-text-outline"></ion-icon>
+                        Assessment
+                      </ion-button> -->
+
+                      <ion-button *ngIf="!isStudent" color="primary" shape="round" fill="outline"
+                        (click)="ShareCourse(course.id)">
+                        <ion-icon name="share-social-sharp"></ion-icon>
+
+                      </ion-button>
+                    </ion-col>
+                    <ion-col col-2 col-sm *ngIf="!isStudent">
+                      <ion-button color="danger" shape="round" fill="outline" (click) ="confirmCourseDelete(course)">
+                        <ion-icon name="trash"></ion-icon>
+                      </ion-button>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
               </ion-item>
             </ion-list>
           </ion-footer>

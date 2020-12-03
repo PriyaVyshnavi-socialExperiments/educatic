@@ -212,6 +212,11 @@ const routes: Routes = [
         .then( m => m.AssessmentQuizAddPageModule)
       },
       {
+        path: 'assessment/quiz/:id/update',
+        loadChildren: () => import('../../pages/assessment/assessment-quiz-add/assessment-quiz-add.module')
+        .then( m => m.AssessmentQuizAddPageModule)
+      },
+      {
         path: 'assessment/questions',
         loadChildren: () => import('../../pages/assessment/assessment-questions/assessment-questions.module')
         .then( m => m.AssessmentQuestionsPageModule)

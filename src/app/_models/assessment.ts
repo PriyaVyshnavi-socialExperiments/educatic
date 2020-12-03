@@ -9,6 +9,7 @@ export interface IAssessment {
   subjectName: string;
   assessmentTitle: string;
   assessmentDescription: string;
+  active: boolean;
   assessmentQuiz: IQuestion[];
 }
 
