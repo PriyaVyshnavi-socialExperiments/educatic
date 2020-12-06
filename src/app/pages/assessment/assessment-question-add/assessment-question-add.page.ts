@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonRadioGroup, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { IUser } from 'src/app/_models';
 import { IAssessment, IQuestion } from 'src/app/_models/assessment';
 import { QuestionType } from 'src/app/_models/question-type';
@@ -15,7 +15,6 @@ import { AssessmentService } from 'src/app/_services/assessment/assessment.servi
 })
 export class AssessmentQuestionAddPage implements OnInit {
   @ViewChild('documentEditForm') documentEditForm: FormGroupDirective;
-  @ViewChild('radioGroup') radioGroup: IonRadioGroup
 
   question: IQuestion;
   subjectName: string;
@@ -24,6 +23,7 @@ export class AssessmentQuestionAddPage implements OnInit {
   currentUser: IUser;
   quizAssessment: IAssessment;
   answer = 3;
+  backURL = '';
 
   constructor(private formBuilder: FormBuilder,
     private assessmentService: AssessmentService,
@@ -33,8 +33,6 @@ export class AssessmentQuestionAddPage implements OnInit {
     private toastController: ToastController) { }
 
   ngOnInit() {
-    this.quizAssessment = history.state.assessment as IAssessment;
-
     this.questionForm = this.formBuilder.group({
       question: new FormControl('', [
         Validators.required,
@@ -55,6 +53,7 @@ export class AssessmentQuestionAddPage implements OnInit {
       this.subjectName = this.activatedRoute.snapshot.paramMap.get('subject');
       const assessmentId = this.activatedRoute.snapshot.paramMap.get('id');
       const questionId = this.activatedRoute.snapshot.paramMap.get('questionId');
+      this.backURL = `/assessment/${this.subjectName}/${assessmentId}/questions`;
       if (questionId) {
         this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((subjectWise) => {
           subjectWise.subscribe((subjectAssessments) => {
@@ -114,10 +113,6 @@ export class AssessmentQuestionAddPage implements OnInit {
     }
   }
 
-  selectTwo() {
-    this.radioGroup.value = '2'
-  }
-
   selectedAnswerOption(event) {
     console.log('selectedAnswerOption ', event.target.value);
   }
@@ -135,8 +130,9 @@ export class AssessmentQuestionAddPage implements OnInit {
     switch (questionType) {
       case QuestionType.Objective:
         for (let i = this.t.length; i < 4; i++) {
+          const questionOption = this.question?.questionOptions[i];
           this.t.push(this.formBuilder.group({
-            option: [`${this.question.questionOptions[i + 1]}`]
+            option: [`${questionOption ? questionOption : ''}`]
           }));
         }
         break;

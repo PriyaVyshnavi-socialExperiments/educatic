@@ -2,10 +2,10 @@
   <ion-toolbar>
     <ion-title> Add Question</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/assessment/questions"></ion-back-button>
+      <ion-back-button [defaultHref]="backURL"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button ion-button block [routerLink]="['/assessment/questions']">Cancel</ion-button>
+      <ion-button ion-button block [routerLink]="backURL">Cancel</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -60,7 +60,7 @@
             <div [formGroup]="option" class="col-xl-12 col-lg-12 col-md-12 col-sm-12"
               *ngFor="let option of t.controls;  let i = index">
               <mat-form-field class="example-full-width" appearance="outline">
-                <mat-label> Answer</mat-label>
+                <mat-label> Answer option {{ i }}</mat-label>
                 <input matInput placeholder="Answer" formControlName="option" autocomplete="off">
                 <ion-radio class="item" matSuffix [value]="i" [name]="i"></ion-radio>
               </mat-form-field>
@@ -68,7 +68,7 @@
           </ion-radio-group>
           <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12" style="text-align: center;">
             <button mat-flat-button type="button" color="secondary"
-              class="login100-form-btn container-login100-form-btn" [routerLink]="['/assessment/questions']">
+              class="login100-form-btn container-login100-form-btn" [routerLink]="backURL">
               Cancel
             </button>
             <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn"
