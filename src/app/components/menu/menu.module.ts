@@ -222,7 +222,12 @@ const routes: Routes = [
         .then( m => m.AssessmentQuestionsPageModule)
       },
       {
-        path: 'assessment/question/add',
+        path: 'assessment/:subject/:id/question/add',
+        loadChildren: () => import('../../pages/assessment/assessment-question-add/assessment-question-add.module')
+        .then( m => m.AssessmentQuestionAddPageModule)
+      },
+      {
+        path: 'assessment/:subject/:id/question/update/:questionId',
         loadChildren: () => import('../../pages/assessment/assessment-question-add/assessment-question-add.module')
         .then( m => m.AssessmentQuestionAddPageModule)
       },

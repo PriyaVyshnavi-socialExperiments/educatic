@@ -37,24 +37,27 @@ export class AssessmentQuestionsPage implements OnInit {
       this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((subjectWise) => {
         subjectWise.subscribe((subjectAssessments) => {
           const subjectWiseAssessments = subjectAssessments.find((a) => a.subjectName.toLowerCase() === this.subjectName);
-          if(subjectWiseAssessments) {
+          if (subjectWiseAssessments) {
             this.subjectName = subjectWiseAssessments.subjectName;
             this.assessment = subjectWiseAssessments.assessments?.find((a) => a.id === assessmentId) || {};
-            if(this.assessment){
-              console.log("this.assessment: ", this.assessment);
+            if (this.assessment) {
               this.questions = [...this.assessment?.assessmentQuestions]
             }
           }
         })
-      })
+      });
     });
   }
 
-  AddNewQuestion() {
-    this.router.navigateByUrl('assessment/question/add', { state: { assessment: this.assessment } });
+  AddQuestion() {
+    this.router.navigateByUrl(`assessment/${this.subjectName}/${this.assessment.id}/question/add`);
   }
 
-  async confirmQuestionDelete() {
+  UpdateQuestion(questionId: string) {
+    this.router.navigateByUrl(`assessment/${this.subjectName}/${this.assessment.id}/question/update/${questionId}`);
+  }
+
+  async confirmQuestionDelete(questionId: string) {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Confirm!',

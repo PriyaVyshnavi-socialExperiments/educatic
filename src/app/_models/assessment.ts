@@ -37,7 +37,8 @@ export interface IQuestion {
     [key: number]: string;
   };
   questionType: QuestionType;
-  answer: string;
+  shortAnswer: string;
+  optionAnswer: number;
 }
 
 export interface IAnswer {
