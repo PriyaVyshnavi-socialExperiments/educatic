@@ -1,11 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/assessment/quizzes"></ion-back-button>
+      <ion-back-button ></ion-back-button>
     </ion-buttons>
     <ion-title>Questions</ion-title>
     <ion-buttons slot="end">
-      <ion-button color="secondary" slot="end" (click)="AddNewQuestion()" shape="round" fill="outline">
+      <ion-button color="secondary" slot="end" (click)="AddQuestion()" shape="round" fill="outline">
         New Question
       </ion-button>
     </ion-buttons>
@@ -17,33 +17,36 @@
     <ion-grid class="grid">
       <ion-row class="ion-justify-content-center">
         <ion-card class="item-card">
-          <ion-item-divider color="warning">
-            <ion-label>Title: {{assessment.assessmentTitle}}</ion-label>
-            <ion-chip outline="true" slot="end" color="dark" (click)="ShareQuestions(assessment)">
+          <ion-item-divider color="primary">
+            <ion-label>Title: {{assessment?.assessmentTitle}}</ion-label>
+            <ion-chip *ngIf="questions.length" outline="true" slot="end" color="light" (click)="ShareQuestions(assessment)">
               <ion-label>Share</ion-label>
               <ion-icon name="share-social-sharp"></ion-icon>
             </ion-chip>
           </ion-item-divider>
-          <ion-list lines="full">
-            <ion-item>
+          <ion-list lines="full" *ngIf="questions.length">
+            <ion-item *ngFor="let question of questions; index as i">
               <ion-chip color="primary">
-                1
+                {{ i + 1 }}
               </ion-chip>
-              <ion-label style="margin-left: 5px;" (click)="AddNewQuestion()">
-                {{assessment.assessmentDescription}}
+              <ion-label style="margin-left: 5px;">
+                {{question?.questionDescription}}
               </ion-label>
-              <ion-icon name="create" color="success" slot="end" (click)="AddNewQuestion()"></ion-icon>
-              <ion-icon name="trash" color="danger" slot="end" (click)="confirmQuestionDelete()" ></ion-icon>
-            </ion-item>
-            <ion-item>
-              <ion-chip color="primary">
-                2
-              </ion-chip>
-              <ion-label style="margin-left: 5px;" (click)="AddNewQuestion()">22 students out of 50 from Class 2 (Section A) are selected for a quiz. 27 students out of 50 students from Class 2 (Section B) are selected for the same quiz. How many total number of students are selected from section A and B for the quiz?</ion-label>
-              <ion-icon name="create" (click)="AddNewQuestion()" color="success" slot="end"></ion-icon>
-              <ion-icon name="trash" color="danger" slot="end"></ion-icon>
+              <ion-icon name="create" color="success" slot="end" (click)="UpdateQuestion(question?.id)"></ion-icon>
+              <ion-icon name="trash" color="danger" slot="end" (click)="confirmQuestionDelete(question?.id)"></ion-icon>
             </ion-item>
           </ion-list>
+          <ion-row  class="ion-justify-content-center" *ngIf="!questions.length">
+            <ion-card class="item-card" style="box-shadow: none;" >
+              <ion-card-content  class="ion-text-center">
+                <div style="display: flex;" class="ion-justify-content-center">
+                  <ion-avatar>
+                    <img src="../../../../assets/images/question-mark.svg">
+                  </ion-avatar></div>
+                <p>Looks like there are no questions available at this moment.</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-row>
         </ion-card>
       </ion-row>
     </ion-grid>

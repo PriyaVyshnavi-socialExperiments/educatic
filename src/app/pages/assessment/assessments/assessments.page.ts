@@ -36,7 +36,7 @@ export class AssessmentsPage implements OnInit {
         subjectWise.subscribe((assessments) => {
           this.assessments = [...assessments];
           this.courseCategory = this.assessments.map((cat, index) => {
-            return { id: index.toString(), name: cat.key.toLowerCase() } as ICourseContentCategory;
+            return { id: index.toString(), name: cat.subjectName.toLowerCase() } as ICourseContentCategory;
           })
           this.assessmentService.SetOfflineData('Assessment', 'category', this.courseCategory);
         })
@@ -44,9 +44,9 @@ export class AssessmentsPage implements OnInit {
     });
   }
 
-  selectAssessment(assessment: ISubjectAssessment) {
+  selectAssessment(subject: string) {
     setTimeout(() => {
-      this.router.navigateByUrl(`assessment/quizzes`, { state: {SubjectAssessments: assessment } });
+      this.router.navigateByUrl(`assessment/quizzes/${subject}`);
     }, 10);
   }
 
