@@ -88,7 +88,6 @@ export class AssessmentQuestionsPage implements OnInit {
 
     modal.onDidDismiss()
       .then((modalData: any) => {
-        console.log(modalData.data);
         const assessmentShare = {
           schoolId: modalData.data.schoolId,
           classId: modalData.data.classId,
