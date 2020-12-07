@@ -22,8 +22,9 @@ export class AssessmentQuestionAddPage implements OnInit {
   answerIndex = false;
   currentUser: IUser;
   quizAssessment: IAssessment;
-  answer = 3;
+  optionAnswer = 0;
   backURL = '';
+  assessmentId = '';
 
   constructor(private formBuilder: FormBuilder,
     private assessmentService: AssessmentService,
@@ -51,20 +52,20 @@ export class AssessmentQuestionAddPage implements OnInit {
       }
       this.currentUser = user;
       this.subjectName = this.activatedRoute.snapshot.paramMap.get('subject');
-      const assessmentId = this.activatedRoute.snapshot.paramMap.get('id');
+      this.assessmentId = this.activatedRoute.snapshot.paramMap.get('id');
       const questionId = this.activatedRoute.snapshot.paramMap.get('questionId');
-      this.backURL = `/assessment/${this.subjectName}/${assessmentId}/questions`;
+      this.backURL = `/assessment/${this.subjectName}/${this.assessmentId}/questions`;
       if (questionId) {
         this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((subjectWise) => {
           subjectWise.subscribe((subjectAssessments) => {
             const subjectWiseAssessments = subjectAssessments.find((a) => a.subjectName.toLowerCase() === this.subjectName);
             if (subjectWiseAssessments) {
               this.subjectName = subjectWiseAssessments.subjectName;
-              this.quizAssessment = subjectWiseAssessments.assessments?.find((a) => a.id === assessmentId) || {};
+              this.quizAssessment = subjectWiseAssessments.assessments?.find((a) => a.id === this.assessmentId) || {};
               if (this.quizAssessment?.assessmentQuestions) {
                 this.question = this.quizAssessment.assessmentQuestions.find((a) => a.id === questionId);
                 if (this.question) {
-                  this.question.optionAnswer = 1;
+                  this.f.shortAnswer.setValue(this.question.shortAnswer);
                   this.f.question.setValue(this.question.questionDescription);
                   this.f.questionType.setValue(this.question.questionType);
                   this.fillAnswersOptions(this.question.questionType);
@@ -89,31 +90,36 @@ export class AssessmentQuestionAddPage implements OnInit {
     } else {
       const selectedQuestionType = this.f.questionType.value;
       const question = {
+        id: this.question? this.question.id : '',
         questionDescription: this.f.question.value,
         questionType: selectedQuestionType
       } as IQuestion;
 
+      question.questionDescription = this.f.question.value;
+      question.questionType = selectedQuestionType;
+
       if (selectedQuestionType === QuestionType.ShortAnswer) {
         question.shortAnswer = this.f.shortAnswer.value;
       } else {
-        question.optionAnswer = this.f.optionAnswer.value;
+        question.optionAnswer = this.optionAnswer;
         const option = {};
-        option[1] = this.t.value[0].answerOption;
-        option[2] = this.t.value[1].answerOption;
+        option[1] = this.t.value[0].option;
+        option[2] = this.t.value[1].option;
         if (selectedQuestionType === QuestionType.Objective) {
-          option[3] = this.t.value[2].answerOption;
-          option[4] = this.t.value[3].answerOption;
+          option[3] = this.t.value[2].option;
+          option[4] = this.t.value[3].option;
         }
         question.questionOptions = option;
       }
 
-      this.assessmentService.CreateUpdateAssessmentQuestion(question, this.quizAssessment.id).subscribe((res) => {
-        this.router.navigateByUrl(`/assessment/quizzes`);
+      this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId).subscribe((res) => {
+        this.router.navigateByUrl(this.backURL);
       });
     }
   }
 
   selectedAnswerOption(event) {
+    this.optionAnswer = event.target.value + 1;
     console.log('selectedAnswerOption ', event.target.value);
   }
 
@@ -130,7 +136,7 @@ export class AssessmentQuestionAddPage implements OnInit {
     switch (questionType) {
       case QuestionType.Objective:
         for (let i = this.t.length; i < 4; i++) {
-          const questionOption = this.question?.questionOptions[i];
+          const questionOption = this.question?.questionOptions[i + 1];
           this.t.push(this.formBuilder.group({
             option: [`${questionOption ? questionOption : ''}`]
           }));

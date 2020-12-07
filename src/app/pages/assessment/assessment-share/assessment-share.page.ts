@@ -52,25 +52,32 @@ export class AssessmentSharePage implements OnInit {
   }
 
   dismissModal() {
-    this.modalController.dismiss().then(() => { this.modalController = null; });
-  }
-
-  SubmitCourseShare() {
     if (this.courseShareForm.invalid) {
       return;
     }
-    const courseContent = {
-      schoolId: this.f.schoolId.value,
-      classId: this.f.classId.value,
-      contentId: this.contentId,
-    } as ICourseContentDistribution;
 
-    this.contentService.DistributeCourseContent(courseContent).subscribe(() => {
-      this.courseShareForm.reset();
-      this.presentToast();
-      this.dismissModal();
-    });
+    this.modalController.dismiss({
+      schoolId: this.f.schoolId.value,
+      classId: this.f.classId.value
+    }).then(() => { this.modalController = null; });
   }
+
+  // SubmitCourseShare() {
+  //   if (this.courseShareForm.invalid) {
+  //     return;
+  //   }
+  //   const courseContent = {
+  //     schoolId: this.f.schoolId.value,
+  //     classId: this.f.classId.value,
+  //     contentId: this.contentId,
+  //   } as ICourseContentDistribution;
+
+  //   this.contentService.DistributeCourseContent(courseContent).subscribe(() => {
+  //     this.courseShareForm.reset();
+  //     this.presentToast();
+  //     this.dismissModal();
+  //   });
+  // }
 
   onChangeSchool(schoolId) {
     this.classInfo = this.schoolInfo.find((c) => c.id === schoolId.value).classRooms;

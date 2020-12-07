@@ -3,6 +3,7 @@ import { Guid } from 'guid-typescript';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
 import { IAssessment, IQuestion, ISubjectAssessment } from 'src/app/_models/assessment';
+import { IAssessmentShare } from 'src/app/_models/assessment-share';
 import { HttpService } from '../http-client/http.client';
 import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
@@ -90,6 +91,18 @@ export class AssessmentService extends OfflineService {
           )
         ),
         toArray()
+      );
+  }
+
+  public AssessmentShare(assessmentShare: IAssessmentShare) {
+    if (!assessmentShare.id) {
+      assessmentShare.id = Guid.create().toString();
+    }
+    return this.http.Post<any>('/assessment/share', assessmentShare)
+      .pipe(
+        map(response => {
+          return response;
+        }),
       );
   }
 
