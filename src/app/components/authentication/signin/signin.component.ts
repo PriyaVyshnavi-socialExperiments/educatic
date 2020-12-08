@@ -25,6 +25,7 @@ export class SigninComponent implements OnInit, OnDestroy {
   error = '';
   loading = false;
   matcher = new ErrorStateMatcherHelper();
+  studentLoginModal: HTMLIonModalElement;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -84,14 +85,15 @@ export class SigninComponent implements OnInit, OnDestroy {
   }
 
   async openStudentSignInModal() {
-    const modal: HTMLIonModalElement =
+    if(this.studentLoginModal) {
+      this.studentLoginModal.dismiss();
+    }
+    this.studentLoginModal =
       await this.modalController.create({
         component: StudentSigninPage,
         mode: 'ios',
-        componentProps: {
-        }
       });
-    await modal.present();
+    await this.studentLoginModal.present();
   }
 
   private async presentToast() {

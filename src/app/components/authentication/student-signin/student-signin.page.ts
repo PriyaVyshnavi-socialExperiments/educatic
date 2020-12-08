@@ -39,6 +39,7 @@ export class StudentSigninPage implements OnInit {
   }
 
   onSubmit() {
+    this.dismissModal();
     if (this.studentLoginForm.invalid) {
       return;
     } else {
@@ -48,7 +49,6 @@ export class StudentSigninPage implements OnInit {
       this.authenticationService.StudentLogin(loginRequest)
         .subscribe((user) => {
           this.router.navigate(['assignment/subjects']);
-          this.dismissModal();
         },
           error => {
             this.presentToast();
