@@ -23,6 +23,10 @@ export class AssessmentsPage implements OnInit {
     private assessmentService: AssessmentService) { }
 
   ngOnInit() {
+   
+  }
+
+  ionViewWillEnter() {
     this.authenticationService.currentUser.subscribe((user) => {
       if (!user) {
         return;
@@ -32,13 +36,20 @@ export class AssessmentsPage implements OnInit {
       if (this.isStudent) {
         this.title = 'My Assessments';
       }
-      this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((subjectWise) => {
+
+      this.courseCategory = this.currentUser.assessmentCategory.map((cat, index) => {
+        return { id: index.toString(), name: cat.toLowerCase() } as ICourseContentCategory;
+      });
+
+      this.assessmentService.SetOfflineData('Assessment', 'category', this.courseCategory);
+
+      this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id, this.currentUser.classId).subscribe((subjectWise) => {
         subjectWise.subscribe((assessments) => {
           this.assessments = [...assessments];
-          this.courseCategory = this.assessments.map((cat, index) => {
-            return { id: index.toString(), name: cat.subjectName.toLowerCase() } as ICourseContentCategory;
-          })
-          this.assessmentService.SetOfflineData('Assessment', 'category', this.courseCategory);
+          // this.courseCategory = this.assessments.map((cat, index) => {
+          //   return { id: index.toString(), name: cat.subjectName.toLowerCase() } as ICourseContentCategory;
+          // })
+          // this.assessmentService.SetOfflineData('Assessment', 'category', this.courseCategory);
         })
       })
     });
