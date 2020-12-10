@@ -5,7 +5,7 @@
       <ion-menu-button autoHide="true"></ion-menu-button>
     </ion-buttons>
     <ion-buttons slot="end" *ngIf="!isStudent">
-      <ion-button color="secondary" slot="end" [routerLink]="['assessment/quiz/add']" shape="round" fill="outline">
+      <ion-button color="secondary" slot="end" [routerLink]="['quiz/add']" shape="round" fill="outline">
         New Assessment
       </ion-button>
     </ion-buttons>
@@ -32,7 +32,7 @@
     </ion-row>
   </ion-grid>
   <ion-grid style="height: 100%" *ngIf="!assessments.length">
-    <ion-row *ngIf="!isStudent" justify-content-center align-items-center class="justify-center" [routerLink]="['assessment/quiz/add']">
+    <ion-row *ngIf="!isStudent" justify-content-center align-items-center class="justify-center" [routerLink]="['quiz/add']">
       <div text-center>
         <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
         <h4>No assessment available!</h4>

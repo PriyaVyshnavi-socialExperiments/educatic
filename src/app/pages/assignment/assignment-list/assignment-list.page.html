@@ -29,11 +29,9 @@
                   <p> {{assignment.assignmentDescription}} </p>
                   <p>Date Submitted: <b>{{assignment.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
                 </ion-col>
-                <ion-col *ngIf="currentUser?.role === 'Student'" size="12">
+                <ion-col size="12">
                   <ion-row>
-
-                  
-                      <ion-button color="primary" (click)=UploadAssignment(assignment) shape="round" fill="outline"
+                      <ion-button *ngIf="currentUser?.role === 'Student'"  color="primary" (click)=UploadAssignment(assignment) shape="round" fill="outline"
                         > Upload
                         <ion-icon name="push-outline"></ion-icon>
                       </ion-button>

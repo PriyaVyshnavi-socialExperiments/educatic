@@ -134,6 +134,10 @@ ion-content {
   overflow      : hidden;
 }
 
+.tui-image-editor-submenu {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   .tui-image-editor {
     width: 100% !important;
