@@ -35,7 +35,7 @@
     <ion-row *ngIf="!isStudent" justify-content-center align-items-center class="justify-center" [routerLink]="['assessment/quiz/add']">
       <div text-center>
         <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
-        <h4>No assessment available for <strong>{{ this.currentUser?.defaultSchool?.name }}</strong> school</h4>
+        <h4>No assessment available!</h4>
         <p>Click here to create new assessment</p>
       </div>
     </ion-row>

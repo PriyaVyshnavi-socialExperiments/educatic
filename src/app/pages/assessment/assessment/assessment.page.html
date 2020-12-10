@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{title}}</ion-title>
+    <ion-title>{{title|titlecase}}</ion-title>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/assessments"></ion-back-button>
     </ion-buttons>
@@ -12,41 +12,78 @@
 
 <ion-content>
   <ion-grid class="grid">
-    <ion-row class="ion-justify-content-center">
-      <ion-card class="item-card" *ngFor="let question of assessment?.assessmentQuestions; index as i">
-        <ion-list>
-
-          <ion-list-header>
-            <ion-label><b>Q{{i+1}}. {{question.questionDescription}}</b></ion-label>
-          </ion-list-header>
-          <div [ngSwitch]="question.questionType">
-            <ion-item-group *ngSwitchCase="'ShortAnswer'">
-              <ion-item lines="none">
-                <ion-label>ShortAnswer</ion-label>
-              </ion-item>
-            </ion-item-group>
-            <ion-item-group *ngSwitchCase="'Objective'">
-              <ion-radio-group mode="md">
-                <ion-item lines="none" *ngFor="let option of options">
-                  <ion-label>{{question.questionOptions[option]}}</ion-label>
-                  <ion-radio slot="start" [value]="option" [name]="option"></ion-radio>
+    <div class="limiter">
+      <div class="container-login100">
+        <div class="wrap-login100">
+          <form class="login100-form validate-form">
+            <ion-row class="ion-justify-content-center">
+              <ion-card class="item-card">
+                <ion-item lines="full">
+                  <ion-card-header>
+                    <h1>
+                      {{assessment?.assessmentTitle}}
+                    </h1>
+                    <p>
+                      {{assessment?.assessmentDescription}}
+                    </p>
+                  </ion-card-header>
                 </ion-item>
-              </ion-radio-group>
-            </ion-item-group>
-            <ion-item-group *ngSwitchCase="'TrueFalse'">
-              <ion-item lines="none">
-                <ion-label>True</ion-label>
-                <ion-radio slot="start" value="true"></ion-radio>
-              </ion-item>
-              <ion-item lines="none">
-                <ion-label>False</ion-label>
-                <ion-radio slot="start" value="false"></ion-radio>
-              </ion-item>
-            </ion-item-group>
-          </div>
-
-        </ion-list>
-      </ion-card>
-    </ion-row>
+                <div *ngFor="let question of assessment?.assessmentQuestions; index as i">
+                  <ion-card-content *ngIf="i===visibleQuestion">
+                    <ion-list>
+                      <ion-list-header>
+                        <ion-label><b>Q{{i+1}}. {{question.questionDescription}}</b></ion-label>
+                      </ion-list-header>
+                      <div [ngSwitch]="question.questionType">
+                        <ion-item-group *ngSwitchCase="'ShortAnswer'">
+                          <ion-item lines="none">
+                            <mat-form-field class="example-full-width" appearance="outline">
+                              <mat-label>Answer</mat-label>
+                              <textarea matInput placeholder="Enter answer here" value="" autocomplete="off"
+                                rows="4" (keyup)="selectedAnswerOption($event)"></textarea>
+                              <mat-icon matSuffix>
+                              </mat-icon>
+                            </mat-form-field>
+                          </ion-item>
+                        </ion-item-group>
+                        <ion-item-group *ngSwitchCase="'Objective'">
+                          <ion-radio-group mode="md" (ionChange)="selectedAnswerOption($event)">
+                            <ion-item lines="none" *ngFor="let option of options">
+                              <ion-label>{{question.questionOptions[option] | titlecase}}</ion-label>
+                              <ion-radio slot="start" [value]="{option: option, question: question}" [name]="option"></ion-radio>
+                            </ion-item>
+                          </ion-radio-group>
+                        </ion-item-group>
+                        <ion-item-group *ngSwitchCase="'TrueFalse'">
+                          <ion-radio-group mode="md" (ionChange)="selectedAnswerOption($event)">
+                            <ion-item lines="none">
+                              <ion-label>True</ion-label>
+                              <ion-radio slot="start" [value]="{option: 1, question: question}"></ion-radio>
+                            </ion-item>
+                            <ion-item lines="none">
+                              <ion-label>False</ion-label>
+                              <ion-radio slot="start" [value]="{option: 2, question: question}"></ion-radio>
+                            </ion-item>
+                          </ion-radio-group>
+                        </ion-item-group>
+                      </div>
+                      <ion-footer>
+                        <ion-button *ngIf="visibleNext(question, i)" (click)="visibleQuestion = visibleQuestion +1"
+                          class="float-right" expand="block" fill="clear">
+                          Next >>
+                        </ion-button>
+                        <ion-button *ngIf="i===questionCount" class="float-right" expand="block" fill="clear">
+                          Submit
+                        </ion-button>
+                      </ion-footer>
+                    </ion-list>
+                  </ion-card-content>
+                </div>
+              </ion-card>
+            </ion-row>
+          </form>
+        </div>
+      </div>
+    </div>
   </ion-grid>
 </ion-content>
