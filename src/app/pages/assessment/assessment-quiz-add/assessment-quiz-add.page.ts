@@ -31,7 +31,6 @@ export class AssessmentQuizAddPage implements OnInit {
 
   ngOnInit() {
     this.quizAssessment = history.state.assessmentQuiz as IAssessment;
-    
     this.quizForm = this.formBuilder.group({
       quizTitle: new FormControl('', [
         Validators.required,

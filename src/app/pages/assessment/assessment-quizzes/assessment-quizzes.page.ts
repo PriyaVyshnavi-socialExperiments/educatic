@@ -92,7 +92,7 @@ export class AssessmentQuizzesPage implements OnInit {
 
   NavigateToQuestions(assessment: IAssessment) {
     if (this.isStudent) {
-      this.router.navigate([`assessment/1000/10001/student`]);
+      this.router.navigateByUrl(`assessment/${this.subjectName}/${assessment.id}/student`, { state: { assessment } });
     } else {
       this.router.navigateByUrl(`assessment/${this.subjectName}/${assessment.id}/questions`);
     }

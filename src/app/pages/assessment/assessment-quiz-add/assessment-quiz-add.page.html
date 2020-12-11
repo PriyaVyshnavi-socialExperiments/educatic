@@ -1,11 +1,11 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title> Add Quiz</ion-title>
+    <ion-title>Quiz</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/assessment/quizzes"></ion-back-button>
+      <ion-back-button defaultHref="/assessments"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button ion-button block [routerLink]="['/assessment/quizzes']">Cancel</ion-button>
+      <ion-button ion-button block [routerLink]="['/assessments']">Cancel</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -62,7 +62,7 @@
           
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" style="text-align: center;">
               <button mat-flat-button type="button" color="secondary"
-                class="login100-form-btn container-login100-form-btn" [routerLink]="['/assessment/quizzes']">
+                class="login100-form-btn container-login100-form-btn" [routerLink]="['/assessments']">
                 Cancel
               </button>
               <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn"

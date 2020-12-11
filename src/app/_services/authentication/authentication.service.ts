@@ -2,7 +2,7 @@
 import { BehaviorSubject, forkJoin, Observable, ReplaySubject } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 
-import { IUser, LoginRequest, StudentLoginRequest, ISchool, OfflineSync } from '../../_models';
+import { IUser, LoginRequest, StudentLoginRequest, ISchool, OfflineSync, Role } from '../../_models';
 import { ApplicationInsightsService } from '../../_helpers/application-insights';
 import { OfflineService } from '../offline/offline.service';
 import { HttpService } from '../http-client/http.client';
@@ -113,6 +113,9 @@ export class AuthenticationService extends OfflineService {
         this.currentUser.subscribe((currentUser) => {
             if (currentUser) {
                 currentUser.defaultSchool = currentUser.schools?.find((s) => s.id === schoolId);
+                if(currentUser.role === Role.Student) {
+                    currentUser.classId = currentUser.defaultSchool?.classRooms[0]?.classId;
+                }
                 this.SetOfflineData('User', 'current-user', currentUser);
             }
         });
