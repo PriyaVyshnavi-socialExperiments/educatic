@@ -38,7 +38,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   refreshDashboard() {
-    this.dashboard.ngOnInit();
+    this.dashboard.loadData();
     // this.schoolService.GetPowerBIConfig().subscribe((config) => {
     //   this.powerBIConfig = config[0];
     //   this.powerBIConfig.embedUrl = this.powerBIConfig.embedUrl + '&isMobile=true';

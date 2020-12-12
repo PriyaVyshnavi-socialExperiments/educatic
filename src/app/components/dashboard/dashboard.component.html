@@ -25,11 +25,11 @@
                     </ion-item>
                     <ion-item>
                         <ion-label>Start Date</ion-label>
-                        <ion-datetime value="2020-9-26" placeholder="Select Date" (ionChange)="changeStartDate($event)"></ion-datetime>
+                        <ion-datetime [(ngModel)]="this.startDate" placeholder="Select Date" (ionChange)="changeStartDate($event)"></ion-datetime>
                     </ion-item>
                     <ion-item>
                         <ion-label>End Date</ion-label>
-                        <ion-datetime value="2020-10-26" placeholder="Select Date" (ionChange)="changeEndDate(value)"></ion-datetime>
+                        <ion-datetime [(ngModel)]="this.endDate" placeholder="Select Date" (ionChange)="changeEndDate(value)"></ion-datetime>
                     </ion-item>    
                 </ion-list>
             </ion-col>
@@ -39,32 +39,48 @@
                 <ion-card>
                     #Total Schools
                     <br>
-                    <span>{{this.allSchools.length}}</span>
+                    <span>{{this.totalSchools}}</span>
                     <br>
                     #Active Schools 
+                    <br>
+                    <span>{{this.activeSchools}}</span>
+                    <br>
                 </ion-card>
             </ion-col>
             <ion-col size="6" size-sm="3">
                 <ion-card >
                     #Total Teachers
                     <br>
+                    <span>{{this.totalTeachers}}</span>
+                    <br>
                     #Active Teachers
+                    <br>
+                    <span>{{this.activeTeachers}}</span>
+                    <br>
                 </ion-card>
             </ion-col>
             <ion-col size="6" size-sm="3">
                 <ion-card>
                     #Total Students
                     <br>
+                    <span>{{this.totalStudents}}</span>
+                    <br>
                     #Active Students
+                    <br>
+                    <span>{{this.activeStudents}}</span>
+                    <br>
                 </ion-card>
             </ion-col>
             <ion-col size="6" size-sm="3">
                 <ion-card>
                     #Total Classes
                     <br>
-                    <span>{{this.allClasses.length}}</span>
+                    <span>{{this.totalClasses}}</span>
                     <br>
                     #Active Classes
+                    <br>
+                    <span>{{this.activeClasses}}</span>
+                    <br>
                 </ion-card>
             </ion-col>
             <ion-col size="12">
@@ -82,8 +98,8 @@
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="6">
-                <ion-card>
-                    Student Enrollment 
+                <ion-card (click)="presentModal(this.charts['student-enrollment'], 'line')">
+                    <canvas id="student-enrollment"></canvas>>
                 </ion-card>
             </ion-col>
         </ion-row>
@@ -104,12 +120,12 @@
                 </ion-card>
             </ion-col>
         </ion-row>
-        <ion-row class="bottom-row">
-            <ion-col size="12" size-sm="6">
+        <ion-row class="ion-align-items-center">
+            <ion-col size="12" size-sm="12">
                 <ion-card style="overflow: scroll">
                     Classes by #attendance 
                     <ion-grid>
-                        <ion-row>
+                        <ion-row style="text-align: left;">
                             <ion-col>
                                 City
                             </ion-col>
@@ -131,30 +147,37 @@
                         </ion-row>
                         <ion-row *ngFor="let class of this.classes">
                             <ion-col>
-                                {{this.data.schools.get(class.schoolId).school.city}}
+                                {{class.city}}
                             </ion-col>
                             <ion-col>
-                                {{this.data.schools.get(class.schoolId).school.name}}
+                                {{class.school}}
                             </ion-col>
                             <ion-col>
-                                {{class.classRoomName}}
+                                {{class.name}}
                             </ion-col>
                             <ion-col>
-                                Cumulative Attendance 
+                                {{this.dashboardService.getCumulativeAttendance(class, "classes", this.start, this.end)}}%
                             </ion-col>
                             <ion-col>
                                 {{class.students.length}}
                             </ion-col>
                             <ion-col>
-                                {{this.data.schools.get(class.schoolId).school.teachers.length}}
+                                {{class.numTeachers}}
                             </ion-col>
                         </ion-row>
                       </ion-grid>
                 </ion-card>
             </ion-col>
+        </ion-row>
+        <ion-row>
             <ion-col size="12" size-sm="6">
                 <ion-card>
                     Schools with low attendance
+                </ion-card>
+            </ion-col>
+            <ion-col size="12" size-sm="6">
+                <ion-card>
+                    Schools with high attendance
                 </ion-card>
             </ion-col>
         </ion-row>

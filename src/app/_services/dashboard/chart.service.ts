@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { forkJoin } from 'rxjs';
-import { SchoolService } from '../../_services/school/school.service';
-import { ISchool } from '../../_models/school';
-import { IClassRoom } from '../../_models/class-room';
-import { IStudent } from '../../_models/student';
+import { DashboardService } from './dashboard.service';
 import { Chart } from 'chart.js'; 
 // import the plugin core
 import 'chartjs-plugin-colorschemes/src/plugins/plugin.colorschemes';
 
 // import a particular color scheme
 import { Aspect6 } from 'chartjs-plugin-colorschemes/src/colorschemes/colorschemes.office';
+import { IDashboardSchool } from 'src/app/_models/dashboard-models/dashboard-school';
+import { IDashboardClassRoom } from 'src/app/_models/dashboard-models/dashboard-classroom';
+import { IDashboardCity } from 'src/app/_models/dashboard-models/dashboard-city';
+import { DateAdapter } from '@angular/material/core';
+import { IDashboardStudent } from 'src/app/_models/dashboard-models/dashboard-student';
 
 interface IAttendance {
   present: number,
@@ -34,9 +34,59 @@ interface IAttendance {
 })
 export class ChartService {
 
-  constructor() { }
+  constructor(
+    private dashboardService: DashboardService,
+  ) { }
 
-  getBarChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string) {
+  getStudentEnrollmentLineChart(id:string, xAxisTitle: string, yAxisTitle: string, title: string): Chart {
+    return new Chart(document.getElementById(id), {
+      type: "scatter",
+      data: {
+          labels: null,
+          datasets: []
+      },
+      options: {
+        legend: {
+          display: true
+        },
+        plugins: {
+          colorschemes: {
+              scheme: Aspect6
+          }
+        },
+        scales: {
+            xAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: xAxisTitle,
+              },
+              type: 'time',
+              time: {
+                unit: 'day',
+                unitStepSize: 1,
+                displayFormats: {
+                  'day': 'MMM DD',
+                }
+              }
+            }],
+            yAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: yAxisTitle,
+              },
+            }]
+        },
+        title: {
+          display: true,
+          text: title
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+      }
+    });
+  }
+
+  getAttendanceBarChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string): Chart {
     return new Chart(document.getElementById(id), {
       type: "bar",
       data: {
@@ -83,7 +133,7 @@ export class ChartService {
     });
   }
 
-  getLineChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string) {
+  getAttendanceLineChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string): Chart {
     return new Chart(document.getElementById(id), {
       type: "line",
       data: {
@@ -138,93 +188,136 @@ export class ChartService {
     });
   }
 
-  changeClasses(table: any, classes: IClassRoom[]) { 
-    let tempChartData = {
+  updateStudentEnrollmentLineChart(students: IDashboardStudent[], start: Date, end: Date) {
+    let chart = {
+      datasets: [],
+      labels: null
+    }
+    let enrollments: Map<string, number> = new Map();
+    if (students) {
+      let data = [];
+      for (let student of students) {
+        if (new Date(student.enrollmentDate) >= start && new Date(student.enrollmentDate) <= end) {
+          if (enrollments.get(student.enrollmentDate) == undefined) {
+            enrollments.set(student.enrollmentDate, 0);
+          }
+          let curr: number = enrollments.get(student.enrollmentDate);
+          enrollments.set(student.enrollmentDate, curr + 1); 
+        }
+      }
+      for (let entry of enrollments.entries()) {
+        let date: string = entry[0];
+        let students: number = entry[1];
+        data.push({
+          x: date,
+          y: students
+        })
+      }
+      chart.datasets.push({
+        data: data,
+        label: "Student Enrollment",
+        fill: false
+      })
+    }
+    return chart;
+  }
+
+  updateAttendanceBarChart(info: IDashboardSchool[] | IDashboardClassRoom[] | IDashboardCity[], id: "classes" | "cities" | "schools", start: Date, end: Date) {
+    let chart = {
+      datasets: [],
+      labels: []
+    }
+    if (info) {
+      let attendance = this.dashboardService.getAttendance(info, id, start, end); 
+      let data = [];
+      for (let entity of attendance) {
+        let total = 0;
+        let present = 0;
+        if (entity.attendance.length > 0) {
+          for (let entry of entity.attendance) {
+            total += entry[1].total;
+            present += entry[1].present;
+          }
+          let attendance = this.getAttendancePercentage(total, present);
+          data.push(attendance); 
+          chart.labels.push(entity.name); 
+        }
+      }
+      chart.datasets.push({
+        data: data,
+        fill: true
+      })
+    }    
+    return chart; 
+  }
+
+  updateAttendanceLineChart(info: IDashboardSchool[] | IDashboardClassRoom[] | IDashboardCity[], id: "classes" | "cities" | "schools", start: Date, end: Date) {
+    let chart = {
       labels: null,
       datasets: []
     }
-    if (classes) {
-      for (let entry of classes) {
-        if (table.classes.get(entry.classId).attendance.size > 0) {
+    if (info) {
+      let attendance = this.dashboardService.getAttendance(info, id, start, end); 
+      for (let entity of attendance) {
+        if (entity.attendance.length > 0) {
           let entryData = [];
-          for (let dateEntry of table.classes.get(entry.classId).attendance.keys()) {
-            let total: number = table.classes.get(entry.classId).attendance.get(dateEntry).total;
-            let present: number = table.classes.get(entry.classId).attendance.get(dateEntry).present;
-            let attendance = Math.round((present / total) * 100);
+          for (let entry of entity.attendance) {
+            let total: number = entry[1].total;
+            let present: number = entry[1].present;
+            let attendance = this.getAttendancePercentage(total, present);
             let data = {
-              x: new Date(dateEntry),
+              x: entry[0],
               y: attendance
             }
             entryData.push(data);
           }
           let graphDataEntry = {
             data: entryData,
-            label: entry.classRoomName,
+            label: entity.name,
             fill: false
           }
-          tempChartData.datasets.push(graphDataEntry);
+          chart.datasets.push(graphDataEntry);
         }
       }
     }
-    return tempChartData
+    return chart; 
   }
 
-  updateBarChart(attendance: {name: string, attendance: [string, IAttendance][]}[]) {
+  updateGenderAttendanceBarChart(info: IDashboardSchool[] | IDashboardClassRoom[] | IDashboardCity[], id: "classes" | "cities" | "schools", start: Date, end: Date) {
     let chart = {
       datasets: [],
-      labels: []
+      labels: ["male", "female", "non-binary"]
     }
-    let data = [];
-    for (let entity of attendance) {
-      let total = 0;
-      let present = 0;
-      if (entity.attendance.length > 0) {
-        for (let entry of entity.attendance) {
-          total += entry[1].total;
-          present += entry[1].present;
-        }
-        let attendance = present / total * 100;
-        data.push(attendance); 
-        chart.labels.push(entity.name); 
-      }
-    }
-    chart.datasets.push({
-      data: data,
-      fill: true
-    })
-    return chart; 
-  }
-
-  updateLineChart(attendance: {name: string, attendance: [string, IAttendance][]}[]) {
-    let chart = {
-      labels: null,
-      datasets: []
-    }
-    for (let entity of attendance) {
-      if (entity.attendance.length > 0) {
-        let entryData = [];
-        for (let entry of entity.attendance) {
-          let total: number = entry[1].total;
-          let present: number = entry[1].present;
-          let attendance = Math.round((present / total) * 100);
-          let data = {
-            x: new Date(entry[0]),
-            y: attendance
+    if (info) {
+      let attendance = this.dashboardService.getAttendance(info, id, start, end); 
+      let maleTotal = 0;
+      let femaleTotal = 0;
+      let nonBinaryTotal = 0;
+      let malePresent = 0;
+      let femalePresent = 0;
+      let nonBinaryPresent = 0;
+      for (let entity of attendance) {
+        if (entity.attendance.length > 0) {
+          for (let entry of entity.attendance) {
+            maleTotal += entry[1].male.total;
+            femaleTotal += entry[1].female.total;
+            nonBinaryTotal += entry[1].nonBinary.total;
+            malePresent += entry[1].male.present;
+            femalePresent += entry[1].female.present;
+            nonBinaryPresent += entry[1].nonBinary.present;
           }
-          entryData.push(data);
         }
-        let graphDataEntry = {
-          data: entryData,
-          label: entity.name,
-          fill: false
-        }
-        chart.datasets.push(graphDataEntry);
       }
+      chart.datasets.push({
+        data: [this.getAttendancePercentage(maleTotal, malePresent), this.getAttendancePercentage(femaleTotal, femalePresent), 
+          this.getAttendancePercentage(nonBinaryTotal, nonBinaryPresent)],
+        fill: true
+      })
     }
     return chart; 
   }
 
-  updateGenderBarChart(data: any[]) {
-
+  getAttendancePercentage(total: number, present: number): number {
+    return Math.round(present / total * 100); 
   }
 }

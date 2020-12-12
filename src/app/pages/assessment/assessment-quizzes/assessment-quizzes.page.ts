@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
+import { IUser, Role } from 'src/app/_models';
+import { IAssessment, ISubjectAssessment } from 'src/app/_models/assessment';
+import { ICourseContentCategory } from 'src/app/_models/course-content-category';
+import { AuthenticationService } from 'src/app/_services';
+import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
 
 @Component({
   selector: 'app-assessment-quizzes',
@@ -8,18 +13,37 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./assessment-quizzes.page.scss'],
 })
 export class AssessmentQuizzesPage implements OnInit {
+  currentUser: IUser;
+  isStudent: boolean;
+  subjectAssessment: ISubjectAssessment;
 
-  constructor( private router: Router,
-    private alertController: AlertController,) { }
+  constructor(private router: Router,
+    private authenticationService: AuthenticationService,
+    private assessmentService: AssessmentService,
+    private toastController: ToastController,
+    private alertController: AlertController,
+    ) { }
 
   ngOnInit() {
+    this.authenticationService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.isStudent = this.currentUser.role === Role.Student;
+      this.subjectAssessment = history.state.SubjectAssessments as ISubjectAssessment;
+      console.log("this.subjectAssessment: ", this.subjectAssessment);
+      if (!this.subjectAssessment) {
+        this.router.navigateByUrl('/assessments');
+      }
+    });
   }
 
   AddNewCategory() {
 
   }
 
-   async confirmQuizDelete() {
+  async confirmQuizDelete(assessment: IAssessment) {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Confirm!',
@@ -32,6 +56,10 @@ export class AssessmentQuizzesPage implements OnInit {
         }, {
           text: 'Okay',
           handler: () => {
+            assessment.active = false;
+            this.assessmentService.CreateUpdateAssessment(assessment).subscribe((res)=> {
+              this.presentToast('Assessment quiz deleted successfully.', 'success');
+            })
           }
         }
       ]
@@ -41,11 +69,34 @@ export class AssessmentQuizzesPage implements OnInit {
   }
 
   AddNewQuiz() {
-    this.router.navigate(['assessment/quiz/add']);
+    this.router.navigateByUrl(`assessment/quiz/add`);
   }
 
-  NavigateToQuestions() {
-    this.router.navigate(['assessment/questions']);
+  UpdateQuiz(assessmentQuiz: IAssessment) {
+    this.router.navigateByUrl(`assessment/quiz/${assessmentQuiz.id}/update`, { state: { assessmentQuiz } } );
+  }
+
+  NavigateToQuestions(assessment: IAssessment) {
+    if (this.isStudent) {
+      this.router.navigate([`assessment/1000/10001/student`]);
+    } else {
+      this.router.navigateByUrl('assessment/questions', { state: { assessment } });
+    }
+  }
+
+  private async presentToast(msg, type) {
+    const toast = await this.toastController.create({
+      message: msg,
+      position: 'bottom',
+      duration: 3000,
+      color: type,
+      buttons: [{
+        text: 'Close',
+        role: 'cancel',
+      }
+      ]
+    });
+    toast.present();
   }
 
 }

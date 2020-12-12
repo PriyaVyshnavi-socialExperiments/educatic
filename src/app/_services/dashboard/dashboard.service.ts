@@ -1,157 +1,249 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpBackend } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { SchoolService } from '../../_services/school/school.service';
 import { ISchool } from '../../_models/school';
 import { IClassRoom } from '../../_models/class-room';
 import { IStudent } from '../../_models/student';
-import { ChartService } from '../../_services/dashboard/chart.service';
-import { ThrowStmt } from '@angular/compiler';
+import { IDashboardCity } from '../../_models/dashboard-models/dashboard-city'; 
+import { IDashboardSchool } from '../../_models/dashboard-models/dashboard-school'; 
+import { IDashboardClassRoom } from '../../_models/dashboard-models/dashboard-classroom'; 
+import { IDashboardStudent } from '../../_models/dashboard-models/dashboard-student';
+import { IDashboardTeacher } from '../../_models/dashboard-models/dashboard-teacher';
+import {  IAttendance } from '../../_models/dashboard-models/dashboard-attendance';
+import {catchError, tap, timestamp} from 'rxjs/operators'; 
+import { Embed } from 'powerbi-client';
 
-interface IAttendance {
-  present: number,
-  total: number,
-  male: {
-    present: number,
-    total: number
-  },
-  female: {
-    present: number,
-    total: number
-  },
-  nonBinary: {
-    present: number,
-    total: number
-  }
-}
 
 @Injectable({
   providedIn: 'root'
 })
 /**
  * This service processes the azure tables in order to provide the dashboard with the information needed to update.
- * It makes four calls to do this, to the School Table, Student Table, Attendance Table, and the ClassRoom Table.
+ * It does this by first processing the School Table, ClassRoom Table, and then the Student Table. Next, it 
+ * proccesses the atttendance table and uses the data from the other tables to build up an object that keeps track of 
+ * attendance in cities, schools, and classes in order to easily answer requests made to the dashboard.
  */
 export class DashboardService {
-  prod: boolean = false;
-  studentTable: IStudent[];
-  classTable: IClassRoom[];
-  schoolTable: ISchool[];
-  attendanceTable;
-
 
   data = {
-    cities: new Map<string, { schools: Set<ISchool>, attendance: Map<string, IAttendance>}>(),
-    schools: new Map<string, { school: ISchool, attendance: Map<string, IAttendance>}>(),
-    classes: new Map<string, { classRoom: any, attendance: Map<string, IAttendance>}>(),
-    students: new Map()
+    cities: new Map<string, { city: IDashboardCity, attendance: Map<string, IAttendance>} >(),
+    schools: new Map<string, { school: IDashboardSchool, attendance: Map<string, IAttendance>}>(),
+    classes: new Map<string, { classRoom: IDashboardClassRoom, attendance: Map<string, IAttendance>}>(),
+    students: new Map<string, { student: IDashboardStudent, attendance: Map<string, boolean>}>(),
+    teachers: new Map<string, { teacher: IDashboardTeacher, attendance: Map<string, boolean>}>(),
   }
+
+  httpWithoutInterceptor: HttpClient;
   url = "https://goofflinee.table.core.windows.net/";
-  attendanceSAS = "?sv=2018-03-28&si=Attentdance-1761217FECC&tn=attentdance&sig=QVmjYIYbHeldHrcjQ5W145al9AyszZoXC55VmnHhwho%3D";
+  attendanceSAS = "sv=2018-03-28&si=Attentdance-1763A06CFEA&tn=attentdance&sig=rGRdN1X0akvsp7ytPy1FWV%2FtsbD%2B9sLwv3XcZ8a7AJY%3D";
+  studentSAS = "sv=2018-03-28&si=Student-17640438131&tn=student&sig=jdWSmr%2B9YW9SLIt%2B%2BdosxfKMjJMhURddmddGHSWja3c%3D";
 
   constructor(
     private http: HttpClient,
     private schoolService: SchoolService,
-    private chartService: ChartService
-  ) { }
+    private httpBackend: HttpBackend
+  ) { 
+    this.httpWithoutInterceptor = new HttpClient(this.httpBackend); 
+  }
 
   /**
-   * Make Get requests to the azure table subscription to load in the correct Tables. T
+   * Make Get requests to the azure table subscription to load in the correct Tables. Returns error if request 
+   * to azure tables fails. 
    */
-  public getTables() {
-    try {
-      let schoolTable = this.getSchoolTable(); // Will contain classes and students within individual school entries
-      let attendanceTable = this.getAttendanceTable() // No backend set up, so done manually 
-      return forkJoin([schoolTable, attendanceTable]);
-    } catch (error) {
-      return error("Failed to get data"); 
-    }
-    
+  public getData() { 
+    let schoolTable = this.getSchoolTable(); // Will contain classes and students within individual school entries
+    let attendanceTable = this.getAttendanceTable() // No backend set up, so done manually 
+    let studentEnrollment = this.getStudentEnrollment();
+    return forkJoin([schoolTable, attendanceTable, studentEnrollment]).pipe(
+      tap((result) => this.processData(result[0], result[1], result[2])),
+      catchError((err) => {
+        throw err
+      })
+    ); 
   }
 
-  public processData(schoolTable: ISchool[], attendanceTable) {
-    this.data = {
-      cities: new Map<string, { schools: Set<ISchool>, attendance: Map<string, IAttendance>}>(),
-      schools: new Map<string, { school: ISchool, attendance: Map<string, IAttendance>}>(),
-      classes: new Map<string, { classRoom: any, attendance: Map<string, IAttendance>}>(),
-      students: new Map()
-    }
+  /**
+   * Takes the newly fetched school table and attendance table and uses it to store the attendance 
+   * and other information of classes, schools, cities, and students. 
+   * @param schoolTable ISchool array of all active schools 
+   * @param attendanceTable array of attendance entries 
+   */
+  public processData(schoolTable: ISchool[], attendanceTable: any, studentEnrollment: any) {
+    this.data.cities.clear();
+    this.data.classes.clear();
+    this.data.schools.clear();
+    this.data.students.clear(); 
 
-    this.schoolTable = schoolTable;
-    this.attendanceTable = attendanceTable.value;
-    this.processSchoolTable();
-    this.processAttendanceTable();
+    this.processSchoolTable(schoolTable);
+    this.processStudentEnrollment(studentEnrollment.value); 
+    this.processAttendanceTable(attendanceTable.value);
     this.data.classes = new Map([...this.data.classes.entries()].sort());
-
-    return this.data;
   }
   
-  private processSchoolTable() {
+  /**
+   * Processes the school table by creating a mapping from cities and schoolId's to information about the 
+   * schools and cities including attendance. 
+   */
+  private processSchoolTable(schoolTable: ISchool[]) {
     // Map schoolId to city, will likely want to map schoolId to school so that 
     // all student information could be accessed. This is done in order to decrease database calls
     // which could be costly 
-    this.schoolTable.forEach((school: ISchool) => {
+    schoolTable.forEach((school: ISchool) => {
       if (this.data.cities.get(school.city) === undefined) {
+        let city = {
+          name: school.city,
+          id: school.city,
+          schools: []
+        };
         this.data.cities.set(school.city, {
-          attendance: new Map<string, IAttendance>(),
-          schools: new Set<ISchool>()
-        })
-      }
-      this.data.cities.get(school.city).schools.add(school);
+          city: city,
+          attendance: new Map<string, IAttendance>()
+        });
+      } 
+      let classRooms: IDashboardClassRoom[] = this.processClassRooms(school);
+      let teachers: IDashboardTeacher[] = this.processTeachers(school);
 
+      let dashSchool: IDashboardSchool = {
+        name: school.name,
+        id: school.id,
+        address1: school.address1,
+        address2: school.address1,
+        country: school.country,
+        state: school.state,
+        city: school.city,
+        zip: school.zip,
+        latitude: school.latitude,
+        longitude: school.longitude,
+        classRooms: classRooms,
+        teachers: teachers
+      }
+      
       if (this.data.schools.get(school.id) === undefined) {
         this.data.schools.set(school.id, { 
-          school: school,
+          school: dashSchool,
           attendance: new Map<string, IAttendance>()
         });
+        this.data.cities.get(school.city).city.schools.push(dashSchool); 
       }
-      this.processClassRooms(school.classRooms);
     })
   }
 
-  private processClassRooms(classRooms: IClassRoom[]) {
-    classRooms.forEach((classRoom) => {
-      if (this.data.classes.get(classRoom.classId) == undefined) {
-        this.data.classes.set(classRoom.classId, {
-          classRoom: classRoom,
+  /**
+   * Processes the classes in a given school by creating a mapping from classId's to information about 
+   * the classRoom including attendance. 
+   * @param classRooms all classes within a given school 
+   */
+  private processClassRooms(school: ISchool): IDashboardClassRoom[] {
+    let classes: IDashboardClassRoom[] = [];
+    school.classRooms.forEach((classRoom) => {
+      let students: IDashboardStudent[] = this.processStudents(classRoom); 
+      let temp = {
+        name: classRoom.classRoomName,
+        id: classRoom.classId,
+        school: school.name,
+        schoolId: school.id,
+        city: school.city,
+        classDivision: classRoom.classDivision,
+        students: students,
+        numTeachers: school.teachers.length
+      }
+      classes.push(temp); 
+
+      if (this.data.classes.get(temp.id) == undefined) {
+        this.data.classes.set(temp.id, {
+          classRoom: temp,
           attendance: new Map<string, IAttendance>()
         })
-        this.processStudents(classRoom.students);
       }
     })
+    return classes; 
   }
 
-  private processStudents(students: IStudent[]) {
-    // Map studentId to student gender, will likely want to map studentId to student so that 
-    // all student information could be accessed 
-    students.forEach((student) => {
+  /**
+   * Processes the student table by creating a mapping from sutdent Id's to information about students 
+   * including when they were enrolled. 
+   * @param students Array of students in a given class 
+   */
+  private processStudents(classRoom: IClassRoom): IDashboardStudent[] {
+    let dashStudents: IDashboardStudent[] = []; 
+    classRoom.students.forEach((student) => {
+      let temp: IDashboardStudent = {
+        name: student.firstName + " " + student.lastName,
+        id: student.id,
+        classId: student.classId,
+        schoolId: student.schoolId,
+        city: student.city,
+        gender: student.gender,
+        enrollmentDate: "" + student.syncDateTime
+      }
+      dashStudents.push(temp);
+
       if (this.data.students.get(student.id) == undefined) {
         this.data.students.set(student.id, {
-          student: student,
+          student: temp,
+          attendance: new Map<string, boolean>()
         });
       }
     })
+    return dashStudents; 
+  }
+
+  private processStudentEnrollment(studentEnrollment: any[]) {
+    for (let student of studentEnrollment) {
+      let id: string = student.RowKey;      
+      let tempTimeStamp: Date = new Date(student.TimeStamp);
+      let tempUpdatedOn: Date = new Date(student.UpdatedOn);
+      let timeStamp: string = "" + (tempTimeStamp.getMonth() + 1) + "/" + tempTimeStamp.getDate() + "/" + tempTimeStamp.getFullYear();
+      let updatedOn: string = "" + (tempUpdatedOn.getMonth() + 1) + "/" + tempUpdatedOn.getDate() + "/" + tempUpdatedOn.getFullYear();
+      
+      let enrollmentDate: string = tempTimeStamp < tempUpdatedOn ? timeStamp: updatedOn;
+      console.log(enrollmentDate);
+      if (this.data.students.get(id) != undefined) {
+        this.data.students.get(id).student.enrollmentDate = enrollmentDate; 
+      }
+    }
+  }
+
+  private processTeachers(school: ISchool): IDashboardTeacher[] {
+    let teachers: IDashboardTeacher[] = [];
+    for (let teacher of school.teachers) {
+      let temp = {
+        name: teacher.firstName + " " + teacher.lastName,
+        id: teacher.id,
+        schoolId: teacher.schoolId
+      }
+      teachers.push(temp); 
+
+      if (this.data.teachers.get(temp.id) == undefined) {
+        this.data.teachers.set(temp.id, {
+          teacher: temp,
+          attendance: new Map<string, boolean>()
+        })
+      }
+    }
+    return teachers; 
   }
 
   /**
    * Attendance is stored as individual entries in the Attendance Table. As a result, in order to format 
-   * the data, I go through each table entry and build up a map of:
-   *      cities -> city attendance data -> dates -> cummulative city/gender attendance 
-   *             -> schools -> school attendance data -> dates -> cummulatice school/gender attendance 
-   *                        -> classes -> class attendance data -> dates -> cummulative class/gender attendance
-   * Simply, I map cities to the schools in the city. I map schools to the classes in the school. And for 
-   * schools, cities, and classes, I keep track of total attendance for each date attenance was recorded.
+   * the data, I go through each table entry and update the attendance data of the city, school, and class that 
+   * this student was in. I also update the gender attendance for each city, school, and class. I keep track of 
+   * daily attendance in order to allow different ways to display data on the dashboard. 
    */
-  private processAttendanceTable() {
-    this.attendanceTable.forEach((entry) => {
-      if (this.data.students.get(entry.StudentId) === undefined) {
+  private processAttendanceTable(attendanceTable: any) {
+    attendanceTable.forEach((entry) => {
+      if (this.data.students.get(entry.StudentId) == undefined) {
         console.log("Attendance Not Taken " + entry.StudentId);
       }
-      if (this.data.schools.get(entry.PartitionKey) != undefined && this.data.students.get(entry.StudentId) != undefined) {
+      if (this.data.schools.get(entry.PartitionKey) != undefined && this.data.students.get(entry.StudentId) != undefined && this.data.teachers.get(entry.TeacherId) != undefined) {
         let city = this.data.schools.get(entry.PartitionKey).school.city;
         let schoolId = entry.PartitionKey; 
         let classId = entry.ClassRoomId;
         let gender = this.data.students.get(entry.StudentId).student.gender; 
+        let studentId = entry.StudentId;
+        let teacherId = entry.TeacherId
+        console.log(teacherId);
         if (gender !== "male" && gender !== "female") {
           gender = "nonBinary";
         }
@@ -201,7 +293,6 @@ export class DashboardService {
           });
         }
 
-
         // Initalize the map of day to attendance data inside the class map and finds out the total number of students 
         // In each city, school, and class
         if (this.data.classes.get(classId).attendance.get(dateKey) === undefined) {
@@ -223,13 +314,21 @@ export class DashboardService {
           });
         }
 
+        if (entry.Present && this.data.students.get(studentId).attendance.get(dateKey) === undefined) {
+          this.data.students.get(studentId).attendance.set(dateKey, entry.Present)
+        }
+
+        if (this.data.teachers.get(teacherId).attendance.get(dateKey) === undefined) {
+          this.data.teachers.get(teacherId).attendance.set(dateKey, true);
+        }
+
         // Update total number of students in class for cities, schools, classes 
         this.data.schools.get(schoolId).attendance.get(dateKey).total++;
         this.data.cities.get(city).attendance.get(dateKey).total++;
         this.data.classes.get(classId).attendance.get(dateKey).total++; 
 
         // Update present attendance for cities, schools, and classes 
-        if (entry.present) {
+        if (entry.Present) {
           this.data.cities.get(city).attendance.get(dateKey).present++;
           this.data.schools.get(schoolId).attendance.get(dateKey).present++;
           this.data.classes.get(classId).attendance.get(dateKey).present++;
@@ -239,7 +338,7 @@ export class DashboardService {
         this.data.cities.get(city).attendance.get(dateKey)[gender].total++;
         this.data.schools.get(schoolId).attendance.get(dateKey)[gender].total++;
         this.data.classes.get(classId).attendance.get(dateKey)[gender].total++;
-        if (entry.present) {
+        if (entry.Present) {
           this.data.cities.get(city).attendance.get(dateKey)[gender].present++;
           this.data.schools.get(schoolId).attendance.get(dateKey)[gender].present++;
           this.data.classes.get(classId).attendance.get(dateKey)[gender].present++;
@@ -249,93 +348,90 @@ export class DashboardService {
   }
 
   private getAttendanceTable() {
-    let endpoint = this.url + "Attentdance()" + this.attendanceSAS;
+    let endpoint = this.url + "Attentdance()" + "?" + this.attendanceSAS;
     return this.getRequest(endpoint);
   }
 
   private getSchoolTable() {
-    // Using school service (Gets rid of inactive/deleted schools)
-    // let endpoint = this.url + "School()" + this.schoolSAS;
     return this.schoolService.GetSchools();
   }
-
-  // private getClassTable() {
-  //   let endpoint = this.url + "ClassRoom()" + this.classRoomSAS;
-  //   return this.getRequest(endpoint);
-  // }
-
-  // private getStudentTable() {
-  //   let endpoint = this.url + "Student()" + this.studentSAS;
-  //   return this.getRequest(endpoint);    
-  // }
-
-
-  private getRequest(endpoint: string) {
-    try {
-      return this.http.get(endpoint);
-    } catch (err) {
-      console.log(err);
-    }
+  
+  private getStudentEnrollment() {
+    let endpoint = this.url + "Student()" + "?$select=RowKey,UpdatedOn,Timestamp&" + this.studentSAS; 
+    return this.getRequest(endpoint); 
   }
 
-  getCities(): {name: string, id: string}[] {
-    let cities: {name: string, id: string}[] = []; 
-    for (let city of this.data.cities.keys()) {
-      cities.push({name: city, id: city}); 
+  private getRequest(endpoint: string) {
+    return this.httpWithoutInterceptor.get(endpoint);
+  }
+
+  getCities(): IDashboardCity[] {
+    let cities: IDashboardCity[] = []; 
+    for (let city of this.data.cities.values()) {
+      cities.push(city.city); 
     } 
     return cities; 
   }
 
-  getSchools(city: {name: string, id: string}): {name: string, id: string, city: string}[] {
-    let schools: {name: string, id: string, city: string}[] = []; 
-    for (let school of this.data.cities.get(city.id).schools) {
-      schools.push({name: school.name, id: school.id, city: city.name})
-    }
-    return schools; 
+  getActiveSchools(schools: IDashboardSchool[], start: Date, end: Date): number {
+    return this.numActive(schools, 'schools', start, end); 
   }
 
-  getClasses(school: {name: string, id: string, city: string}): {name: string, id: string, school: string}[] {
-    let classes: {name: string, id: string, school: string}[] = []; 
-    for (let classRoom of this.data.schools.get(school.id).school.classRooms) {
-      classes.push({name: classRoom.classRoomName, id: classRoom.classId, school: school.name});
-    }
-    return classes; 
+  getActiveClasses(classRooms: IDashboardClassRoom[], start: Date, end: Date): number {
+    return this.numActive(classRooms, 'classes', start, end); 
+  }
+  
+  getActiveStudents(students: IDashboardStudent[], start: Date, end: Date): number {
+    return this.numActive(students, 'students', start, end);
   }
 
-  getBarChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string) {
-    return this.chartService.getBarChart(id, xAxisTitle, yAxisTitle, title); 
+  getActiveTeachers(teachers: IDashboardTeacher[], start: Date, end: Date) {
+    return this.numActive(teachers, 'teachers', start, end) ;
   }
 
-  getLineChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string) {
-    return this.chartService.getLineChart(id, xAxisTitle, yAxisTitle, title); 
-  }
-
-  updateAttendanceLineChart(data: {name: string, id: string, city?: string, school?: string}[], id: "classes" | "cities" | "schools") {
-    let attendance: {name: string, attendance: [string, IAttendance][]}[] = this.getAttendance(data, id); 
-    return this.chartService.updateLineChart(attendance); 
-  }
-
-  updateAttendanceBarChart(data: any[], id: "classes" | "cities" | "schools") {
-    let attendance: {name: string, attendance: [string, IAttendance][]}[] = this.getAttendance(data, id); 
-    return this.chartService.updateBarChart(attendance); 
-  }
-
-  updateGenderBarChart(data: any[]) {
-    return this.chartService.updateGenderBarChart(data); 
-  }
-
-  getAttendance(data: {name: string, id: string, city?: string, school?: string}[], id: "classes" | "cities" | "schools"): {name: string, attendance: [string, IAttendance][]}[] {
-    let attendanceData: {name: string, attendance: [string, IAttendance][]}[] = [];
+  numActive(data: IDashboardStudent[] | IDashboardTeacher[] | IDashboardSchool[]| IDashboardCity[], id: 'students' | 'teachers' | 'classes' | 'schools', start: Date, end: Date): number {
+    let total = 0; 
     for (let item of data) {
-      let attendance: {name: string, attendance: [string, IAttendance][]} = {
+      for (let entry of this.data[id].get(item.id).attendance.entries()) {
+        let date: Date = new Date(entry[0]);
+        if (date >= start && date <= end) {
+          total++;
+          break; 
+        }
+      }
+    }
+    return total; 
+  }
+
+  public getAttendance(data: IDashboardSchool[] | IDashboardClassRoom[] | IDashboardCity[], id: "classes" | "cities" | "schools", start: Date, end: Date): {name: string, attendance: [Date, IAttendance][]}[] {
+    let attendanceData: {name: string, attendance: [Date, IAttendance][]}[] = [];
+    for (let item of data) {
+      let attendance: {name: string, attendance: [Date, IAttendance][]} = {
         name: item.name,
         attendance: []
       }
       for (let entry of this.data[id].get(item.id).attendance.entries()) {
-        attendance.attendance.push(entry); 
+        let date: Date = new Date(entry[0]); 
+        if (date >= start && date <= end) { 
+          attendance.attendance.push([date, entry[1]]); 
+        }
       }
       attendanceData.push(attendance); 
     }
     return attendanceData; 
+  }
+
+  getCumulativeAttendance(data: IDashboardSchool | IDashboardClassRoom | IDashboardCity, id: "classes" | "cities" | "schools", start: Date, end: Date): number {
+    let total = 0;
+    let present = 0;
+    for (let entry of this.data[id].get(data.id).attendance.entries()) {
+      let attendance: IAttendance = entry[1];
+      let date: Date = new Date(entry[0]); 
+      if (date >= start && date <= end) { 
+        total += attendance.total;
+        present += attendance.present;
+      }
+    }
+    return total == 0 ? 0 : Math.round(present / total * 100); 
   }
 }

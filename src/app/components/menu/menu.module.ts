@@ -192,14 +192,14 @@ const routes: Routes = [
       //   .then( m => m.AssessmentPageModule)
       // },
       {
-        path: 'assessment/quizzes',
-        loadChildren: () => import('../../pages/assessment/assessment-quizzes/assessment-quizzes.module')
-        .then( m => m.AssessmentQuizzesPageModule)
-      },
-      {
         path: 'assessments',
         loadChildren: () => import('../../pages/assessment/assessments/assessments.module')
         .then( m => m.AssessmentsPageModule)
+      },
+      {
+        path: 'assessment/quizzes',
+        loadChildren: () => import('../../pages/assessment/assessment-quizzes/assessment-quizzes.module')
+        .then( m => m.AssessmentQuizzesPageModule)
       },
       {
         path: 'assessment/:subject/:id/student',
@@ -208,6 +208,11 @@ const routes: Routes = [
       },
       {
         path: 'assessment/quiz/add',
+        loadChildren: () => import('../../pages/assessment/assessment-quiz-add/assessment-quiz-add.module')
+        .then( m => m.AssessmentQuizAddPageModule)
+      },
+      {
+        path: 'assessment/quiz/:id/update',
         loadChildren: () => import('../../pages/assessment/assessment-quiz-add/assessment-quiz-add.module')
         .then( m => m.AssessmentQuizAddPageModule)
       },

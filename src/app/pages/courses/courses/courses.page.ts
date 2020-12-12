@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { Role } from 'src/app/_models';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { ICourseContentCategory } from 'src/app/_models/course-content-category';
@@ -28,6 +28,8 @@ export class CoursesPage implements OnInit {
     private modalController: ModalController,
     private authService: AuthenticationService,
     private contentService: CourseContentService,
+    private toastController: ToastController,
+    private alertController: AlertController,
     private router: Router,
   ) { }
 
@@ -35,19 +37,7 @@ export class CoursesPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.authService.currentUser.subscribe((user) => {
-      if (!user) {
-        return;
-      }
-      if (user.role === Role.Student) {
-        this.isStudent = true;
-      }
-      if (user.courseContent) {
-        this.contentService.GetCategoryWiseContent(user.courseContent).subscribe((groupResponse) => {
-          this.categoryWiseContent = Object.values(groupResponse.reverse());
-        });
-      }
-    });
+    this.refreshContent();
   }
 
 
@@ -94,8 +84,29 @@ export class CoursesPage implements OnInit {
     }
   }
 
-  TakeAssessment ( content: ICourseContent) {
+  TakeAssessment(content: ICourseContent) {
     this.router.navigateByUrl(`assessment/${content.id}`, { state: content });
+  }
+
+  refreshContent() {
+    this.authService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      if (user.role === Role.Student) {
+        this.isStudent = true;
+      }
+      if (user.courseContent) {
+        setTimeout(() => {
+          this.contentService.GetCategoryWiseContent(user.courseContent).subscribe((groupResponse) => {
+            const contents = Object.values(groupResponse.reverse());
+            this.categoryWiseContent = [...contents];
+          });
+        }, 10);
+      }
+    });
+
+
   }
 
   async openViewer(imgContentURL: string, content: ICourseContent) {
@@ -112,6 +123,50 @@ export class CoursesPage implements OnInit {
     });
 
     return await modal.present();
+  }
+
+  async confirmCourseDelete(course: ICourseContent) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Confirm course delete!',
+      message: `<strong>Are you sure you want to delete course?</strong>`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+        }, {
+          text: 'Okay',
+          handler: () => {
+            course.active = false;
+            this.contentService.UpdateCourse(course, course.id).subscribe(() => {
+              this.presentToast('Course content delete successfully.', 'success');
+              setTimeout(() => {
+                this.refreshContent();
+                this.courseContentDisplay = false;
+              }, 10);
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async presentToast(msg, type) {
+    const toast = await this.toastController.create({
+      message: msg,
+      position: 'bottom',
+      duration: 3000,
+      color: type,
+      buttons: [{
+        text: 'Close',
+        role: 'cancel',
+      }
+      ]
+    });
+    toast.present();
   }
 
 }

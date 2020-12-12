@@ -20,9 +20,11 @@ const routes: Routes = [
     loadChildren: () => import('./components/action-popover/action-popover.module').then( m => m.ActionPopoverPageModule)
   },
   {
-    path: 'modal',
-    loadChildren: () => import('./components/graphs/modal/modal.module').then( m => m.ModalPageModule)
+    path: 'train-cognitive-service',
+    loadChildren: () => import('./pages/train-cognitive-service/train-cognitive-service.module')
+    .then( m => m.TrainCognitiveServicePageModule)
   },
+
 
 ];
 
