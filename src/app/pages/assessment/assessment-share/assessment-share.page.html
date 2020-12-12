@@ -13,7 +13,7 @@
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100">
-        <form class="login100-form validate-form" [formGroup]="courseShareForm" (ngSubmit)="SubmitCourseShare()">
+        <form class="login100-form validate-form" [formGroup]="courseShareForm" (ngSubmit)="dismissModal()">
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mb-2">
               <mat-form-field class="example-full-width" appearance="outline">
@@ -48,7 +48,7 @@
           </div>
           <div class="container-login100-form-btn">
             <button mat-flat-button color="primary" class="login100-form-btn" type="submit">
-              Distribute
+              Share
             </button>
           </div>
         </form>

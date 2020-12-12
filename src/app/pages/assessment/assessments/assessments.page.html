@@ -4,20 +4,26 @@
     <ion-buttons slot="start">
       <ion-menu-button autoHide="true"></ion-menu-button>
     </ion-buttons>
+    <ion-buttons slot="end" *ngIf="!isStudent">
+      <ion-button color="secondary" slot="end" [routerLink]="['quiz/add']" shape="round" fill="outline">
+        New Assessment
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-grid class="grid">
+  <ion-grid class="grid" *ngIf="assessments.length">
     <ion-row class="ion-justify-content-center">
-      <ion-card class="item-card" *ngFor="let assessment of assessments" (click)="selectAssessment(assessment)">
+      <ion-card class="item-card" *ngFor="let assessment of assessments"
+        (click)="selectAssessment(assessment.subjectName)">
         <ion-card-content>
           <ion-item lines="none">
             <ion-avatar slot="start">
               <img src="../../../../assets/images/subject.svg">
             </ion-avatar>
             <ion-label>
-              <h2>{{ assessment.key | titlecase}}</h2>
+              <h2>{{ assessment.subjectName | titlecase}}</h2>
               <p> {{assessment.length}} Assessments</p>
             </ion-label>
           </ion-item>
@@ -25,6 +31,20 @@
       </ion-card>
     </ion-row>
   </ion-grid>
+  <ion-grid style="height: 100%" *ngIf="!assessments.length">
+    <ion-row *ngIf="!isStudent" justify-content-center align-items-center class="justify-center" [routerLink]="['quiz/add']">
+      <div text-center>
+        <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+        <h4>No assessment available!</h4>
+        <p>Click here to create new assessment</p>
+      </div>
+    </ion-row>
+
+    <ion-row justify-content-center align-items-center class="justify-center" *ngIf="isStudent">
+      <div text-center>
+        <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+        <h4>No assessment available!</h4>
+      </div>
+    </ion-row>
+  </ion-grid>
 </ion-content>
-
-

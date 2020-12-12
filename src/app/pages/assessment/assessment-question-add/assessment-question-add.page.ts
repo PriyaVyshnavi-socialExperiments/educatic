@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
+import { IUser } from 'src/app/_models';
+import { IAssessment, IQuestion } from 'src/app/_models/assessment';
 import { QuestionType } from 'src/app/_models/question-type';
+import { AuthenticationService } from 'src/app/_services';
+import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
 
 @Component({
   selector: 'app-assessment-question-add',
@@ -8,21 +14,67 @@ import { QuestionType } from 'src/app/_models/question-type';
   styleUrls: ['./assessment-question-add.page.scss'],
 })
 export class AssessmentQuestionAddPage implements OnInit {
+  @ViewChild('documentEditForm') documentEditForm: FormGroupDirective;
 
+  question: IQuestion;
+  subjectName: string;
   questionForm: FormGroup;
   answerIndex = false;
-  constructor(private formBuilder: FormBuilder,) { }
+  currentUser: IUser;
+  quizAssessment: IAssessment;
+  optionAnswer = 0;
+  backURL = '';
+  assessmentId = '';
+
+  constructor(private formBuilder: FormBuilder,
+    private assessmentService: AssessmentService,
+    private authenticationService: AuthenticationService,
+    private activatedRoute: ActivatedRoute,
+    public router: Router,
+    private toastController: ToastController) { }
 
   ngOnInit() {
     this.questionForm = this.formBuilder.group({
-      question: new FormControl(`22 students out of 50 from Class 2 (Section A) are selected for a quiz. 27 students out of 50 students from Class 2 (Section B) are selected for the same quiz. How many total number of students are selected from section A and B for the quiz?`, [
+      question: new FormControl('', [
         Validators.required,
-        Validators.maxLength(100),
+        Validators.maxLength(1000),
       ]),
-      questionType: new FormControl(``, [
+      questionType: new FormControl('', [
         Validators.required,
       ]),
+      shortAnswer: new FormControl(``),
       answerOptions: new FormArray([])
+    });
+
+    this.authenticationService.currentUser?.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.subjectName = this.activatedRoute.snapshot.paramMap.get('subject');
+      this.assessmentId = this.activatedRoute.snapshot.paramMap.get('id');
+      const questionId = this.activatedRoute.snapshot.paramMap.get('questionId');
+      this.backURL = `/assessment/${this.subjectName}/${this.assessmentId}/questions`;
+      if (questionId) {
+        this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((subjectWise) => {
+          subjectWise.subscribe((subjectAssessments) => {
+            const subjectWiseAssessments = subjectAssessments.find((a) => a.subjectName.toLowerCase() === this.subjectName);
+            if (subjectWiseAssessments) {
+              this.subjectName = subjectWiseAssessments.subjectName;
+              this.quizAssessment = subjectWiseAssessments.assessments?.find((a) => a.id === this.assessmentId) || {};
+              if (this.quizAssessment?.assessmentQuestions) {
+                this.question = this.quizAssessment.assessmentQuestions.find((a) => a.id === questionId);
+                if (this.question) {
+                  this.f.shortAnswer.setValue(this.question.shortAnswer);
+                  this.f.question.setValue(this.question.questionDescription);
+                  this.f.questionType.setValue(this.question.questionType);
+                  this.fillAnswersOptions(this.question.questionType);
+                }
+              }
+            }
+          })
+        });
+      }
     });
   }
 
@@ -33,10 +85,41 @@ export class AssessmentQuestionAddPage implements OnInit {
   get t() { return this.f.answerOptions as FormArray; }
 
   SubmitQuestion() {
+    if (this.questionForm.invalid) {
+      return;
+    } else {
+      const selectedQuestionType = this.f.questionType.value;
+      const question = {
+        id: this.question? this.question.id : '',
+        questionDescription: this.f.question.value,
+        questionType: selectedQuestionType
+      } as IQuestion;
 
+      question.questionDescription = this.f.question.value;
+      question.questionType = selectedQuestionType;
+
+      if (selectedQuestionType === QuestionType.ShortAnswer) {
+        question.shortAnswer = this.f.shortAnswer.value;
+      } else {
+        question.optionAnswer = this.optionAnswer;
+        const option = {};
+        option[1] = this.t.value[0].option;
+        option[2] = this.t.value[1].option;
+        if (selectedQuestionType === QuestionType.Objective) {
+          option[3] = this.t.value[2].option;
+          option[4] = this.t.value[3].option;
+        }
+        question.questionOptions = option;
+      }
+
+      this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId).subscribe((res) => {
+        this.router.navigateByUrl(this.backURL);
+      });
+    }
   }
 
   selectedAnswerOption(event) {
+    this.optionAnswer = event.target.value + 1;
     console.log('selectedAnswerOption ', event.target.value);
   }
 
@@ -45,21 +128,26 @@ export class AssessmentQuestionAddPage implements OnInit {
   }
 
   onChangeQuestionType(questionType) {
+    this.fillAnswersOptions(questionType.value);
+  }
+
+  private fillAnswersOptions(questionType) {
     this.t.clear();
-    switch (questionType.value) {
+    switch (questionType) {
       case QuestionType.Objective:
         for (let i = this.t.length; i < 4; i++) {
+          const questionOption = this.question?.questionOptions[i + 1];
           this.t.push(this.formBuilder.group({
-            answerOption: [`${48 - i}`, Validators.required]
+            option: [`${questionOption ? questionOption : ''}`]
           }));
         }
         break;
       case QuestionType.TrueFalse:
         this.t.push(this.formBuilder.group({
-          answerOption: [{ value: `True`, disabled: true }, Validators.required]
+          option: [{ value: `True`, disabled: true }]
         }));
         this.t.push(this.formBuilder.group({
-          answerOption: [{ value: `False`, disabled: true }, Validators.required]
+          option: [{ value: `False`, disabled: true }]
         }));
         break;
       case QuestionType.ShortAnswer:
@@ -67,7 +155,5 @@ export class AssessmentQuestionAddPage implements OnInit {
       default:
         break;
     }
-
   }
-
 }

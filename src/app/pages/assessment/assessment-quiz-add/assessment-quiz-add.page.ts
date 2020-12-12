@@ -31,7 +31,6 @@ export class AssessmentQuizAddPage implements OnInit {
 
   ngOnInit() {
     this.quizAssessment = history.state.assessmentQuiz as IAssessment;
-    
     this.quizForm = this.formBuilder.group({
       quizTitle: new FormControl('', [
         Validators.required,
@@ -86,6 +85,7 @@ export class AssessmentQuizAddPage implements OnInit {
       }
       this.assessmentService.CreateUpdateAssessment(assessment).subscribe((res) => {
         this.presentToast('Assessment quiz update successfully.', 'success');
+        this.router.navigateByUrl(`/assessment/quizzes`);
       });
     }
   }

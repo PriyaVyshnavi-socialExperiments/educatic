@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{title}}</ion-title>
+    <ion-title>{{title|titlecase}}</ion-title>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/assessments"></ion-back-button>
     </ion-buttons>
@@ -12,98 +12,78 @@
 
 <ion-content>
   <ion-grid class="grid">
-    <ion-row class="ion-justify-content-center">
-      <ion-card class="item-card">
-        <ion-list>
-          <ion-radio-group mode="md">
-            <ion-list-header>
-              <ion-label><b>Q1. A book has 98 pages. Gauri has read 59 pages out of them. How many more pages does she has to read to finish the book?</b></ion-label>
-            </ion-list-header>
-        
-            <ion-item  lines="none">
-              <ion-label>48</ion-label>
-              <ion-radio slot="start" value="48"></ion-radio>
-            </ion-item>
-        
-            <ion-item  lines="none">
-              <ion-label>46</ion-label>
-              <ion-radio slot="start" value="46"></ion-radio>
-            </ion-item>
-            <ion-item  lines="none">
-              <ion-label>43</ion-label>
-              <ion-radio slot="start" value="43"></ion-radio>
-            </ion-item>
-            <ion-item  lines="none">
-              <ion-label>86</ion-label>
-              <ion-radio slot="start" value="86"></ion-radio>
-            </ion-item>
-          </ion-radio-group>
-        </ion-list>
-      </ion-card>
-      <ion-card class="item-card">
-        <ion-list>
-          <ion-radio-group>
-            <ion-list-header>
-              <ion-label><b>Q2.  22 students out of 50 from Class 2 (Section A) are selected for a quiz. 27 students out of 50 students from Class 2 (Section B) are selected for the same quiz. How many total number of students are selected from section A and B for the quiz?</b></ion-label>
-            </ion-list-header>
-        
-            <ion-item  lines="none">
-              <ion-label>48</ion-label>
-              <ion-radio slot="start" value="48" checked></ion-radio>
-            </ion-item>
-        
-            <ion-item  lines="none">
-              <ion-label>46</ion-label>
-              <ion-radio slot="start" value="46"></ion-radio>
-            </ion-item>
-        
-            <ion-item  lines="none">
-              <ion-label>41</ion-label>
-              <ion-radio slot="start" value="41"></ion-radio>
-            </ion-item>
-            <ion-item  lines="none">
-              <ion-label>53</ion-label>
-              <ion-radio slot="start" value="53"></ion-radio>
-            </ion-item>
-          </ion-radio-group>
-        </ion-list>
-      </ion-card>
-      <ion-card class="item-card">
-        <ion-list>
-          <ion-radio-group>
-            <ion-list-header>
-              <ion-label><b>Q3. One less than eighty-eight is seventy-eight. </b></ion-label>
-            </ion-list-header>
-        
-            <ion-item  lines="none">
-              <ion-label>True</ion-label>
-              <ion-radio slot="start" value="true"></ion-radio>
-            </ion-item>
-            <ion-item  lines="none">
-              <ion-label>False</ion-label>
-              <ion-radio slot="start" value="false"></ion-radio>
-            </ion-item>
-          </ion-radio-group>
-        </ion-list>
-      </ion-card>
-      <ion-card class="item-card">
-        <ion-list>
-          <ion-radio-group>
-            <ion-list-header>
-              <ion-label><b>Q4. If 15, 72, 56 and 23 are arranged in ascending order, then the order of numbers will be 15 < 23 < 56</b></ion-label>
-            </ion-list-header>
-        
-            <ion-item  lines="none">
-              <ion-label>True</ion-label>
-              <ion-radio slot="start" value="true"></ion-radio>
-            </ion-item>
-            <ion-item  lines="none">
-              <ion-label>False</ion-label>
-              <ion-radio slot="start" value="false"></ion-radio>
-            </ion-item>
-          </ion-radio-group>
-        </ion-list>
-      </ion-card>
-    </ion-row>
+    <div class="limiter">
+      <div class="container-login100">
+        <div class="wrap-login100">
+          <form class="login100-form validate-form">
+            <ion-row class="ion-justify-content-center">
+              <ion-card class="item-card">
+                <ion-item lines="full">
+                  <ion-card-header>
+                    <h1>
+                      {{assessment?.assessmentTitle}}
+                    </h1>
+                    <p>
+                      {{assessment?.assessmentDescription}}
+                    </p>
+                  </ion-card-header>
+                </ion-item>
+                <div *ngFor="let question of assessment?.assessmentQuestions; index as i">
+                  <ion-card-content *ngIf="i===visibleQuestion">
+                    <ion-list>
+                      <ion-list-header>
+                        <ion-label><b>Q{{i+1}}. {{question.questionDescription}}</b></ion-label>
+                      </ion-list-header>
+                      <div [ngSwitch]="question.questionType">
+                        <ion-item-group *ngSwitchCase="'ShortAnswer'">
+                          <ion-item lines="none">
+                            <mat-form-field class="example-full-width" appearance="outline">
+                              <mat-label>Answer</mat-label>
+                              <textarea matInput placeholder="Enter answer here" value="" autocomplete="off"
+                                rows="4" (keyup)="selectedAnswerOption($event)"></textarea>
+                              <mat-icon matSuffix>
+                              </mat-icon>
+                            </mat-form-field>
+                          </ion-item>
+                        </ion-item-group>
+                        <ion-item-group *ngSwitchCase="'Objective'">
+                          <ion-radio-group mode="md" (ionChange)="selectedAnswerOption($event)">
+                            <ion-item lines="none" *ngFor="let option of options">
+                              <ion-label>{{question.questionOptions[option] | titlecase}}</ion-label>
+                              <ion-radio slot="start" [value]="{option: option, question: question}" [name]="option"></ion-radio>
+                            </ion-item>
+                          </ion-radio-group>
+                        </ion-item-group>
+                        <ion-item-group *ngSwitchCase="'TrueFalse'">
+                          <ion-radio-group mode="md" (ionChange)="selectedAnswerOption($event)">
+                            <ion-item lines="none">
+                              <ion-label>True</ion-label>
+                              <ion-radio slot="start" [value]="{option: 1, question: question}"></ion-radio>
+                            </ion-item>
+                            <ion-item lines="none">
+                              <ion-label>False</ion-label>
+                              <ion-radio slot="start" [value]="{option: 2, question: question}"></ion-radio>
+                            </ion-item>
+                          </ion-radio-group>
+                        </ion-item-group>
+                      </div>
+                      <ion-footer>
+                        <ion-button *ngIf="visibleNext(question, i)" (click)="visibleQuestion = visibleQuestion +1"
+                          class="float-right" expand="block" fill="clear">
+                          Next >>
+                        </ion-button>
+                        <ion-button *ngIf="i===questionCount" class="float-right" expand="block" fill="clear">
+                          Submit
+                        </ion-button>
+                      </ion-footer>
+                    </ion-list>
+                  </ion-card-content>
+                </div>
+              </ion-card>
+            </ion-row>
+          </form>
+        </div>
+      </div>
+    </div>
   </ion-grid>
 </ion-content>

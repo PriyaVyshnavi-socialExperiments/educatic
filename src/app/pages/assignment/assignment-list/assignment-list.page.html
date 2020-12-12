@@ -16,63 +16,67 @@
 
     <ion-grid class="grid">
       <ion-row class="ion-justify-content-center">
-    <ion-card class="item-card" *ngFor="let assignment of assignments">
+        <ion-card class="item-card" *ngFor="let assignment of assignments">
 
-      <ion-card-content>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="12" (click)="ViewTeacherAssignment(assignment)">
+                  <h2>{{assignment.assignmentName}} <ion-badge *ngIf="!ShowHideBadge(assignment.createdDate)"
+                      color="danger">
+                      New</ion-badge>
+                  </h2>
+                  <p> {{assignment.assignmentDescription}} </p>
+                  <p>Date Submitted: <b>{{assignment.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
+                </ion-col>
+                <ion-col size="12">
+                  <ion-row>
+                      <ion-button *ngIf="currentUser?.role === 'Student'"  color="primary" (click)=UploadAssignment(assignment) shape="round" fill="outline"
+                        > Upload
+                        <ion-icon name="push-outline"></ion-icon>
+                      </ion-button>
+                      <ion-button color="warning" (click)="assignment.badgeToggle = !assignment.badgeToggle"
+                        shape="round" fill="outline">
+                        <ion-label *ngIf="!assignment.badgeToggle">Show
 
-        <ion-item lines="none" color="light">
-          <ion-grid>
-            <ion-row>
-              <ion-col size="12" size-md (click)="ViewTeacherAssignment(assignment)">
-                <h2>{{assignment.assignmentName}} <ion-badge *ngIf="!ShowHideBadge(assignment.createdDate)"
-                    color="danger">
-                    New</ion-badge>
-                </h2>
-                <p> {{assignment.assignmentDescription}} </p>
-                <p>Date Submitted: <b>{{assignment.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
-              </ion-col>
-              <ion-col>
+                        </ion-label>
+                        <ion-icon *ngIf="!assignment.badgeToggle" name="chevron-down-circle-outline"></ion-icon>
+                        <ion-label *ngIf="assignment.badgeToggle">Hide
 
-                <ion-item lines="none" color="light">
-                
-                  <ion-buttons *ngIf="currentUser?.role === 'Student'" slot="end">
-                    <ion-button color="primary" (click)=UploadAssignment(assignment) shape="round" fill="outline"
-                      class="upload-button">
-                      <ion-icon slot="start" name="push-outline"></ion-icon>Upload
-                    </ion-button>
-                  </ion-buttons>
+                        </ion-label>
+                        <ion-icon *ngIf="assignment.badgeToggle" name="chevron-up-circle-outline"></ion-icon>
+                      </ion-button>
+                    <!-- <ion-badge style="float: right;" color="warning" class="number-circle" 
+                  (click)="assignment.badgeToggle = !assignment.badgeToggle">
+                  <h1>
+                    <ion-icon *ngIf="!assignment.badgeToggle" name="chevron-down-circle-outline"></ion-icon>
+                    <ion-icon *ngIf="assignment.badgeToggle" name="chevron-up-circle-outline"></ion-icon>
+                  </h1>
+                </ion-badge> -->
+                  </ion-row>
 
-                  <ion-badge color="warning" class="number-circle" slot="end"
-                    (click)="assignment.badgeToggle = !assignment.badgeToggle">
-                    <h1>
-                      <ion-icon *ngIf="!assignment.badgeToggle" name="chevron-down-circle-outline"></ion-icon>
-                      <ion-icon *ngIf="assignment.badgeToggle" name="chevron-up-circle-outline"></ion-icon>
-                    </h1>
-                  </ion-badge>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
-        <ion-list *ngIf="assignment.badgeToggle">
-          <ion-item *ngFor="let item of FilterStudentAssignments(assignment.studentAssignments); let i = index"
-            (click)="ViewStudentAssignment(item, assignment.assignmentName, assignment.id)">
-            <ion-badge slot="start" color="light" class="number-circle">{{i + 1}}</ion-badge>
-            <ion-label>
-              <h2>{{item.studentName}} <ion-badge *ngIf="!ShowHideBadge(item.createdDate)" color="danger">New
-                </ion-badge>
-              </h2>
-              <p> Submitted Date: <b>{{item.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
-            </ion-label>
-          </ion-item>
-          <ion-item lines="none" *ngIf="!assignment.studentAssignments.length">
-            <ion-label color="danger">
-              <h2>Assignment not uploaded yet by students</h2>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+            <ion-list *ngIf="assignment.badgeToggle">
+              <ion-item *ngFor="let item of FilterStudentAssignments(assignment.studentAssignments); let i = index"
+                (click)="ViewStudentAssignment(item, assignment.assignmentName, assignment.id)">
+                <ion-badge slot="start" color="light" class="number-circle">{{i + 1}}</ion-badge>
+                <ion-label>
+                  <h2>{{item.studentName}} <ion-badge *ngIf="!ShowHideBadge(item.createdDate)" color="danger">New
+                    </ion-badge>
+                  </h2>
+                  <p> Submitted Date: <b>{{item.createdDate | date: 'yyyy/MM/dd HH:mm:ss'}}</b> </p>
+                </ion-label>
+              </ion-item>
+              <ion-item lines="none" *ngIf="!assignment.studentAssignments.length">
+                <ion-label color="danger">
+                  <h2>Assignment not uploaded yet by students</h2>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
       </ion-row>
     </ion-grid>
   </div>

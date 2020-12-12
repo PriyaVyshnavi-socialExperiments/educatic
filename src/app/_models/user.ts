@@ -13,4 +13,6 @@ export interface IUser {
     schools: ISchool[];
     defaultSchool: ISchool;
     courseContent?: ICourseContent[];
+    classId?: string;
+    assessmentCategory: string[];
 }
