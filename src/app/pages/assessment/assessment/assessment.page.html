@@ -5,7 +5,7 @@
       <ion-back-button defaultHref="/assessments"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button ion-button block>Submit</ion-button>
+      <ion-button [routerLink]="['/assessments']" ion-button block>Cancel</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -21,55 +21,61 @@
                 <ion-item lines="full">
                   <ion-card-header>
                     <h1>
-                      {{assessment?.assessmentTitle}}
+                      {{assessment?.assessmentTitle | titlecase}}
                     </h1>
                     <p>
-                      {{assessment?.assessmentDescription}}
+                      {{assessment?.assessmentDescription | titlecase}}
                     </p>
                   </ion-card-header>
                 </ion-item>
                 <div *ngFor="let question of assessment?.assessmentQuestions; index as i">
                   <ion-card-content *ngIf="i===visibleQuestion">
                     <ion-list>
-                      <ion-list-header>
+                     
                         <ion-label><b>Q{{i+1}}. {{question.questionDescription}}</b></ion-label>
-                      </ion-list-header>
+                     
                       <div [ngSwitch]="question.questionType">
                         <ion-item-group *ngSwitchCase="'ShortAnswer'">
                           <ion-item lines="none">
                             <mat-form-field class="example-full-width" appearance="outline">
                               <mat-label>Answer</mat-label>
-                              <textarea matInput placeholder="Enter answer here" value="" autocomplete="off"
-                                rows="4" (keyup)="selectedAnswerOption($event)"></textarea>
+                              <textarea matInput placeholder="Enter answer here" value="" autocomplete="off" rows="4"
+                                #answer (keyup)="shortAnswerText(answer)"></textarea>
                               <mat-icon matSuffix>
                               </mat-icon>
                             </mat-form-field>
                           </ion-item>
                         </ion-item-group>
                         <ion-item-group *ngSwitchCase="'Objective'">
-                          <ion-radio-group mode="md" (ionChange)="selectedAnswerOption($event)">
+                          <ion-radio-group mode="md" (ionChange)="selectedAnswerOption(optionAnswer)" #optionAnswer>
                             <ion-item lines="none" *ngFor="let option of options">
-                              <ion-label>{{question.questionOptions[option] | titlecase}}</ion-label>
-                              <ion-radio slot="start" [value]="{option: option, question: question}" [name]="option"></ion-radio>
+                              <ion-label [color]="validateAnswerColor(optionAnswer, option, question)">
+                                {{question.questionOptions[option] | titlecase}}</ion-label>
+                              <ion-radio [color]="validateAnswerColor(optionAnswer, option, question)" slot="start"
+                                [value]="{option: option, question: question}" [name]="option"></ion-radio>
                             </ion-item>
                           </ion-radio-group>
                         </ion-item-group>
                         <ion-item-group *ngSwitchCase="'TrueFalse'">
-                          <ion-radio-group mode="md" (ionChange)="selectedAnswerOption($event)">
+                          <ion-radio-group mode="md" (ionChange)="selectedAnswerOption(trueFalseAnswer)"
+                            #trueFalseAnswer>
                             <ion-item lines="none">
-                              <ion-label>True</ion-label>
-                              <ion-radio slot="start" [value]="{option: 1, question: question}"></ion-radio>
+                              <ion-label [color]="validateAnswerColor(trueFalseAnswer, 1, question)">True</ion-label>
+                              <ion-radio [color]="validateAnswerColor(trueFalseAnswer, 1, question)" slot="start"
+                                [value]="{option: 1, question: question}"></ion-radio>
                             </ion-item>
                             <ion-item lines="none">
-                              <ion-label>False</ion-label>
-                              <ion-radio slot="start" [value]="{option: 2, question: question}"></ion-radio>
+                              <ion-label [color]="validateAnswerColor(trueFalseAnswer, 2, question)">False</ion-label>
+                              <ion-radio [color]="validateAnswerColor(trueFalseAnswer, 2, question)" slot="start"
+                                [value]="{option: 2, question: question}"></ion-radio>
                             </ion-item>
                           </ion-radio-group>
                         </ion-item-group>
                       </div>
                       <ion-footer>
-                        <ion-button *ngIf="visibleNext(question, i)" (click)="visibleQuestion = visibleQuestion +1"
-                          class="float-right" expand="block" fill="clear">
+                        <ion-button *ngIf="isNext && i!==questionCount"
+                          (click)="visibleQuestion = visibleQuestion +1; isNext = !isNext" class="float-right"
+                          expand="block" fill="clear">
                           Next >>
                         </ion-button>
                         <ion-button *ngIf="i===questionCount" class="float-right" expand="block" fill="clear">
@@ -79,6 +85,17 @@
                     </ion-list>
                   </ion-card-content>
                 </div>
+
+                <ion-row justify-content-center align-items-center class="justify-center" *ngIf="!assessment?.assessmentQuestions.length">
+                  
+                  <ion-card-header>
+                    <div text-center>
+                        <img src="../../../../assets/images/assessment.svg" style="height: 40px;">
+                    <!-- <ion-icon name="help-circle-outline" style="zoom:5.0;" color="medium"></ion-icon> -->
+                    <h4>No assessment question(s) available!</h4>
+                  </div>
+                  </ion-card-header>
+                </ion-row>
               </ion-card>
             </ion-row>
           </form>

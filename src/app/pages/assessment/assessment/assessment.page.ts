@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IAssessment, IQuestion } from 'src/app/_models/assessment';
+import { IAnswer, IAssessment, IQuestion } from 'src/app/_models/assessment';
 import { QuestionType } from 'src/app/_models/question-type';
 
 @Component({
@@ -11,9 +11,11 @@ import { QuestionType } from 'src/app/_models/question-type';
 export class AssessmentPage implements OnInit {
   title: string;
   assessment: IAssessment;
+  assessmentAnswers: IAnswer[] = [];
   options = [1, 2, 3, 4];
   visibleQuestion = 0;
   questionCount = 0;
+  isNext = false;
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -32,8 +34,32 @@ export class AssessmentPage implements OnInit {
     return true;
   }
 
-  selectedAnswerOption(event) {
-    console.log('selectedAnswerOption ', event.target.value);
+  validateAnswerColor(selectedOption, option, question: IQuestion) {
+    selectedOption = selectedOption?.value?.option;
+    return selectedOption === option && selectedOption === question.optionAnswer + 1 ? 'success' : '';
   }
 
+  shortAnswerText(shortAnswer) {
+    shortAnswer = shortAnswer.value.trim();
+    if (shortAnswer?.length) {
+      this.isNext = true;
+    } else {
+      this.isNext = false;
+    }
+  }
+
+  selectedAnswerOption(selectedOption) {
+    selectedOption = selectedOption.value;
+    if (selectedOption.option) {
+      const optionQuestion: { option: number, question: IQuestion } = selectedOption;
+      if (optionQuestion.option === optionQuestion.question.optionAnswer + 1) {
+        this.isNext = true;
+      } else {
+        this.isNext = false;
+      }
+    }
+  }
+
+  updateAssessmentAnswers() {
+  }
 }
