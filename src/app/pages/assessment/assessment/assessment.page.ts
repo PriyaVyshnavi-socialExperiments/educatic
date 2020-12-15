@@ -37,11 +37,19 @@ export class AssessmentPage implements OnInit {
       }
       this.currentUser = user;
       this.title = this.activatedRoute.snapshot.paramMap.get('subject');
-      this.assessment = history.state.assessment as IAssessment;
-      this.questionCount = this.assessment.assessmentQuestions.length - 1;
-      if (!this.assessment) {
-        this.router.navigateByUrl(`assessment/quizzes/${this.title}`);
-      }
+      const assessmentId = this.activatedRoute.snapshot.paramMap.get('id');
+      this.assessmentService.GetOfflineAssessments().subscribe((subjectWise) => {
+        subjectWise.subscribe((subjectAssessments) => {
+          const subjectWiseAssessments = subjectAssessments.find((a) => a.subjectName.toLowerCase() === this.title.toLowerCase());
+          if (subjectWiseAssessments) {
+            this.assessment = subjectWiseAssessments.assessments?.find((a) => a.id === assessmentId) || {};
+            if (!this.assessment) {
+              this.router.navigateByUrl(`assessment/quizzes/${this.title}`);
+            }
+            this.questionCount = this.assessment.assessmentQuestions.length - 1;
+          }
+        })
+      });
     });
   }
 

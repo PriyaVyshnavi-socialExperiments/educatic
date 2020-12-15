@@ -2,10 +2,10 @@
   <ion-toolbar>
     <ion-title>{{title|titlecase}}</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/assessments"></ion-back-button>
+      <ion-back-button size="small" defaultHref="/assessments"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button [routerLink]="['/assessments']" ion-button block>Cancel</ion-button>
+      <ion-button size="small" [routerLink]="['/assessments']" ion-button block>Cancel</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -31,9 +31,9 @@
                 <div *ngFor="let question of assessment?.assessmentQuestions; index as i">
                   <ion-card-content *ngIf="i===visibleQuestion">
                     <ion-list>
-                     
-                        <ion-label><b>Q{{i+1}}. {{question.questionDescription}}</b></ion-label>
-                     
+
+                      <ion-label><b>Q{{i+1}}. {{question.questionDescription}}</b></ion-label>
+
                       <div [ngSwitch]="question.questionType">
                         <ion-item-group *ngSwitchCase="'ShortAnswer'">
                           <ion-item lines="none">
@@ -72,13 +72,13 @@
                           </ion-radio-group>
                         </ion-item-group>
                       </div>
-                      <ion-footer>
-                        <ion-button *ngIf="isNext && i!==questionCount"
-                          (click)="moveNextQuestion()" class="float-right"
-                          expand="block" fill="clear">
-                          Next >>
+                      <ion-footer style="padding: 10px;">
+                        <ion-button size="small" color="secondary" *ngIf="isNext && i!==questionCount" (click)="moveNextQuestion()"
+                          class="float-right" shape="round" fill="outline">
+                          Next Question
                         </ion-button>
-                        <ion-button (click)="SubmitAssessment()" *ngIf="isNext && i===questionCount" class="float-right" expand="block" fill="clear">
+                        <ion-button size="small" color="secondary" (click)="SubmitAssessment()" *ngIf="isNext && i===questionCount"
+                          class="float-right" shape="round" fill="outline">
                           Submit
                         </ion-button>
                       </ion-footer>
@@ -86,14 +86,14 @@
                   </ion-card-content>
                 </div>
 
-                <ion-row justify-content-center align-items-center class="justify-center" *ngIf="!assessment?.assessmentQuestions.length">
-                  
+                <ion-row justify-content-center align-items-center class="justify-center"
+                  *ngIf="!assessment?.assessmentQuestions.length">
+
                   <ion-card-header>
                     <div text-center>
-                        <img src="../../../../assets/images/assessment.svg" style="height: 40px;">
-                    <!-- <ion-icon name="help-circle-outline" style="zoom:5.0;" color="medium"></ion-icon> -->
-                    <h4>No assessment question(s) available!</h4>
-                  </div>
+                      <img src="../../../../assets/images/assessment.svg" style="height: 40px;">
+                      <h4>No assessment question(s) available!</h4>
+                    </div>
                   </ion-card-header>
                 </ion-row>
               </ion-card>

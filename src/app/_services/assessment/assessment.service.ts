@@ -68,11 +68,11 @@ export class AssessmentService extends OfflineService {
       );
   }
 
-  public GetAssessments(schoolId: string, classId?: string) {
+  public GetAssessments(schoolId: string, classId?: string, studentId?: string) {
     if (!this.network.IsOnline()) {
       return this.GetOfflineAssessments();
     } else {
-      const url = classId? `/assessments/${schoolId}/${classId}`: `/assessments/${schoolId}`;
+      const url = classId? `/assessments/${schoolId}/${classId}/${studentId}`: `/assessments/${schoolId}`;
       return this.http.Get<IAssessment[]>(url)
         .pipe(
           map(res => this.GetSubjectWiseAssessments(res)),
