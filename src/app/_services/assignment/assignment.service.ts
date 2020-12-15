@@ -26,11 +26,11 @@ export class AssignmentService extends OfflineService {
   }
 
   public AssignmentTeacher(assignment: IAssignment, file: File) {
-    return concat(this.UploadAssignment(file), this.Teacher(assignment));
+    return concat(this.UploadAssignment(file), this.CreateUpdateAssignment(assignment));
   }
 
   public AssignmentStudent(assignment: IStudentAssignment, file: File) {
-    return concat(this.UploadAssignment(file), this.Student(assignment));
+    return concat(this.UploadAssignment(file), this.SubmitAssignment(assignment));
   }
 
   public AddOfflineSubjects(subjects: ICourseContentCategory[]) {
@@ -92,11 +92,11 @@ export class AssignmentService extends OfflineService {
     return this.blobUpload.uploadFile(assignment);
   }
 
-  private Teacher(assignment: IAssignment) {
+  public CreateUpdateAssignment(assignment: IAssignment) {
     if (!assignment.id) {
       assignment.id = Guid.create().toString();
     }
-    return this.http.Post<Response>('/assignment/teacher', assignment)
+    return this.http.Post<Response>('/assignment/create', assignment)
       .pipe(
         map(response => {
           return response;
@@ -107,8 +107,8 @@ export class AssignmentService extends OfflineService {
       );
   }
 
-  private Student(assignment: IStudentAssignment) {
-    return this.http.Post<Response>('/assignment/student', assignment);
+  private SubmitAssignment(assignment: IStudentAssignment) {
+    return this.http.Post<Response>('/assignment/submit', assignment);
   }
 
   private getOfflineAssignments() {

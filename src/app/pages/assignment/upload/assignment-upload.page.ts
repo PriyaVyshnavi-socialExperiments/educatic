@@ -175,7 +175,8 @@ export class AssignmentUploadPage implements OnInit {
       schoolId: this.school.id,
       subjectName: this.subjectName,
       assignmentName: this.f.assignmentName.value,
-      assignmentDescription: this.f.assignmentDescription.value
+      assignmentDescription: this.f.assignmentDescription.value,
+      createdBy: this.currentUser.id
     } as IAssignment;
 
     let blobDataURL = `${this.school.name.replace(/\s/g, '')}_${this.school.id}/${classRoom.classRoomName.replace(/\s/g, '')}_${classRoom.classId}/${this.subjectName}`;

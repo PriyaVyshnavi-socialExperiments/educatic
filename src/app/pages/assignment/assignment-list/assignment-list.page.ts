@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { IAssignment, IStudentAssignment } from 'src/app/_models/assignment';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -33,30 +33,13 @@ export class AssignmentListPage implements OnInit {
     private assignmentService: AssignmentService,
     private authenticationService: AuthenticationService,
     private datePipe: DatePipe,
+    private alertController: AlertController,
+    private toastController: ToastController,
     private dataShare: DataShareService) {
   }
 
   ionViewWillEnter() {
-    this.authenticationService.currentUser.subscribe((user) => {
-      if (!user) {
-        return;
-      }
-      this.currentUser = user;
-      this.school = user.defaultSchool;
-      this.classId = this.activatedRoute.snapshot.paramMap.get('classId');
-      this.subjectName = this.activatedRoute.snapshot.paramMap.get('subjectName');
-      this.assignmentService.GetAssignments(this.school.id, this.classId).subscribe((list) => {
-        this.assignmentService.GetSubjectWiseAssignments(list).subscribe((asms) => {
-          const subjectWiseAssignments = asms.find((a) => a.key === this.subjectName);
-          this.assignments = [...subjectWiseAssignments?.assignment || []];
-          this.assignments.map(p =>
-            p.studentAssignments?.length > 0
-              ? { ...p, studentAssignmentList: p.studentAssignments }
-              : p
-          );
-        });
-      })
-    });
+    this.refresh();
     console.log('assignment list..')
   }
 
@@ -138,6 +121,70 @@ export class AssignmentListPage implements OnInit {
         return await modal.present();
       }
     }
+  }
+
+  async DeleteAssignment(assignment: IAssignment) {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Confirm!',
+      message: `<strong>Are you sure you want to delete assignment?</strong>`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+        }, {
+          text: 'Okay',
+          handler: () => {
+            assignment.active = false;
+            assignment.createdBy = this.currentUser.id;
+            this.assignmentService.CreateUpdateAssignment(assignment).subscribe((res) => {
+              this.presentToast('Assignment deleted successfully.', 'success');
+              this.refresh();
+            })
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private refresh() {
+    this.authenticationService.currentUser.subscribe((user) => {
+      if (!user) {
+        return;
+      }
+      this.currentUser = user;
+      this.school = user.defaultSchool;
+      this.classId = this.activatedRoute.snapshot.paramMap.get('classId');
+      this.subjectName = this.activatedRoute.snapshot.paramMap.get('subjectName');
+      this.assignmentService.GetAssignments(this.school.id, this.classId).subscribe((list) => {
+        this.assignmentService.GetSubjectWiseAssignments(list).subscribe((asms) => {
+          const subjectWiseAssignments = asms.find((a) => a.key === this.subjectName);
+          this.assignments = [...subjectWiseAssignments?.assignment || []];
+          this.assignments.map(p =>
+            p.studentAssignments?.length > 0
+              ? { ...p, studentAssignmentList: p.studentAssignments }
+              : p
+          );
+        });
+      });
+    });
+  }
+
+  private async presentToast(msg, type) {
+    const toast = await this.toastController.create({
+      message: msg,
+      position: 'bottom',
+      duration: 3000,
+      color: type,
+      buttons: [{
+        text: 'Close',
+        role: 'cancel',
+      }
+      ]
+    });
+    toast.present();
   }
 
 }
