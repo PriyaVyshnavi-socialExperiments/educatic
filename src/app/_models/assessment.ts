@@ -19,9 +19,9 @@ export interface IStudentAssessment {
   studentName: string;
   studentId: string;
   schoolId: string;
+  classId: string;
   assessmentAnswers: IAnswer[];
   createdDate: Date;
-  attempts: number;
 }
 
 export interface ISubjectAssessment {
@@ -44,6 +44,6 @@ export interface IQuestion {
 export interface IAnswer {
  questionId: string;
  attempts: number;
- answerKey: number;
- attemptAnswer: string;
+ optionAnswer: number;
+ shortAnswer: string;
 }

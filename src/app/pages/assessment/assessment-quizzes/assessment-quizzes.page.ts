@@ -36,7 +36,7 @@ export class AssessmentQuizzesPage implements OnInit {
       this.isStudent = this.currentUser.role === Role.Student;
       this.subjectName = this.activatedRoute.snapshot.paramMap.get('subject');
 
-      this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((subjectWise) => {
+      this.assessmentService.GetOfflineAssessments().subscribe((subjectWise) => {
         subjectWise.subscribe((assessments) => {
           this.subjectAssessment = [...assessments];
           const subjectWiseAssessments = this.subjectAssessment.find((a) => a.subjectName.toLowerCase() === this.subjectName);

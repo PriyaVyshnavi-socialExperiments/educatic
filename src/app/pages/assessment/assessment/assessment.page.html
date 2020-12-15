@@ -40,7 +40,7 @@
                             <mat-form-field class="example-full-width" appearance="outline">
                               <mat-label>Answer</mat-label>
                               <textarea matInput placeholder="Enter answer here" value="" autocomplete="off" rows="4"
-                                #answer (keyup)="shortAnswerText(answer)"></textarea>
+                                #answer (keyup)="shortAnswerText(answer, question.id)"></textarea>
                               <mat-icon matSuffix>
                               </mat-icon>
                             </mat-form-field>
@@ -74,11 +74,11 @@
                       </div>
                       <ion-footer>
                         <ion-button *ngIf="isNext && i!==questionCount"
-                          (click)="visibleQuestion = visibleQuestion +1; isNext = !isNext" class="float-right"
+                          (click)="moveNextQuestion()" class="float-right"
                           expand="block" fill="clear">
                           Next >>
                         </ion-button>
-                        <ion-button *ngIf="i===questionCount" class="float-right" expand="block" fill="clear">
+                        <ion-button (click)="SubmitAssessment()" *ngIf="isNext && i===questionCount" class="float-right" expand="block" fill="clear">
                           Submit
                         </ion-button>
                       </ion-footer>
