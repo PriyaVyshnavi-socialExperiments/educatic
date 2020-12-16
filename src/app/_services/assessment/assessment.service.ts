@@ -2,8 +2,7 @@ import { Injectable, Injector } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
-import { IAssessment, IQuestion, IStudentAssessment, ISubjectAssessment } from 'src/app/_models/assessment';
-import { IAssessmentShare } from 'src/app/_models/assessment-share';
+import { IAssessment, IAssessmentShare, IQuestion, IStudentAssessment, ISubjectAssessment } from 'src/app/_models/assessment';
 import { HttpService } from '../http-client/http.client';
 import { NetworkService } from '../network/network.service';
 import { OfflineService } from '../offline/offline.service';
@@ -31,8 +30,8 @@ export class AssessmentService extends OfflineService {
         map(response => {
           return response;
         }),
-        finalize(() => {
-          this.UpdateAssessmentOfflineList(assessment);
+        finalize(async() => {
+          await this.UpdateAssessmentOfflineList(assessment);
         })
       );
   }
@@ -52,7 +51,7 @@ export class AssessmentService extends OfflineService {
       );
   }
 
-  public CreateUpdateAssessmentQuestion(question: IQuestion, assessmentId: string) {
+  public CreateUpdateAssessmentQuestion(question: IQuestion, assessmentId: string, subjectName: string) {
     if (!question.id) {
       question.id = Guid.create().toString();
     }
@@ -62,8 +61,8 @@ export class AssessmentService extends OfflineService {
         map(response => {
           return response;
         }),
-        finalize(() => {
-          this.UpdateAssessmentQuestionOffline(question, assessmentId);
+        finalize(async() => {
+          await this.UpdateAssessmentQuestionOffline(question, assessmentId, subjectName);
         })
       );
   }
@@ -154,7 +153,8 @@ export class AssessmentService extends OfflineService {
     } else {
       const subjectWise = {
         subjectName: assessment.subjectName,
-        length: 1
+        length: 1,
+        assessments: []
       } as ISubjectAssessment
       subjectWise.assessments.unshift(assessment);
       filterSubjectAssessments.unshift(subjectWise);
@@ -162,17 +162,23 @@ export class AssessmentService extends OfflineService {
     await this.SetOfflineData('Assessment', 'assessments', filterSubjectAssessments);
   }
 
-  private async UpdateAssessmentQuestionOffline(question: IQuestion, assessmentId: string) {
-    // const data = await this.GetOfflineData('Assessment', 'assessments');
-    // const assessments = data ? data as ISubjectAssessment[] : [];
-    // const assessmentStored = assessments.find((s) => s.id === assessmentId);
+  private async UpdateAssessmentQuestionOffline(question: IQuestion, assessmentId: string, subjectName: string) {
+    const data = await this.GetOfflineData('Assessment', 'assessments');
+    const assessments = data ? data as ISubjectAssessment[] : [];
+    const offlineAssessments = assessments.find((s) => s.subjectName === subjectName)?.assessments;
+    const assessmentStored = offlineAssessments.find((s) => s.id === assessmentId);
 
-    // const assessmentQuestionList = assessmentStored.assessmentQuiz.filter((cc) => {
-    //   return cc.id !== question.id;
-    // });
-    // assessmentQuestionList.unshift(question);
-    // assessmentStored.assessmentQuiz = [...assessmentQuestionList];
-    // await this.UpdateAssessmentOfflineList(assessmentStored);
+    let assessmentQuestionList = assessmentStored.assessmentQuestions?.filter((cc) => {
+      return cc.id !== question.id;
+    });
+
+    if(!assessmentQuestionList) {
+      assessmentQuestionList = [];
+    }
+    
+    assessmentQuestionList.unshift(question);
+    assessmentStored.assessmentQuestions = [...assessmentQuestionList];
+    await this.UpdateAssessmentOfflineList(assessmentStored);
   }
 
   public GetOfflineAssessments() {

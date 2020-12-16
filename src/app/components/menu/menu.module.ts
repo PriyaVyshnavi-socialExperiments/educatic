@@ -240,6 +240,11 @@ const routes: Routes = [
         path: 'assessment/share',
         loadChildren: () => import('../../pages/assessment/assessment-share/assessment-share.module')
         .then( m => m.AssessmentSharePageModule)
+      },
+      {
+        path: 'assessment/:subject/solved/:id',
+        loadChildren: () => import('../../pages/assessment/assessment-solved/assessment-solved.module')
+        .then( m => m.AssessmentSolvedPageModule)
       }
     ],
     runGuardsAndResolvers: 'always',
