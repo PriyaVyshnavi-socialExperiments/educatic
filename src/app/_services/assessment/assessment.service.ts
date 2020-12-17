@@ -2,7 +2,7 @@ import { Injectable, Injector } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
-import { IAssessment, IQuestion, ISubjectAssessment } from 'src/app/_models/assessment';
+import { IAssessment, IQuestion, IStudentAssessment, ISubjectAssessment } from 'src/app/_models/assessment';
 import { IAssessmentShare } from 'src/app/_models/assessment-share';
 import { HttpService } from '../http-client/http.client';
 import { NetworkService } from '../network/network.service';
@@ -37,6 +37,21 @@ export class AssessmentService extends OfflineService {
       );
   }
 
+  public SubmitStudentAssessment(assessment: IStudentAssessment) {
+    if (!assessment.id) {
+      assessment.id = Guid.create().toString();
+    }
+    return this.http.Post<Response>('/assessment/student/update', assessment)
+      .pipe(
+        map(response => {
+          return response;
+        }),
+        finalize(() => {
+          //this.UpdateAssessmentOfflineList(assessment);
+        })
+      );
+  }
+
   public CreateUpdateAssessmentQuestion(question: IQuestion, assessmentId: string) {
     if (!question.id) {
       question.id = Guid.create().toString();
@@ -53,11 +68,11 @@ export class AssessmentService extends OfflineService {
       );
   }
 
-  public GetAssessments(schoolId: string, classId?: string) {
+  public GetAssessments(schoolId: string, classId?: string, studentId?: string) {
     if (!this.network.IsOnline()) {
-      return this.getOfflineAssessmentsSubjectWise();
+      return this.GetOfflineAssessments();
     } else {
-      const url = classId? `/assessments/${schoolId}/${classId}`: `/assessments/${schoolId}`;
+      const url = classId? `/assessments/${schoolId}/${classId}/${studentId}`: `/assessments/${schoolId}`;
       return this.http.Get<IAssessment[]>(url)
         .pipe(
           map(res => this.GetSubjectWiseAssessments(res)),
@@ -69,7 +84,7 @@ export class AssessmentService extends OfflineService {
             }
           }),
           catchError(() => {
-            return this.getOfflineAssessmentsSubjectWise();
+            return this.GetOfflineAssessments();
           })
         );
     }
@@ -160,7 +175,7 @@ export class AssessmentService extends OfflineService {
     // await this.UpdateAssessmentOfflineList(assessmentStored);
   }
 
-  private getOfflineAssessmentsSubjectWise() {
+  public GetOfflineAssessments() {
     return from(this.GetOfflineData('Assessment', 'assessments')).pipe(
       map(response => {
         if (response && response.length > 0) {

@@ -23,7 +23,7 @@ export class AssessmentsPage implements OnInit {
     private assessmentService: AssessmentService) { }
 
   ngOnInit() {
-   
+
   }
 
   ionViewWillEnter() {
@@ -43,15 +43,16 @@ export class AssessmentsPage implements OnInit {
 
       this.assessmentService.SetOfflineData('Assessment', 'category', this.courseCategory);
 
-      this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id, this.currentUser.classId).subscribe((subjectWise) => {
-        subjectWise.subscribe((assessments) => {
-          this.assessments = [...assessments];
-          // this.courseCategory = this.assessments.map((cat, index) => {
-          //   return { id: index.toString(), name: cat.subjectName.toLowerCase() } as ICourseContentCategory;
-          // })
-          // this.assessmentService.SetOfflineData('Assessment', 'category', this.courseCategory);
+      this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id, this.currentUser.classId, this.currentUser.id)
+        .subscribe((subjectWise) => {
+          subjectWise.subscribe((assessments) => {
+            this.assessments = [...assessments];
+            // this.courseCategory = this.assessments.map((cat, index) => {
+            //   return { id: index.toString(), name: cat.subjectName.toLowerCase() } as ICourseContentCategory;
+            // })
+            // this.assessmentService.SetOfflineData('Assessment', 'category', this.courseCategory);
+          })
         })
-      })
     });
   }
 

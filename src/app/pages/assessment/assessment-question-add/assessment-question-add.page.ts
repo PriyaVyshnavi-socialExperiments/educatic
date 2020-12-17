@@ -56,7 +56,7 @@ export class AssessmentQuestionAddPage implements OnInit {
       const questionId = this.activatedRoute.snapshot.paramMap.get('questionId');
       this.backURL = `/assessment/${this.subjectName}/${this.assessmentId}/questions`;
       if (questionId) {
-        this.assessmentService.GetAssessments(this.currentUser.defaultSchool.id).subscribe((subjectWise) => {
+        this.assessmentService.GetOfflineAssessments().subscribe((subjectWise) => {
           subjectWise.subscribe((subjectAssessments) => {
             const subjectWiseAssessments = subjectAssessments.find((a) => a.subjectName.toLowerCase() === this.subjectName);
             if (subjectWiseAssessments) {
