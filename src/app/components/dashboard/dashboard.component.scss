@@ -16,7 +16,7 @@ ion-card {
     overflow: hidden;
 }
 
-span {
+.static-cards {
     font-size: xx-large;
 }
 
@@ -24,6 +24,10 @@ ion-icon {
     float: right;
 }
 
-agm-map {
-    height: 100%;
+.odd-row {
+    color: gray; 
+}
+
+.even-row {
+    color: white; 
 }

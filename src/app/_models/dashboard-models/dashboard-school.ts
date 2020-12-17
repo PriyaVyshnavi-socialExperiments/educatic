@@ -14,4 +14,5 @@ export interface IDashboardSchool {
     longitude: string;
     classRooms: IDashboardClassRoom[];
     teachers: IDashboardTeacher[];
+    averageAttendance: number;
 }

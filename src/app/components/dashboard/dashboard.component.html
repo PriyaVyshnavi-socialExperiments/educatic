@@ -39,11 +39,11 @@
                 <ion-card>
                     #Total Schools
                     <br>
-                    <span>{{this.totalSchools}}</span>
+                    <span class="static-cards">{{this.totalSchools}}</span>
                     <br>
                     #Active Schools 
                     <br>
-                    <span>{{this.activeSchools}}</span>
+                    <span class="static-cards">{{this.activeSchools}}</span>
                     <br>
                 </ion-card>
             </ion-col>
@@ -51,11 +51,11 @@
                 <ion-card >
                     #Total Teachers
                     <br>
-                    <span>{{this.totalTeachers}}</span>
+                    <span class="static-cards">{{this.totalTeachers}}</span>
                     <br>
                     #Active Teachers
                     <br>
-                    <span>{{this.activeTeachers}}</span>
+                    <span class="static-cards">{{this.activeTeachers}}</span>
                     <br>
                 </ion-card>
             </ion-col>
@@ -63,11 +63,11 @@
                 <ion-card>
                     #Total Students
                     <br>
-                    <span>{{this.totalStudents}}</span>
+                    <span class="static-cards">{{this.totalStudents}}</span>
                     <br>
                     #Active Students
                     <br>
-                    <span>{{this.activeStudents}}</span>
+                    <span class="static-cards">{{this.activeStudents}}</span>
                     <br>
                 </ion-card>
             </ion-col>
@@ -75,11 +75,11 @@
                 <ion-card>
                     #Total Classes
                     <br>
-                    <span>{{this.totalClasses}}</span>
+                    <span class="static-cards">{{this.totalClasses}}</span>
                     <br>
                     #Active Classes
                     <br>
-                    <span>{{this.activeClasses}}</span>
+                    <span class="static-cards">{{this.activeClasses}}</span>
                     <br>
                 </ion-card>
             </ion-col>
@@ -92,9 +92,7 @@
         <ion-row>
             <ion-col size="12" size-sm="6">
                 <ion-card>
-                    <agm-map>
-                        <agm-marker></agm-marker>
-                    </agm-map>
+                    <bing-map [(schools)]="this.schools"></bing-map>
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="6">
@@ -122,10 +120,10 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
             <ion-col size="12" size-sm="12">
-                <ion-card style="overflow: scroll">
-                    Classes by #attendance 
+                <ion-card style="overflow: scroll;">
+                    <span style="font-size: large">Classes by #attendance</span>
                     <ion-grid>
-                        <ion-row style="text-align: left;">
+                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: medium">
                             <ion-col>
                                 City
                             </ion-col>
@@ -145,7 +143,7 @@
                                 #Teachers
                             </ion-col>
                         </ion-row>
-                        <ion-row *ngFor="let class of this.classes">
+                        <ion-row *ngFor="let class of this.classes" style="text-align: left; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid;">
                             <ion-col>
                                 {{class.city}}
                             </ion-col>
@@ -156,7 +154,7 @@
                                 {{class.name}}
                             </ion-col>
                             <ion-col>
-                                {{this.dashboardService.getCumulativeAttendance(class, "classes", this.start, this.end)}}%
+                                {{class.averageAttendance}}%
                             </ion-col>
                             <ion-col>
                                 {{class.students.length}}
@@ -171,13 +169,73 @@
         </ion-row>
         <ion-row>
             <ion-col size="12" size-sm="6">
-                <ion-card>
-                    Schools with low attendance
+                <ion-card style="overflow: scroll;">
+                    <span style="font-size: large">Five schools with lowest attendance</span>
+                    <ion-grid>
+                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: medium">
+                            <ion-col>
+                                City
+                            </ion-col>
+                            <ion-col>
+                                School
+                            </ion-col>
+                            <ion-col>
+                                Attendance 
+                            </ion-col>
+                            <ion-col>
+                                #Teachers
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngFor="let school of this.schools.slice().reverse().slice(0, 5)" style="text-align: left; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid;">
+                            <ion-col>
+                                {{school.city}}
+                            </ion-col>
+                            <ion-col>
+                                {{school.name}}
+                            </ion-col>
+                            <ion-col>
+                                {{school.averageAttendance}}%
+                            </ion-col>
+                            <ion-col>
+                                {{school.teachers.length}}
+                            </ion-col>
+                        </ion-row>
+                      </ion-grid>
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="6">
-                <ion-card>
-                    Schools with high attendance
+                <ion-card style="overflow: scroll;">
+                    <span style="font-size: large">Five schools with highest attendance</span>
+                    <ion-grid>
+                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: medium">
+                            <ion-col>
+                                City
+                            </ion-col>
+                            <ion-col>
+                                School
+                            </ion-col>
+                            <ion-col>
+                                Attendance 
+                            </ion-col>
+                            <ion-col>
+                                #Teachers
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngFor="let school of this.schools.slice(0, 5)" style="text-align: left; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid;">
+                            <ion-col>
+                                {{school.city}}
+                            </ion-col>
+                            <ion-col>
+                                {{school.name}}
+                            </ion-col>
+                            <ion-col>
+                                {{school.averageAttendance}}%
+                            </ion-col>
+                            <ion-col>
+                                {{school.teachers.length}}
+                            </ion-col>
+                        </ion-row>
+                      </ion-grid>
                 </ion-card>
             </ion-col>
         </ion-row>

@@ -1,19 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpBackend } from '@angular/common/http';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { SchoolService } from '../../_services/school/school.service';
 import { ISchool } from '../../_models/school';
 import { IClassRoom } from '../../_models/class-room';
-import { IStudent } from '../../_models/student';
 import { IDashboardCity } from '../../_models/dashboard-models/dashboard-city'; 
 import { IDashboardSchool } from '../../_models/dashboard-models/dashboard-school'; 
 import { IDashboardClassRoom } from '../../_models/dashboard-models/dashboard-classroom'; 
 import { IDashboardStudent } from '../../_models/dashboard-models/dashboard-student';
 import { IDashboardTeacher } from '../../_models/dashboard-models/dashboard-teacher';
 import {  IAttendance } from '../../_models/dashboard-models/dashboard-attendance';
-import {catchError, tap, timestamp} from 'rxjs/operators'; 
-import { Embed } from 'powerbi-client';
-
+import {catchError, tap } from 'rxjs/operators'; 
 
 @Injectable({
   providedIn: 'root'
@@ -34,13 +31,20 @@ export class DashboardService {
     teachers: new Map<string, { teacher: IDashboardTeacher, attendance: Map<string, boolean>}>(),
   }
 
+  // Used to bypass interceptor to avoid page reload if error in retrieving data. This would otherwise cause 
+  // constant reloads and eventually log the user out. 
   httpWithoutInterceptor: HttpClient;
+  // Used to geocode addresses of cities into lat/long
+  geocodingURl = "http://dev.virtualearth.net/REST/v1/Locations";
+  bingMapsKey = "Agl1OUJpxhobILNXiGeeP92f2mQnWP3b1dloH9Sj56LGR1poYMRNYhLZyQZeY3Mu"; 
+  // URL of azure tables to get data from 
   url = "https://goofflinee.table.core.windows.net/";
+  // Secure Access Signature of attendance table
   attendanceSAS = "sv=2018-03-28&si=Attentdance-1763A06CFEA&tn=attentdance&sig=rGRdN1X0akvsp7ytPy1FWV%2FtsbD%2B9sLwv3XcZ8a7AJY%3D";
+  // Secure Access Signature of the student table 
   studentSAS = "sv=2018-03-28&si=Student-17640438131&tn=student&sig=jdWSmr%2B9YW9SLIt%2B%2BdosxfKMjJMhURddmddGHSWja3c%3D";
 
   constructor(
-    private http: HttpClient,
     private schoolService: SchoolService,
     private httpBackend: HttpBackend
   ) { 
@@ -48,7 +52,7 @@ export class DashboardService {
   }
 
   /**
-   * Make Get requests to the azure table subscription to load in the correct Tables. Returns error if request 
+   * Make Get requests to the azure table subscription to load in the correct Tables. Throw error if request 
    * to azure tables fails. 
    */
   public getData() { 
@@ -60,7 +64,7 @@ export class DashboardService {
       catchError((err) => {
         throw err
       })
-    ); 
+    );
   }
 
   /**
@@ -89,18 +93,7 @@ export class DashboardService {
     // Map schoolId to city, will likely want to map schoolId to school so that 
     // all student information could be accessed. This is done in order to decrease database calls
     // which could be costly 
-    schoolTable.forEach((school: ISchool) => {
-      if (this.data.cities.get(school.city) === undefined) {
-        let city = {
-          name: school.city,
-          id: school.city,
-          schools: []
-        };
-        this.data.cities.set(school.city, {
-          city: city,
-          attendance: new Map<string, IAttendance>()
-        });
-      } 
+    for (let school of schoolTable) {
       let classRooms: IDashboardClassRoom[] = this.processClassRooms(school);
       let teachers: IDashboardTeacher[] = this.processTeachers(school);
 
@@ -113,25 +106,36 @@ export class DashboardService {
         state: school.state,
         city: school.city,
         zip: school.zip,
-        latitude: school.latitude,
-        longitude: school.longitude,
+        latitude: null,
+        longitude: null,
         classRooms: classRooms,
-        teachers: teachers
+        teachers: teachers,
+        averageAttendance: 0,
       }
-      
-      if (this.data.schools.get(school.id) === undefined) {
-        this.data.schools.set(school.id, { 
-          school: dashSchool,
+
+      this.data.schools.set(school.id, { 
+        school: dashSchool,
+        attendance: new Map<string, IAttendance>()
+      });
+      if (this.data.cities.get(school.city) === undefined) {
+        let city = {
+          name: school.city,
+          id: school.city,
+          schools: []
+        };
+        this.data.cities.set(school.city, {
+          city: city,
           attendance: new Map<string, IAttendance>()
         });
-        this.data.cities.get(school.city).city.schools.push(dashSchool); 
-      }
-    })
+      } 
+      this.data.cities.get(school.city).city.schools.push(dashSchool);
+    }
   }
 
   /**
    * Processes the classes in a given school by creating a mapping from classId's to information about 
-   * the classRoom including attendance. 
+   * the classRoom including attendance. The number of teachers for the class room is currently marked 
+   * as the number of teachers at the current school. 
    * @param classRooms all classes within a given school 
    */
   private processClassRooms(school: ISchool): IDashboardClassRoom[] {
@@ -146,7 +150,8 @@ export class DashboardService {
         city: school.city,
         classDivision: classRoom.classDivision,
         students: students,
-        numTeachers: school.teachers.length
+        numTeachers: school.teachers.length,
+        averageAttendance: 0,
       }
       classes.push(temp); 
 
@@ -189,22 +194,33 @@ export class DashboardService {
     return dashStudents; 
   }
 
+  /**
+   * Process the raw student table data from azure, updates student stored in this.data to include 
+   * the updatedOn time stamp which represents when student was enrolled. 
+   * @param studentEnrollment Azure student table
+   */
   private processStudentEnrollment(studentEnrollment: any[]) {
     for (let student of studentEnrollment) {
       let id: string = student.RowKey;      
       let tempTimeStamp: Date = new Date(student.TimeStamp);
       let tempUpdatedOn: Date = new Date(student.UpdatedOn);
+      // Converts to string in order to count enrollments that occured on the same data identically. 
       let timeStamp: string = "" + (tempTimeStamp.getMonth() + 1) + "/" + tempTimeStamp.getDate() + "/" + tempTimeStamp.getFullYear();
       let updatedOn: string = "" + (tempUpdatedOn.getMonth() + 1) + "/" + tempUpdatedOn.getDate() + "/" + tempUpdatedOn.getFullYear();
       
       let enrollmentDate: string = tempTimeStamp < tempUpdatedOn ? timeStamp: updatedOn;
-      console.log(enrollmentDate);
       if (this.data.students.get(id) != undefined) {
         this.data.students.get(id).student.enrollmentDate = enrollmentDate; 
       }
     }
   }
 
+
+  /**
+   * Parses teachers at given school
+   * @param school school that teacher is in
+   * @returns Array of teachers at school
+   */
   private processTeachers(school: ISchool): IDashboardTeacher[] {
     let teachers: IDashboardTeacher[] = [];
     for (let teacher of school.teachers) {
@@ -233,9 +249,9 @@ export class DashboardService {
    */
   private processAttendanceTable(attendanceTable: any) {
     attendanceTable.forEach((entry) => {
-      if (this.data.students.get(entry.StudentId) == undefined) {
-        console.log("Attendance Not Taken " + entry.StudentId);
-      }
+      // if (this.data.students.get(entry.StudentId) == undefined) {
+      //   console.log("Attendance Not Taken " + entry.StudentId);
+      // }
       if (this.data.schools.get(entry.PartitionKey) != undefined && this.data.students.get(entry.StudentId) != undefined && this.data.teachers.get(entry.TeacherId) != undefined) {
         let city = this.data.schools.get(entry.PartitionKey).school.city;
         let schoolId = entry.PartitionKey; 
@@ -243,7 +259,6 @@ export class DashboardService {
         let gender = this.data.students.get(entry.StudentId).student.gender; 
         let studentId = entry.StudentId;
         let teacherId = entry.TeacherId
-        console.log(teacherId);
         if (gender !== "male" && gender !== "female") {
           gender = "nonBinary";
         }
@@ -314,10 +329,12 @@ export class DashboardService {
           });
         }
 
+        // Student attendance entry is included only if the student was present 
         if (entry.Present && this.data.students.get(studentId).attendance.get(dateKey) === undefined) {
           this.data.students.get(studentId).attendance.set(dateKey, entry.Present)
         }
 
+        // Teacher attendance is marked for each day that attendance was taken (Even if all students are absent)
         if (this.data.teachers.get(teacherId).attendance.get(dateKey) === undefined) {
           this.data.teachers.get(teacherId).attendance.set(dateKey, true);
         }
@@ -345,6 +362,35 @@ export class DashboardService {
         }
       }
     })
+  }
+
+  /**
+   * Creates an array of observables that, when subscribed to, update the school latitude and longitude 
+   * to be the result of whatever the geocoded address returns. 
+   */
+  public geocodeSchools() {
+    let schoolObservables: Observable<Object>[] = [];
+    for (let value of this.data.schools.values()) {
+      schoolObservables.push(this.search(value.school)); 
+    }
+    return forkJoin(schoolObservables);
+  }
+
+  /**
+   * Uses api to geocode schools based on country, zipcode, city, and address. Chooses the top potential lat/long
+   * @param school School to geocode
+   */
+  private search(school: IDashboardSchool): Observable<Object> {
+    let endpoint = this.geocodingURl +  "?" + `countryRegion=${school.country}&lpostalCode=${school.zip}&addressLine=${school.address1}&locality=${school.city}&maxResults=${1}&key=${this.bingMapsKey}`;
+    return this.getRequest(endpoint).pipe(
+      tap((result: any) => {
+        if (result && result.resourceSets.length > 0 && result.resourceSets[0].resources.length > 0) {
+          let point = result.resourceSets[0].resources[0].point;
+          school.latitude = point.coordinates[0];
+          school.longitude = point.coordinates[1];
+        }
+      })
+    ); 
   }
 
   private getAttendanceTable() {
@@ -389,6 +435,11 @@ export class DashboardService {
     return this.numActive(teachers, 'teachers', start, end) ;
   }
 
+  /** 
+   * Returns the number of active entities (students, teachers, classes, or school) within the currently selected start/end
+   * dates. They are considered active if there is an attendance entry within those date ranges. 
+   * 
+   */
   numActive(data: IDashboardStudent[] | IDashboardTeacher[] | IDashboardSchool[]| IDashboardCity[], id: 'students' | 'teachers' | 'classes' | 'schools', start: Date, end: Date): number {
     let total = 0; 
     for (let item of data) {
@@ -403,6 +454,15 @@ export class DashboardService {
     return total; 
   }
 
+  /**
+   * Returns the attendance data for classes, cities, or schools within the start/end date. Attendance data is stored 
+   * in an array of object where name is the name of the class, citiy, or school, and attendance is an array of dates 
+   * and attendance data for the attendance on that day. 
+   * @param data list of selected schools, classRooms, or cities 
+   * @param id type of data (classes, cities, or schools). This corresponds to the fieldin this.data
+   * @param start start date
+   * @param end end data 
+   */
   public getAttendance(data: IDashboardSchool[] | IDashboardClassRoom[] | IDashboardCity[], id: "classes" | "cities" | "schools", start: Date, end: Date): {name: string, attendance: [Date, IAttendance][]}[] {
     let attendanceData: {name: string, attendance: [Date, IAttendance][]}[] = [];
     for (let item of data) {
@@ -421,6 +481,13 @@ export class DashboardService {
     return attendanceData; 
   }
 
+  /**
+   * Calculates average attendance over time interval 
+   * @param data list of selected schools, classes, or cities 
+   * @param id corresponds to field in this.data
+   * @param start start day
+   * @param end end day 
+   */
   getCumulativeAttendance(data: IDashboardSchool | IDashboardClassRoom | IDashboardCity, id: "classes" | "cities" | "schools", start: Date, end: Date): number {
     let total = 0;
     let present = 0;

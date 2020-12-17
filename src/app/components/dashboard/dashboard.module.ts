@@ -7,9 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list'
 import { DashboardComponent } from './dashboard.component';
-import { GraphModule } from '../graphs/graph.module';
+import { GraphModule } from '../dashboard-helpers/graph.module';
 import { IonicModule } from '@ionic/angular';
-import { AgmCoreModule } from '@agm/core';
 import { FormsModule } from '@angular/forms';
 
 
@@ -29,9 +28,7 @@ import { FormsModule } from '@angular/forms';
     MatMenuModule,
     MatListModule,
     GraphModule,
-    AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyA-Y5rHI-031oKZilJ9DfMDGEU4qZ56-y4'
-    }) 
+
   ],
   exports: [
     DashboardComponent

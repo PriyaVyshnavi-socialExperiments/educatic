@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ChartsComponent } from './charts.component';
+import { ModalPopUpComponent } from './modal-pop-up.component';
 
-describe('ChartsComponent', () => {
-  let component: ChartsComponent;
-  let fixture: ComponentFixture<ChartsComponent>;
+describe('ModalPopUpComponent', () => {
+  let component: ModalPopUpComponent;
+  let fixture: ComponentFixture<ModalPopUpComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChartsComponent ],
+      declarations: [ ModalPopUpComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ChartsComponent);
+    fixture = TestBed.createComponent(ModalPopUpComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

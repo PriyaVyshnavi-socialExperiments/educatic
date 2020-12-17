@@ -1,22 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChartsComponent } from './charts/charts.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select'; 
 import { IonicModule } from '@ionic/angular';
-import { FilterComponent } from './filter/filter.component';
-import { ModalPage } from './modal/modal.page';
+import { BingMapComponent } from './bing-map/bing-map.component';
 import { FormsModule } from '@angular/forms';
+import { ModalPopUpComponent } from './modal-pop-up/modal-pop-up.component';
 
 
 
 @NgModule({
   declarations: [
-    ChartsComponent,
-    FilterComponent,
-    ModalPage,
+    BingMapComponent,
+    ModalPopUpComponent
   ],
   imports: [
     CommonModule,
@@ -28,9 +26,8 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
   ],
   exports: [
-    ChartsComponent,
-    FilterComponent,
-    ModalPage,
+    ModalPopUpComponent,
+    BingMapComponent
   ]
 })
 export class GraphModule { }

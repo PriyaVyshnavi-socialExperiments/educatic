@@ -3,20 +3,26 @@ import { ModalController } from '@ionic/angular';
 import { Chart } from 'chart.js';
 
 @Component({
-  selector: 'app-modal',
-  templateUrl: './modal.page.html',
-  styleUrls: ['./modal.page.scss'],
+  selector: 'app-modal-pop-up',
+  templateUrl: './modal-pop-up.component.html',
+  styleUrls: ['./modal-pop-up.component.scss'],
 })
-export class ModalPage implements OnInit {
+/**
+ * This modal allows the user to click on graphs and enlarge them to get a better view. It uses 
+ * the ModalConroller service to do this. 
+ */
+export class ModalPopUpComponent implements OnInit {
   @Input() chart: Chart;
   @Input() type: String;
   chartVar: Chart;
 
   constructor(public modalController: ModalController) { }
 
+  /**
+   * Loads the graph based in to be displayed 
+   */
   loadGraph() {
     let temp = document.getElementById("chartss")
-    console.log(this.chart);
     this.chartVar = new Chart(temp, {
       type: this.type,
       data: this.chart.data,
@@ -27,8 +33,6 @@ export class ModalPage implements OnInit {
 
   
   dismiss() {
-    // using the injected ModalController this page
-    // can "dismiss" itself and optionally pass back data
     this.modalController.dismiss({
       'dismissed': true
     });
@@ -37,4 +41,5 @@ export class ModalPage implements OnInit {
   ngOnInit() {
     this.loadGraph();
   }
+
 }

@@ -9,25 +9,7 @@ import { Aspect6 } from 'chartjs-plugin-colorschemes/src/colorschemes/colorschem
 import { IDashboardSchool } from 'src/app/_models/dashboard-models/dashboard-school';
 import { IDashboardClassRoom } from 'src/app/_models/dashboard-models/dashboard-classroom';
 import { IDashboardCity } from 'src/app/_models/dashboard-models/dashboard-city';
-import { DateAdapter } from '@angular/material/core';
 import { IDashboardStudent } from 'src/app/_models/dashboard-models/dashboard-student';
-
-interface IAttendance {
-  present: number,
-  total: number,
-  male: {
-    present: number,
-    total: number
-  },
-  female: {
-    present: number,
-    total: number
-  },
-  nonBinary: {
-    present: number,
-    total: number
-  }
-}
 
 @Injectable({
   providedIn: 'root'
@@ -38,9 +20,16 @@ export class ChartService {
     private dashboardService: DashboardService,
   ) { }
 
+  /**
+   * Returns reference to now initialized student enrollment scatter chart. 
+   * @param id id of canvas where chart should be displayed 
+   * @param xAxisTitle x-axis title
+   * @param yAxisTitle y-axis title
+   * @param title title of graph 
+   */
   getStudentEnrollmentLineChart(id:string, xAxisTitle: string, yAxisTitle: string, title: string): Chart {
     return new Chart(document.getElementById(id), {
-      type: "scatter",
+      type: "line",
       data: {
           labels: null,
           datasets: []
@@ -86,6 +75,13 @@ export class ChartService {
     });
   }
 
+  /**
+   * Returns a reference to a general attendance bar chart (can be used for schools, cities, or classRooms)
+   * @param id id of canvas where chart should be displayed 
+   * @param xAxisTitle x-axis title
+   * @param yAxisTitle y-axis title
+   * @param title title of graph 
+   */
   getAttendanceBarChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string): Chart {
     return new Chart(document.getElementById(id), {
       type: "bar",
@@ -133,6 +129,14 @@ export class ChartService {
     });
   }
 
+  /**
+   * Returns a reference to a general attendance line chart (can be used for schools, cities, or classRooms). 
+   * Uses time as the x-axis 
+   * @param id id of canvas where chart should be displayed 
+   * @param xAxisTitle x-axis title
+   * @param yAxisTitle y-axis title
+   * @param title title of graph 
+   */
   getAttendanceLineChart(id: string, xAxisTitle: string, yAxisTitle: string, title: string): Chart {
     return new Chart(document.getElementById(id), {
       type: "line",
@@ -188,6 +192,12 @@ export class ChartService {
     });
   }
 
+  /**
+   * Returns updated data for the student enrollment line chart within start/end date. 
+   * @param students list of selected students
+   * @param start start date
+   * @param end end date 
+   */
   updateStudentEnrollmentLineChart(students: IDashboardStudent[], start: Date, end: Date) {
     let chart = {
       datasets: [],
@@ -197,7 +207,8 @@ export class ChartService {
     if (students) {
       let data = [];
       for (let student of students) {
-        if (new Date(student.enrollmentDate) >= start && new Date(student.enrollmentDate) <= end) {
+        let date = new Date(student.enrollmentDate);
+        if (date >= start && date <= end) {
           if (enrollments.get(student.enrollmentDate) == undefined) {
             enrollments.set(student.enrollmentDate, 0);
           }
@@ -206,13 +217,20 @@ export class ChartService {
         }
       }
       for (let entry of enrollments.entries()) {
-        let date: string = entry[0];
+        let dateEntry: Date = new Date(entry[0]);
         let students: number = entry[1];
         data.push({
-          x: date,
+          x: dateEntry,
           y: students
         })
       }
+      data.sort((a, b) => {
+        if (a.x > b.x) {
+          return 1;
+        } else {
+          return -1;
+        }
+      })
       chart.datasets.push({
         data: data,
         label: "Student Enrollment",
@@ -222,6 +240,13 @@ export class ChartService {
     return chart;
   }
 
+  /**
+   * Updates data for the generic attendance bart chart
+   * @param info selected schools, classes, or cities
+   * @param id id corresponding to type (used in the dashboard service to access correct field in this.data)
+   * @param start start date
+   * @param end end date 
+   */
   updateAttendanceBarChart(info: IDashboardSchool[] | IDashboardClassRoom[] | IDashboardCity[], id: "classes" | "cities" | "schools", start: Date, end: Date) {
     let chart = {
       datasets: [],
@@ -251,6 +276,13 @@ export class ChartService {
     return chart; 
   }
 
+  /**
+   * Updates data of general attendance line chart
+   * @param info selected schools, classes, or cities
+   * @param id id corresponding to field storing all data for classes/cities/schools in the dashboard service
+   * @param start start date
+   * @param end end date 
+   */
   updateAttendanceLineChart(info: IDashboardSchool[] | IDashboardClassRoom[] | IDashboardCity[], id: "classes" | "cities" | "schools", start: Date, end: Date) {
     let chart = {
       labels: null,
@@ -283,6 +315,13 @@ export class ChartService {
     return chart; 
   }
 
+  /**
+   * Updates general gender attendance bar chart 
+   * @param info selected schools, classes, or cities
+   * @param id id corresponding to field storing all data for classes/cities/schools in the dashboard service
+   * @param start start date
+   * @param end end date
+   */
   updateGenderAttendanceBarChart(info: IDashboardSchool[] | IDashboardClassRoom[] | IDashboardCity[], id: "classes" | "cities" | "schools", start: Date, end: Date) {
     let chart = {
       datasets: [],
@@ -317,6 +356,11 @@ export class ChartService {
     return chart; 
   }
 
+  /**
+   * Rounds average attendance (#present students / #total students) to nearest whole percent and returns it. 
+   * @param total 
+   * @param present 
+   */
   getAttendancePercentage(total: number, present: number): number {
     return Math.round(present / total * 100); 
   }

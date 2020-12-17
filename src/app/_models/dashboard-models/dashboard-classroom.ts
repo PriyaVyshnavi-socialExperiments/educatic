@@ -9,4 +9,5 @@ export interface IDashboardClassRoom {
     classDivision: string;
     students: IDashboardStudent[];
     numTeachers: number;
+    averageAttendance: number;
 }
