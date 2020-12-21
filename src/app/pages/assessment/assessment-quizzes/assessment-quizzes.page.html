@@ -13,28 +13,50 @@
 </ion-header>
 
 <ion-content>
-  <div class="main-card ion-justify-content-center">
-    <ion-grid class="grid">
+ 
+    <ion-grid *ngIf="assessments.length" class="grid">
       <ion-row class="ion-justify-content-center">
-      <ion-card class="item-card" *ngFor="let data of assessments">
+      <ion-card class="item-card" *ngFor="let assessment of assessments">
         <ion-item lines="none">
-          <ion-label>{{data.assessmentTitle | titlecase}}</ion-label>
-          <ion-icon *ngIf="!isStudent" name="create" color="success" slot="end" (click)="UpdateQuiz(data)"></ion-icon>
-          <ion-icon *ngIf="!isStudent" name="trash" color="danger" slot="end" (click)="confirmQuizDelete(data)" ></ion-icon>
+          <ion-label>{{assessment.assessmentTitle | titlecase}}</ion-label>
+          <ion-icon *ngIf="!isStudent" name="create" color="success" slot="end" (click)="UpdateQuiz(assessment)"></ion-icon>
+          <ion-icon *ngIf="!isStudent" name="trash" color="danger" slot="end" (click)="confirmQuizDelete(assessment)" ></ion-icon>
         </ion-item>
-        <ion-card-content (click)="NavigateToQuestions(data)">
+        <ion-card-content (click)="NavigateToQuestions(assessment)">
           <ion-card-subtitle>
             <b>Category(Subject):</b> {{subjectName | titlecase}}
           </ion-card-subtitle>
-        <b>Description:</b>  {{data.assessmentDescription}} 
+        <b>Description:</b>  {{assessment.assessmentDescription}} 
         </ion-card-content>
         <ion-footer>
-          <ion-button (click)="NavigateToQuestions(data)" class="float-right" expand="block" fill="clear">
-            Questions >>
+          <ion-item lines="none">
+          <ion-button slot="start" *ngIf="!isStudent && assessment?.studentAssessments?.length" (click)="NavigateToSolvedQuizzes(assessment)" expand="block" fill="clear">
+            Solved Quizzes
           </ion-button>
+          <ion-button slot="end" (click)="NavigateToQuestions(assessment)" expand="block" fill="clear">
+            Questions
+          </ion-button>
+        </ion-item>
         </ion-footer>
       </ion-card>
       </ion-row>
     </ion-grid>
-  </div>
+
+    <ion-grid style="height: 100%" *ngIf="!assessments.length">
+      <ion-row *ngIf="!isStudent" justify-content-center align-items-center class="justify-center" (click)="AddNewQuiz()">
+        <div text-center>
+          <img src="../../../../assets/images/assessment.svg" style="height: 40px;">
+          <h4>No assessment quiz available!</h4>
+          <p>Click here to create new assessment quiz</p>
+        </div>
+      </ion-row>
+  
+      <ion-row justify-content-center align-items-center class="justify-center" *ngIf="isStudent">
+        <div text-center>
+          <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+          <h4>No assessment quiz available!</h4>
+        </div>
+      </ion-row>
+    </ion-grid>
+ 
 </ion-content>

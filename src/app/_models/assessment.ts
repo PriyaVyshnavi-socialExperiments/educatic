@@ -11,6 +11,7 @@ export interface IAssessment {
   assessmentDescription: string;
   active: boolean;
   assessmentQuestions: IQuestion[];
+  studentAssessments: IStudentAssessment[];
 }
 
 export interface IStudentAssessment {
@@ -22,6 +23,7 @@ export interface IStudentAssessment {
   classId: string;
   assessmentAnswers: IAnswer[];
   createdDate: Date;
+  active: boolean;
 }
 
 export interface ISubjectAssessment {
@@ -39,6 +41,7 @@ export interface IQuestion {
   questionType: QuestionType;
   shortAnswer: string;
   optionAnswer: number;
+  active: boolean;
 }
 
 export interface IAnswer {
@@ -46,4 +49,18 @@ export interface IAnswer {
  attempts: number;
  optionAnswer: number;
  shortAnswer: string;
+}
+
+export interface IAssessmentShare {
+  id: string;
+  schoolId: string;
+  classId: string;
+  assessmentId: string;
+  createdBy: string;
+}
+
+export interface IClassAssessment {
+  classId: string;
+  studentAssessments: IStudentAssessment[];
+  length: number;
 }

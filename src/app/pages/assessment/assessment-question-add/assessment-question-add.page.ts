@@ -92,7 +92,8 @@ export class AssessmentQuestionAddPage implements OnInit {
       const question = {
         id: this.question? this.question.id : '',
         questionDescription: this.f.question.value,
-        questionType: selectedQuestionType
+        questionType: selectedQuestionType,
+        active: true
       } as IQuestion;
 
       question.questionDescription = this.f.question.value;
@@ -111,16 +112,19 @@ export class AssessmentQuestionAddPage implements OnInit {
         }
         question.questionOptions = option;
       }
-
-      this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId).subscribe((res) => {
-        this.router.navigateByUrl(this.backURL);
+      if(!question.optionAnswer) {
+        this.presentToast('Please select/enter answer.', 'warning');
+        return;
+      }
+      this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId, this.subjectName).subscribe((res) => {
+        this.presentToast('Assessment quiz question update successfully.', 'success');
+        this.router.navigateByUrl(this.backURL + `?d=${Math.floor(Math.random() * 1000000000)}`);
       });
     }
   }
 
   selectedAnswerOption(event) {
-    this.optionAnswer = event.target.value + 1;
-    console.log('selectedAnswerOption ', event.target.value);
+    this.optionAnswer = event.target.value;
   }
 
   checkEvent($event) {
@@ -155,5 +159,20 @@ export class AssessmentQuestionAddPage implements OnInit {
       default:
         break;
     }
+  }
+
+  private async presentToast(msg, type) {
+    const toast = await this.toastController.create({
+      message: msg,
+      position: 'bottom',
+      duration: 3000,
+      color: type,
+      buttons: [{
+        text: 'Close',
+        role: 'cancel',
+      }
+      ]
+    });
+    toast.present();
   }
 }

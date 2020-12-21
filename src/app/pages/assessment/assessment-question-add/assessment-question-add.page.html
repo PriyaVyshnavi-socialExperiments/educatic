@@ -60,9 +60,9 @@
             <div [formGroup]="option" class="col-xl-12 col-lg-12 col-md-12 col-sm-12"
               *ngFor="let option of t.controls;  let i = index">
               <mat-form-field class="example-full-width" appearance="outline">
-                <mat-label> Answer option {{ i }}</mat-label>
+                <mat-label> Answer option {{ i + 1 }}</mat-label>
                 <input matInput placeholder="Answer" formControlName="option" autocomplete="off">
-                <ion-radio class="item" matSuffix [value]="i" [name]="i"></ion-radio>
+                <ion-radio class="item" matSuffix [value]="i+1" [name]="i+1"></ion-radio>
               </mat-form-field>
             </div>
           </ion-radio-group>

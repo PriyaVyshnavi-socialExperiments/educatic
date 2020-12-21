@@ -77,6 +77,7 @@ export class AssessmentQuizAddPage implements OnInit {
         assessmentDescription: this.f.quizDescription.value,
         subjectName: this.f.quizCategory.value,
         createdBy: this.currentUser.id,
+        active: true,
       } as IAssessment;
 
       if(this.quizAssessment) {
@@ -85,7 +86,7 @@ export class AssessmentQuizAddPage implements OnInit {
       }
       this.assessmentService.CreateUpdateAssessment(assessment).subscribe((res) => {
         this.presentToast('Assessment quiz update successfully.', 'success');
-        this.router.navigateByUrl(`/assessment/quizzes`);
+        this.router.navigateByUrl(`/assessment/quizzes/${assessment.subjectName}?d=${Math.floor(Math.random() * 1000000000)}`);
       });
     }
   }

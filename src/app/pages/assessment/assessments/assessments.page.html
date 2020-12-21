@@ -32,7 +32,8 @@
     </ion-row>
   </ion-grid>
   <ion-grid style="height: 100%" *ngIf="!assessments.length">
-    <ion-row *ngIf="!isStudent" justify-content-center align-items-center class="justify-center" [routerLink]="['quiz/add']">
+    <ion-row *ngIf="!isStudent" justify-content-center align-items-center class="justify-center"
+      [routerLink]="['quiz/add']">
       <div text-center>
         <!-- <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon> -->
         <img src="../../../../assets/images/assessment.svg" style="height: 40px;">

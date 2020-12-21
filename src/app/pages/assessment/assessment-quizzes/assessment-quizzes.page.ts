@@ -28,6 +28,10 @@ export class AssessmentQuizzesPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.refresh();
+  }
+
+  refresh() {
     this.authenticationService.currentUser.subscribe((user) => {
       if (!user) {
         return;
@@ -35,22 +39,24 @@ export class AssessmentQuizzesPage implements OnInit {
       this.currentUser = user;
       this.isStudent = this.currentUser.role === Role.Student;
       this.subjectName = this.activatedRoute.snapshot.paramMap.get('subject');
-
-      this.assessmentService.GetOfflineAssessments().subscribe((subjectWise) => {
-        subjectWise.subscribe((assessments) => {
-          this.subjectAssessment = [...assessments];
-          const subjectWiseAssessments = this.subjectAssessment.find((a) => a.subjectName.toLowerCase() === this.subjectName);
-          if(subjectWiseAssessments) {
-            this.subjectName = subjectWiseAssessments.subjectName;
-            this.assessments = [...subjectWiseAssessments.assessments];
-          }
-        })
-      })
-
-      if (!this.subjectAssessment) {
-        this.router.navigateByUrl('/assessments');
-      }
+      setTimeout(() => {
+        this.assessmentService.GetOfflineAssessments().subscribe((subjectWise) => {
+          subjectWise.subscribe((assessments) => {
+            this.subjectAssessment = [...assessments];
+            const subjectWiseAssessments = this.subjectAssessment.find((a) => a.subjectName.toLowerCase() === this.subjectName);
+            if (subjectWiseAssessments) {
+              this.subjectName = subjectWiseAssessments.subjectName;
+              subjectWiseAssessments.assessments = subjectWiseAssessments.assessments.filter(a => a.active);
+              this.assessments = [...subjectWiseAssessments.assessments];
+            }
+          })
+        });
+      }, 100);
     });
+  }
+
+  ionViewWillEnter() {
+    this.refresh();
   }
 
   AddNewCategory() {
@@ -73,6 +79,7 @@ export class AssessmentQuizzesPage implements OnInit {
             assessment.active = false;
             this.assessmentService.CreateUpdateAssessment(assessment).subscribe((res) => {
               this.presentToast('Assessment quiz deleted successfully.', 'success');
+              this.refresh();
             })
           }
         }
@@ -96,6 +103,10 @@ export class AssessmentQuizzesPage implements OnInit {
     } else {
       this.router.navigateByUrl(`assessment/${this.subjectName}/${assessment.id}/questions`);
     }
+  }
+
+  NavigateToSolvedQuizzes(assessment: IAssessment) {
+    this.router.navigateByUrl(`assessment/${this.subjectName}/solved/${assessment.id}`);
   }
 
   private async presentToast(msg, type) {
