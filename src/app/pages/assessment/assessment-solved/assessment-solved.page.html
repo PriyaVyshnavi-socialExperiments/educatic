@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="backURL"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Solved assessments - {{subjectName | titlecase}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="main-card ion-justify-content-center">
+    <ion-grid class="grid">
+      <ion-row class="ion-justify-content-center">
+        <ion-card class="item-card solved-assessments" *ngFor="let studAssessment of studentAssessments">
+          <ion-item-divider color="primary">
+            <ion-label>Class: {{ getClassName(studAssessment?.classId) | titlecase}} </ion-label>
+          </ion-item-divider>
+
+          <!-- <ion-row  class="ion-justify-content-center" *ngIf="!studentAssessments.length">
+            <ion-card class="item-card" style="box-shadow: none;" >
+              <ion-card-content  class="ion-text-center">
+                <div style="display: flex;" class="ion-justify-content-center">
+                  <ion-avatar>
+                    <img src="../../../../assets/images/question-mark.svg">
+                  </ion-avatar></div>
+                <p>Looks like there are no questions available at this moment.</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-row> -->
+          <ngx-datatable class="material" [rows]="studAssessment?.studentAssessments" [columnMode]="'flex'"
+            [headerHeight]="50" [rowHeight]="50">
+            <ngx-datatable-column name="Sr.No." prop="" editable="false" [flexGrow]="0.3">
+              <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex" let-row="row">
+                {{rowIndex + 1}}
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Student Name" [flexGrow]="1">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{row.studentName}}
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Average attempts" [flexGrow]="1">
+              <ng-template let-row="row" ngx-datatable-cell-template>
+                {{getAverageAttempts(row.assessmentAnswers)}}
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+        </ion-card>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

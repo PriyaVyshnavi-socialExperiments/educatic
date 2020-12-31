@@ -91,7 +91,7 @@ export class AssignmentUploadPage implements OnInit {
         }
       },
       {
-        text: 'Choose From Photos Photo',
+        text: 'upload a file/photo',
         icon: 'image',
         handler: () => {
           this.addImage(CameraSource.Photos);
@@ -129,9 +129,8 @@ export class AssignmentUploadPage implements OnInit {
 
   async addImage(source: CameraSource) {
     const cameraImage = await Camera.getPhoto({
-      quality: 100,
-      width: 400,
-      allowEditing: false,
+      quality: 60,
+      allowEditing: true,
       resultType: CameraResultType.Base64,
       source
     });
@@ -180,9 +179,8 @@ export class AssignmentUploadPage implements OnInit {
     } as IAssignment;
 
     let blobDataURL = `${this.school.name.replace(/\s/g, '')}_${this.school.id}/${classRoom.classRoomName.replace(/\s/g, '')}_${classRoom.classId}/${this.subjectName}`;
-
     if (cameraImage) {
-      const blobData = ContentHelper.b64toBlob(cameraImage.base64String, `image/${cameraImage.format}`);
+      const blobData = blobUtil.base64StringToBlob(cameraImage.base64String);
       blobDataURL = `${blobDataURL}/${assignmentDetails.assignmentName.replace(/\s/g, '')}_${dateFormat(new Date())}.${cameraImage.format}`;
       file = ContentHelper.blobToFile(blobData, blobDataURL);
       assignmentDetails.assignmentURL = blobDataURL;
@@ -242,7 +240,7 @@ export class AssignmentUploadPage implements OnInit {
       let blobDataURL = `${this.school.name.replace(/\s/g, '')}_${this.school.id}/${classRoom.classRoomName.replace(/\s/g, '')}_${classRoom.classId}/${this.subjectName}/${assignmentDetails.studentName}`;
 
       if (cameraImage) {
-        const blobData = ContentHelper.b64toBlob(cameraImage.base64String, `image/${cameraImage.format}`);
+        const blobData = blobUtil.base64StringToBlob(cameraImage.base64String);
         blobDataURL = `${blobDataURL}/${assignment.assignmentName.replace(/\s/g, '')}_${dateFormat(new Date())}.${cameraImage.format}`;
         file = ContentHelper.blobToFile(blobData, blobDataURL);
         assignmentDetails.assignmentURL = blobDataURL;

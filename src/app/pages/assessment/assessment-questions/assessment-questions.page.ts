@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { IUser } from 'src/app/_models';
-import { IAssessment, IQuestion } from 'src/app/_models/assessment';
-import { IAssessmentShare } from 'src/app/_models/assessment-share';
+import { IAssessment, IQuestion, IAssessmentShare } from 'src/app/_models/assessment';
 import { AuthenticationService } from 'src/app/_services';
 import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
 import { AssessmentSharePage } from '../assessment-share/assessment-share.page';
@@ -18,6 +17,7 @@ export class AssessmentQuestionsPage implements OnInit {
   questions: IQuestion[] = [];
   currentUser: IUser;
   subjectName: string;
+  backURL = 'assessment/quizzes/';
 
   constructor(private alertController: AlertController,
     private authenticationService: AuthenticationService,
@@ -28,6 +28,14 @@ export class AssessmentQuestionsPage implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
+   
+  }
+
+  ionViewWillEnter() {
+    this.refresh();
+  }
+
+  refresh() {
     this.authenticationService.currentUser.subscribe((user) => {
       if (!user) {
         return;
@@ -35,7 +43,8 @@ export class AssessmentQuestionsPage implements OnInit {
       this.currentUser = user;
       this.subjectName = this.activatedRoute.snapshot.paramMap.get('subject');
       const assessmentId = this.activatedRoute.snapshot.paramMap.get('id');
-
+      this.backURL = this.backURL + this.subjectName;
+      setTimeout(() => {
       this.assessmentService.GetOfflineAssessments().subscribe((subjectWise) => {
         subjectWise.subscribe((subjectAssessments) => {
           const subjectWiseAssessments = subjectAssessments.find((a) => a.subjectName.toLowerCase() === this.subjectName);
@@ -43,11 +52,13 @@ export class AssessmentQuestionsPage implements OnInit {
             this.subjectName = subjectWiseAssessments.subjectName;
             this.assessment = subjectWiseAssessments.assessments?.find((a) => a.id === assessmentId) || {};
             if (this.assessment) {
-              this.questions = [...this.assessment?.assessmentQuestions]
+              this.assessment.assessmentQuestions = this.assessment?.assessmentQuestions.filter(q=>q.active);
+              this.questions = [...this.assessment.assessmentQuestions]
             }
           }
         })
       });
+    }, 300);
     });
   }
 
@@ -60,6 +71,7 @@ export class AssessmentQuestionsPage implements OnInit {
   }
 
   async confirmQuestionDelete(questionId: string) {
+    const question = this.questions.find(q=>q.id === questionId);
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Confirm!',
@@ -72,6 +84,11 @@ export class AssessmentQuestionsPage implements OnInit {
         }, {
           text: 'Okay',
           handler: () => {
+            question.active = false;
+            this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessment.id, this.subjectName).subscribe((res) => {
+              this.presentToast('Assessment question deleted successfully.', 'success');
+              this.refresh();
+            })
           }
         }
       ]
@@ -94,18 +111,18 @@ export class AssessmentQuestionsPage implements OnInit {
           assessmentId: this.assessment.id
         } as IAssessmentShare
         this.assessmentService.AssessmentShare(assessmentShare).subscribe((res) => {
-          this.SharedToast();
+          this.presentToast('Assessment share successfully.', 'success');
         })
       });
     await modal.present();
   }
 
-  private async SharedToast() {
+  private async presentToast(msg, type) {
     const toast = await this.toastController.create({
-      message: 'Assessment share successfully.',
+      message: msg,
       position: 'bottom',
-      duration: 5000,
-      color: 'success',
+      duration: 3000,
+      color: type,
       buttons: [{
         text: 'Close',
         role: 'cancel',

@@ -59,7 +59,7 @@ export class AssessmentPage implements OnInit {
 
   validateAnswerColor(selectedOption, option, question: IQuestion) {
     selectedOption = selectedOption?.value?.option;
-    return selectedOption === option && selectedOption === question.optionAnswer + 1 ? 'success' : '';
+    return selectedOption === option && selectedOption === question.optionAnswer? 'success' : '';
   }
 
   shortAnswerText(shortAnswer: any, questionId: string) {
@@ -76,7 +76,7 @@ export class AssessmentPage implements OnInit {
     selectedOption = selectedOption.value;
     if (selectedOption.option) {
       const optionQuestion: { option: number, question: IQuestion } = selectedOption;
-      if (optionQuestion.option === optionQuestion.question.optionAnswer + 1) {
+      if (optionQuestion.option === optionQuestion.question.optionAnswer) {
         this.isNext = true;
       } else {
         this.isNext = false;
@@ -106,7 +106,6 @@ export class AssessmentPage implements OnInit {
       this.presentToast('Assessment quiz submit successfully.', 'success');
       this.router.navigateByUrl(`/assessments`);
     });
-    console.log("this.finalAssessment: ", finalAssessment);
   }
 
   private async presentToast(msg, type) {

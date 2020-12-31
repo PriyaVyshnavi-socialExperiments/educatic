@@ -136,9 +136,8 @@ export class CourseAddPage implements OnInit {
 
   async addImage(source: CameraSource) {
     const cameraImage = await Camera.getPhoto({
-      quality: 100,
-      width: 400,
-      allowEditing: false,
+      quality: 60,
+      allowEditing: true,
       resultType: CameraResultType.Base64,
       source
     });
