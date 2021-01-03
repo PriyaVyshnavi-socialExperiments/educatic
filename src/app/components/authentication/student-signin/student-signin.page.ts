@@ -48,6 +48,7 @@ export class StudentSigninPage implements OnInit {
       } as StudentLoginRequest;
       this.authenticationService.StudentLogin(loginRequest)
         .subscribe((user) => {
+          this.authenticationService.RefreshNotificationToken();
           this.router.navigate(['assignment/subjects']);
         },
           error => {
