@@ -20,34 +20,42 @@ export class BingMapComponent implements OnInit, OnChanges {
   @ViewChild('myMap') myMap; // using ViewChild to reference the div instead of setting an id
   @Input() schools: IDashboardSchool[] = [];
   map: Microsoft.Maps.Map;  
+  bingMapsApiKey: string = '<Bing Maps API Key Here>';
 
 
   /**
    * When the currently selected schools changes, updates the map. 
    */
   ngOnChanges() { 
-    if (this.map && this.schools) {
-      // Gets rid of what's currently on the map 
-      this.map.layers.clear();
-      let layer: Microsoft.Maps.Layer = new Microsoft.Maps.Layer();
-      let locations: Microsoft.Maps.Location[] = []; 
-      for (let school of this.schools) {
-        let pin: Microsoft.Maps.Pushpin; 
-        if (school.latitude && school.longitude) {
-          pin = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(school.latitude, school.longitude), { title: school.name });
-          locations.push(pin.getLocation()); 
-          layer.add(pin);
+    try {
+      if (this.map && this.schools && this.schools.length > 0) {
+        // Gets rid of what's currently on the map 
+        this.map.layers.clear();
+        let layer: Microsoft.Maps.Layer = new Microsoft.Maps.Layer();
+        let locations: Microsoft.Maps.Location[] = []; 
+        for (let school of this.schools) {
+          let pin: Microsoft.Maps.Pushpin; 
+          if (school.latitude && school.longitude) {
+            pin = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(school.latitude, school.longitude), { title: school.name });
+            if (pin && pin.getLocation()) {
+              locations.push(pin.getLocation()); 
+              layer.add(pin);
+            }
+          }
         }
         // Chooses the best bounds to display all the school locations 
         let bounds = Microsoft.Maps.LocationRect.fromLocations(locations);
         this.map.setView({bounds: bounds});
         this.map.layers.insert(layer);
-      }
+      } 
+    } catch (error) {
+      console.log("Error Updating Map Information: " + error);
     }
   }  
 
   ngOnInit() {
-     // Add a global function for the callback from Bing Maps api
+    try {
+      // Add a global function for the callback from Bing Maps api
      (<any>window).OnLoadBingMapsApi = () => this.InitMap();
 
      // Add programmaticaly the external Bing maps api script
@@ -57,11 +65,20 @@ export class BingMapComponent implements OnInit, OnChanges {
      scriptTag.async = true; 
      // Inject the dynamic script in the DOM
      document.head.appendChild(scriptTag);
+    } catch (error) {
+      console.log("Error initalizing bing maps. Problem with loadings scripts: " + error);
+    }
+     
   }
 
   InitMap(){  // after the view completes initializaion, create the map. Uses my personal bing maps api key currently
-    this.map = new Microsoft.Maps.Map(this.myMap.nativeElement, {
-        credentials: 'Agl1OUJpxhobILNXiGeeP92f2mQnWP3b1dloH9Sj56LGR1poYMRNYhLZyQZeY3Mu'
-    });
+    try {
+      this.map = new Microsoft.Maps.Map(this.myMap.nativeElement, {
+        credentials: this.bingMapsApiKey
+      });
+    } catch (error) {
+      console.log("Error with loading bing maps, check credentials: " + error);
+    }
+   
   }
 }

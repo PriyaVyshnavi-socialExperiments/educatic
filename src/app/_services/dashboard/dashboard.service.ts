@@ -36,13 +36,13 @@ export class DashboardService {
   httpWithoutInterceptor: HttpClient;
   // Used to geocode addresses of cities into lat/long
   geocodingURl = "http://dev.virtualearth.net/REST/v1/Locations";
-  bingMapsKey = "Agl1OUJpxhobILNXiGeeP92f2mQnWP3b1dloH9Sj56LGR1poYMRNYhLZyQZeY3Mu"; 
+  bingMapsKey = "<Bing Maps API Key Here>"; 
   // URL of azure tables to get data from 
-  url = "https://goofflinee.table.core.windows.net/";
+  url = "<URL Of Azure Tables Here>";
   // Secure Access Signature of attendance table
-  attendanceSAS = "sv=2018-03-28&si=Attentdance-1763A06CFEA&tn=attentdance&sig=rGRdN1X0akvsp7ytPy1FWV%2FtsbD%2B9sLwv3XcZ8a7AJY%3D";
+  attendanceSAS = "<Attendance SAS Here>";
   // Secure Access Signature of the student table 
-  studentSAS = "sv=2018-03-28&si=Student-17640438131&tn=student&sig=jdWSmr%2B9YW9SLIt%2B%2BdosxfKMjJMhURddmddGHSWja3c%3D";
+  studentSAS = "<Student SAS Here>";
 
   constructor(
     private schoolService: SchoolService,
@@ -82,7 +82,6 @@ export class DashboardService {
     this.processSchoolTable(schoolTable);
     this.processStudentEnrollment(studentEnrollment.value); 
     this.processAttendanceTable(attendanceTable.value);
-    this.data.classes = new Map([...this.data.classes.entries()].sort());
   }
   
   /**
@@ -106,13 +105,13 @@ export class DashboardService {
         state: school.state,
         city: school.city,
         zip: school.zip,
-        latitude: null,
-        longitude: null,
+        latitude: school.latitude,
+        longitude: school.longitude,
         classRooms: classRooms,
         teachers: teachers,
         averageAttendance: 0,
       }
-
+      
       this.data.schools.set(school.id, { 
         school: dashSchool,
         attendance: new Map<string, IAttendance>()
@@ -121,7 +120,8 @@ export class DashboardService {
         let city = {
           name: school.city,
           id: school.city,
-          schools: []
+          schools: [],
+          averageAttendance: 0
         };
         this.data.cities.set(school.city, {
           city: city,
@@ -329,8 +329,9 @@ export class DashboardService {
           });
         }
 
-        // Student attendance entry is included only if the student was present 
-        if (entry.Present && this.data.students.get(studentId).attendance.get(dateKey) === undefined) {
+        // Student attendance marked. (If for some reason attendance was taken multiple times, updates attendance for student 
+        // to be true if one of those entries is true). 
+        if (this.data.students.get(studentId).attendance.get(dateKey) === undefined || !this.data.students.get(studentId).attendance.get(dateKey)) {
           this.data.students.get(studentId).attendance.set(dateKey, entry.Present)
         }
 
@@ -360,6 +361,14 @@ export class DashboardService {
           this.data.schools.get(schoolId).attendance.get(dateKey)[gender].present++;
           this.data.classes.get(classId).attendance.get(dateKey)[gender].present++;
         }
+
+        // Set the latitude and longitude of a school if it has not already been set. The attendance 
+        // tracks the latitude and longitude in which attendance was taken, so, assuming it's at the school location, 
+        // this should be the most accurate latitude and longitude for the school. 
+        if (entry.Latitude && entry.Longitude) {
+          this.data.schools.get(schoolId).school.latitude = entry.Latitude;
+          this.data.schools.get(schoolId).school.longitude = entry.Longitude; 
+        }
       }
     })
   }
@@ -371,7 +380,11 @@ export class DashboardService {
   public geocodeSchools() {
     let schoolObservables: Observable<Object>[] = [];
     for (let value of this.data.schools.values()) {
-      schoolObservables.push(this.search(value.school)); 
+      // If the school does not already have a latitude or longitude then geocode the schools address to get 
+      // a latitude and longitude for the schools 
+      if (!value.school.latitude || !value.school.longitude) {
+        schoolObservables.push(this.search(value.school)); 
+      }
     }
     return forkJoin(schoolObservables);
   }
@@ -443,9 +456,9 @@ export class DashboardService {
   numActive(data: IDashboardStudent[] | IDashboardTeacher[] | IDashboardSchool[]| IDashboardCity[], id: 'students' | 'teachers' | 'classes' | 'schools', start: Date, end: Date): number {
     let total = 0; 
     for (let item of data) {
-      for (let entry of this.data[id].get(item.id).attendance.entries()) {
+      for (let entry of this.data[id].get(item.id).attendance.entries()) {        
         let date: Date = new Date(entry[0]);
-        if (date >= start && date <= end) {
+        if (entry[1] && date >= start && date <= end) {
           total++;
           break; 
         }
@@ -481,6 +494,18 @@ export class DashboardService {
     return attendanceData; 
   }
 
+  getAverageSchoolAttendance(data: IDashboardSchool, start: Date, end: Date) {
+    return this.getAverageAttendance(data, 'schools', start, end);
+  }
+  
+  getAverageClassRoomAttendance(data: IDashboardClassRoom, start: Date, end: Date) {
+    return this.getAverageAttendance(data, 'classes', start, end);
+  }
+
+  getAverageCityAttendance(data: IDashboardCity, start: Date, end: Date) {
+    return this.getAverageAttendance(data, 'cities', start, end); 
+  }
+
   /**
    * Calculates average attendance over time interval 
    * @param data list of selected schools, classes, or cities 
@@ -488,7 +513,7 @@ export class DashboardService {
    * @param start start day
    * @param end end day 
    */
-  getCumulativeAttendance(data: IDashboardSchool | IDashboardClassRoom | IDashboardCity, id: "classes" | "cities" | "schools", start: Date, end: Date): number {
+  private getAverageAttendance(data: IDashboardSchool | IDashboardClassRoom | IDashboardCity, id: "classes" | "cities" | "schools", start: Date, end: Date): number {
     let total = 0;
     let present = 0;
     for (let entry of this.data[id].get(data.id).attendance.entries()) {

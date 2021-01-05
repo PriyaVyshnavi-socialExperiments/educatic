@@ -84,8 +84,8 @@
                 </ion-card>
             </ion-col>
             <ion-col size="12">
-                <ion-card (click)="presentModal(this.charts['class-attendance'], 'line')" >
-                    <canvas id="class-attendance"></canvas>
+                <ion-card (click)="presentModal(this.charts[this.classAttendanceChartId], 'line')" >
+                    <canvas [id]="this.classAttendanceChartId"></canvas>
                 </ion-card>
             </ion-col>
         </ion-row>
@@ -96,25 +96,25 @@
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="6">
-                <ion-card (click)="presentModal(this.charts['student-enrollment'], 'line')">
-                    <canvas id="student-enrollment"></canvas>>
+                <ion-card (click)="presentModal(this.charts[this.studentEnrollmentChartId], 'line')">
+                    <canvas [id]="this.studentEnrollmentChartId"></canvas>>
                 </ion-card>
             </ion-col>
         </ion-row>
         <ion-row class="bottom-row">
             <ion-col size="12" size-sm="4">
-                <ion-card (click)="presentModal(this.charts['city-attendance'], 'bar')" >
-                   <canvas id="city-attendance"></canvas>
+                <ion-card (click)="presentModal(this.charts[this.cityAttendanceChartId], 'bar')" >
+                   <canvas [id]="this.cityAttendanceChartId"></canvas>
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="4">
-                <ion-card (click)="presentModal(this.charts['school-attendance'], 'bar')" >
-                    <canvas id="school-attendance"></canvas>
+                <ion-card (click)="presentModal(this.charts[this.schoolAttendanceChartId], 'bar')" >
+                    <canvas [id]="this.schoolAttendanceChartId"></canvas>
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="4">
-                <ion-card (click)="presentModal(this.charts['gender-attendance'], 'bar')" >
-                    <canvas id="gender-attendance"></canvas>
+                <ion-card (click)="presentModal(this.charts[this.genderAttendanceChartId], 'bar')" >
+                    <canvas [id]=this.genderAttendanceChartId></canvas>
                 </ion-card>
             </ion-col>
         </ion-row>

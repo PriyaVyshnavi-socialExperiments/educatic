@@ -4,4 +4,5 @@ export interface IDashboardCity {
     name: string, 
     id: string, 
     schools: IDashboardSchool[],
+    averageAttendance: number,
 }
