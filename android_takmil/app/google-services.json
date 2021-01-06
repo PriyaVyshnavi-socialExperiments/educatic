@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "855033026064",
+    "firebase_url": "https://goofflinee.firebaseio.com",
+    "project_id": "goofflinee",
+    "storage_bucket": "goofflinee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855033026064:android:10ce68e99ed348b5279c95",
+        "android_client_info": {
+          "package_name": "com.goofflinee.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "855033026064-sd9ajfvks11lnc3tultlcuvpres8qfc2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP4EFRqnr-VQXPXCm5cD-K74vbXnPHqvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "855033026064-sd9ajfvks11lnc3tultlcuvpres8qfc2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
