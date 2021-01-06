@@ -144,6 +144,20 @@
       "roles": ["SuperAdmin", "SchoolSuperAdmin", "Teacher"],
       "active": true
     },
+     {
+      "name": "Assessments",
+      "path": "/assessments",
+      "icon": "reader-outline",
+      "roles": ["SuperAdmin", "SchoolSuperAdmin", "Teacher"],
+      "active": true
+    },
+    {
+      "name": "My Assessments",
+      "path": "/assessments",
+      "icon": "reader-outline",
+      "roles": ["Student"],
+      "active": true
+    },
     {
       "name": "Offline Websites",
       "path": "/offline-websites",

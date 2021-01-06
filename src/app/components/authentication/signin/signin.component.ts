@@ -66,6 +66,7 @@ export class SigninComponent implements OnInit, OnDestroy {
       };
       this.authenticationService.Login(this.loginRequest)
         .subscribe((loginResponse) => {
+          this.authenticationService.RefreshNotificationToken();
           const user = loginResponse[0];
           if (user.forceChangePasswordNextLogin) {
             this.router.navigate(['/reset/password']);
