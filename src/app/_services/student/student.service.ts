@@ -123,7 +123,7 @@ export class StudentService extends OfflineService {
   }
 
   public QueueBlobMessage(queueData: IQueueMessage) {
-    return this.http.Post<any>('/queue/message', queueData);
+    return this.http.Post<any>('/cognitive/train/student', queueData);
   }
 
   public DeleteImage(id) {

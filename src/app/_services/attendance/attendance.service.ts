@@ -27,6 +27,6 @@ export class AttendanceService extends OfflineService {
       }
 
       public QueueBlobMessage(queueData: IQueueMessage) {
-        return this.http.Post<any>('/queue/message', queueData);
+        return this.http.Post<any>('/cognitive/process/attendance', queueData);
       }
 }
