@@ -92,8 +92,7 @@ export class AttendancePage implements OnInit, AfterViewInit {
 
   async addImage(source: CameraSource) {
     const image = await Camera.getPhoto({
-      quality: 60,
-      allowEditing: true,
+      quality: 40,
       resultType: CameraResultType.Base64,
       source: CameraSource.Prompt
     });

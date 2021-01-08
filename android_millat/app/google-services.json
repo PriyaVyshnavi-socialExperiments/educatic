@@ -34,6 +34,64 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855033026064:android:cfc01560f1de9291279c95",
+        "android_client_info": {
+          "package_name": "com.millat.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "855033026064-sd9ajfvks11lnc3tultlcuvpres8qfc2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP4EFRqnr-VQXPXCm5cD-K74vbXnPHqvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "855033026064-sd9ajfvks11lnc3tultlcuvpres8qfc2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855033026064:android:4c2cadcb48c73ff1279c95",
+        "android_client_info": {
+          "package_name": "com.mmhs.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "855033026064-sd9ajfvks11lnc3tultlcuvpres8qfc2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP4EFRqnr-VQXPXCm5cD-K74vbXnPHqvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "855033026064-sd9ajfvks11lnc3tultlcuvpres8qfc2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
