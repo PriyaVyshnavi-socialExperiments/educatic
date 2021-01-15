@@ -1,0 +1,33 @@
+::ng-deep .filter-wider-popover
+{
+  --width: 95%;
+  --max-width: 400px;
+}
+
+ion-grid {
+    --ion-grid-padding: 0px; 
+}
+
+ion-card {
+    margin: 1px;
+    height: 300px;
+    padding: 5px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.static-cards {
+    font-size: xx-large;
+}
+
+ion-icon {
+    float: right;
+}
+
+.odd-row {
+    color: gray; 
+}
+
+.even-row {
+    color: white; 
+}
