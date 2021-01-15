@@ -11,6 +11,7 @@ import { RefreshServerService } from './_services/refresh-server/refresh-server.
 import { ServiceEvent } from './_models/service-event';
 import { environment } from '../environments/environment';
 import { UpdateService } from './_services/update/update.service';
+import { PushNotificationService } from './_services/push-notification/push-notification.service';
 
 @Component({
   selector: 'app-root',
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private networkService: NetworkService,
     private offlineSyncManager: OfflineSyncManagerService,
     private refreshServer: RefreshServerService,
+    private pushNotification: PushNotificationService,
     private sw: UpdateService
   ) {
     this.sw.checkForUpdates();
@@ -66,6 +68,8 @@ export class AppComponent implements OnInit, AfterViewInit {
           console.log(`Received message #${event.eventId}: ${event.message}`);
         }
       });
+
+      this.pushNotification.initPush();
 
     });
   }

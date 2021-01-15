@@ -16,3 +16,10 @@ export interface IUser {
     classId?: string;
     assessmentCategory: string[];
 }
+
+export interface INotificationToken {
+
+    id: string;
+    refreshToken: string;
+    role: Role;
+}

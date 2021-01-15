@@ -10,6 +10,7 @@ import { environment } from 'src/environments/environment';
 import { ICourseContent } from 'src/app/_models/course-content';
 import { DataShareService } from 'src/app/_services/data-share.service';
 import { DatePipe } from '@angular/common';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 
 @Component({
   selector: 'app-assignment-list',
@@ -62,7 +63,7 @@ export class AssignmentListPage implements OnInit {
   async ViewStudentAssignment(studAssignment: IStudentAssignment, assignmentName: string, id) {
     const fileExt = studAssignment.assignmentURL.split('.').pop();
     const assignmentURL = `${environment.blobURL}/assignments/${studAssignment.assignmentURL}`;
-    this.ViewAssignment(fileExt, assignmentURL, assignmentName,  studAssignment.id, studAssignment);
+    this.ViewAssignment(fileExt, assignmentURL, assignmentName, studAssignment.id, studAssignment);
 
   }
 
@@ -96,15 +97,20 @@ export class AssignmentListPage implements OnInit {
       courseCategory: this.subjectName,
       courseName: assignmentName,
       isTokenRequired: true,
+      isBlobUrl: true,
       id,
     } as ICourseContent;
-
+    console.log("content: ", content);
     if (fileExt.toLowerCase() === 'pdf') {
       this.router.navigateByUrl(`content/${content.id}/pdf-viewer`, { state: content });
-    } else {
+    }
+    else if (ContentHelper.AudioVideoSupported.indexOf(fileExt.toLowerCase()) > -1) {
+      this.router.navigateByUrl(`content/${content.id}/video-viewer`, { state: content });
+    }
+    else {
       if (this.currentUser.role !== Role.Student && studentAssignments) {
         this.router.navigateByUrl(`content/${studentAssignments.id}/image-viewer`,
-        { state: {assignment: content, studAssignment: studentAssignments} });
+          { state: { assignment: content, studAssignment: studentAssignments } });
       } else {
         const modal: HTMLIonModalElement = await this.modalController.create({
           component: ViewerModalComponent,

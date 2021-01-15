@@ -40,11 +40,14 @@ export class VideoViewerPage implements OnInit, AfterViewInit {
     }
 
     this.VideoConfig();
-
-    this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe(async (url) => {
-      const videoURL = url;
-      await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: videoURL });
-    })
+    if(this.courseContent.isBlobUrl) {
+      await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: this.courseContent.courseURL });
+    } else {
+      this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe(async (url) => {
+        const videoURL = url;
+        await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: videoURL });
+      })
+    }
   }
 
   private VideoConfig() {
@@ -60,6 +63,7 @@ export class VideoViewerPage implements OnInit, AfterViewInit {
     document.addEventListener('jeepCapVideoPlayerEnded',
       (e: CustomEvent) => {
         console.log('Event jeepCapVideoPlayerEnded ', e.detail);
+        this.navCtrl.setDirection('back');
       }, false);
     document.addEventListener('jeepCapVideoPlayerExit',
       (e: CustomEvent) => {

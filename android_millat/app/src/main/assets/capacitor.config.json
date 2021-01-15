@@ -1,6 +1,6 @@
 {
-  "appId": "com.goofflinee.app",
-  "appName": "goOfflineE",
+  "appId": "com.mmhs.app",
+  "appName": "Millat",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
@@ -9,6 +9,9 @@
       "launchShowDuration": 0
     }
   },
+   "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
   "cordova": {
     "preferences": {
       "ScrollEnabled": "false",

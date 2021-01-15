@@ -11,6 +11,7 @@ export interface ICourseContent {
     isTokenRequired: boolean;
     createdBy: string;
     active: boolean;
+    isBlobUrl: boolean;
 }
 
 export interface ICategoryWiseContent {

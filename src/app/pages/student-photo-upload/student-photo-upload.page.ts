@@ -99,8 +99,7 @@ export class StudentPhotoUploadPage implements OnInit {
 
   async addImage(source: CameraSource, id) {
     const image = await Camera.getPhoto({
-      quality: 60,
-      allowEditing: true,
+      quality: 40,
       resultType: CameraResultType.Base64,
       source: CameraSource.Prompt
     });

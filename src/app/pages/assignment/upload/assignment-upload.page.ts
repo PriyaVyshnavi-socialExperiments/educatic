@@ -90,13 +90,13 @@ export class AssignmentUploadPage implements OnInit {
           this.addImage(CameraSource.Camera);
         }
       },
-      {
-        text: 'upload a file/photo',
-        icon: 'image',
-        handler: () => {
-          this.addImage(CameraSource.Photos);
-        }
-      },
+      // {
+      //   text: 'upload a file/photo',
+      //   icon: 'image',
+      //   handler: () => {
+      //     this.addImage(CameraSource.Photos);
+      //   }
+      // },
       {
         text: 'Cancel',
         icon: 'close',
@@ -108,7 +108,7 @@ export class AssignmentUploadPage implements OnInit {
     ];
 
     // Only allow file selection inside a browser
-    if (!this.plt.is('hybrid')) {
+    //if (!this.plt.is('hybrid')) {
       buttons.push({
         text: 'Choose a File',
         icon: 'attach',
@@ -116,7 +116,7 @@ export class AssignmentUploadPage implements OnInit {
           this.fileInput.nativeElement.click();
         }
       });
-    }
+    //}
 
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Select Assignment Source',
@@ -129,10 +129,9 @@ export class AssignmentUploadPage implements OnInit {
 
   async addImage(source: CameraSource) {
     const cameraImage = await Camera.getPhoto({
-      quality: 60,
-      allowEditing: true,
+      quality: 40,
       resultType: CameraResultType.Base64,
-      source
+      source: CameraSource.Prompt
     });
     this.UploadAssignment(cameraImage, null);
   }
@@ -143,7 +142,7 @@ export class AssignmentUploadPage implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
     const fileExt = file.type.split('/').pop();
-    if ((ContentHelper.ImgSupported.indexOf(fileExt.toLowerCase()) > -1)) {
+    if ((ContentHelper.ContentUploadSupported.indexOf(fileExt.toLowerCase()) > -1)) {
       this.UploadAssignment(null, file);
     } else {
       this.presentToast(`This file type is not supported.`, 'danger');
