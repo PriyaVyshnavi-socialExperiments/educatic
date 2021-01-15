@@ -90,13 +90,13 @@ export class AssignmentUploadPage implements OnInit {
           this.addImage(CameraSource.Camera);
         }
       },
-      {
-        text: 'upload a file/photo',
-        icon: 'image',
-        handler: () => {
-          this.addImage(CameraSource.Photos);
-        }
-      },
+      // {
+      //   text: 'upload a file/photo',
+      //   icon: 'image',
+      //   handler: () => {
+      //     this.addImage(CameraSource.Photos);
+      //   }
+      // },
       {
         text: 'Cancel',
         icon: 'close',
@@ -108,7 +108,7 @@ export class AssignmentUploadPage implements OnInit {
     ];
 
     // Only allow file selection inside a browser
-    if (!this.plt.is('hybrid')) {
+    //if (!this.plt.is('hybrid')) {
       buttons.push({
         text: 'Choose a File',
         icon: 'attach',
@@ -116,7 +116,7 @@ export class AssignmentUploadPage implements OnInit {
           this.fileInput.nativeElement.click();
         }
       });
-    }
+    //}
 
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Select Assignment Source',

@@ -1,34 +1,91 @@
 {
   "project_info": {
-    "project_number": "855033026064",
-    "firebase_url": "https://goofflinee.firebaseio.com",
-    "project_id": "goofflinee",
-    "storage_bucket": "goofflinee.appspot.com"
+    "project_number": "710276919129",
+    "project_id": "goofflinee-6fff3",
+    "storage_bucket": "goofflinee-6fff3.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:855033026064:android:10ce68e99ed348b5279c95",
+        "mobilesdk_app_id": "1:710276919129:android:a99bafc2bd546fca33e648",
         "android_client_info": {
           "package_name": "com.goofflinee.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "855033026064-sd9ajfvks11lnc3tultlcuvpres8qfc2.apps.googleusercontent.com",
+          "client_id": "710276919129-fbkqsoqpif1ppmo1upgu0fqh7b4mm38s.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAP4EFRqnr-VQXPXCm5cD-K74vbXnPHqvY"
+          "current_key": "AIzaSyCsbUXQLFVql5JVGZwlliG_anZKHYIrZ10"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "855033026064-sd9ajfvks11lnc3tultlcuvpres8qfc2.apps.googleusercontent.com",
+              "client_id": "710276919129-fbkqsoqpif1ppmo1upgu0fqh7b4mm38s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710276919129:android:1e1c3e1a7f97e75f33e648",
+        "android_client_info": {
+          "package_name": "com.mmhs.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "710276919129-fbkqsoqpif1ppmo1upgu0fqh7b4mm38s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsbUXQLFVql5JVGZwlliG_anZKHYIrZ10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "710276919129-fbkqsoqpif1ppmo1upgu0fqh7b4mm38s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710276919129:android:24c3359cdbf16ffd33e648",
+        "android_client_info": {
+          "package_name": "com.takmil.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "710276919129-fbkqsoqpif1ppmo1upgu0fqh7b4mm38s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsbUXQLFVql5JVGZwlliG_anZKHYIrZ10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "710276919129-fbkqsoqpif1ppmo1upgu0fqh7b4mm38s.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
