@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { IUser } from 'src/app/_models';
 import { IAssessment, IQuestion } from 'src/app/_models/assessment';
 import { QuestionType } from 'src/app/_models/question-type';
@@ -15,6 +16,7 @@ import { AssessmentService } from 'src/app/_services/assessment/assessment.servi
 })
 export class AssessmentQuestionAddPage implements OnInit {
   @ViewChild('documentEditForm') documentEditForm: FormGroupDirective;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
   question: IQuestion;
   subjectName: string;
@@ -25,6 +27,8 @@ export class AssessmentQuestionAddPage implements OnInit {
   optionAnswer = 0;
   backURL = '';
   assessmentId = '';
+  isImageSelect = false;
+  questionImagePath: string | ArrayBuffer = '';
 
   constructor(private formBuilder: FormBuilder,
     private assessmentService: AssessmentService,
@@ -133,6 +137,38 @@ export class AssessmentQuestionAddPage implements OnInit {
 
   onChangeQuestionType(questionType) {
     this.fillAnswersOptions(questionType.value);
+  }
+
+  imageSelectToggle() {
+    this.isImageSelect = !this.isImageSelect;
+    if(this.isImageSelect && !this.questionImagePath) {
+      //this.questionImagePath = '';
+      this.fileInput.nativeElement.click();
+    }
+  }
+
+  editImage() {
+    this.fileInput.nativeElement.click();
+  }
+
+  uploadFile(event: EventTarget) {
+    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
+    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
+    const file: File = target.files[0];
+    const fileExt = file.type.split('/').pop();
+    if ((ContentHelper.ImgSupported.indexOf(fileExt.toLowerCase()) > -1)) {
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        this.questionImagePath = reader.result;
+      };
+      
+     // this.UploadAssignment(null, file);
+    } else {
+      this.presentToast(`This file type is not supported.`, 'danger');
+    }
   }
 
   private fillAnswersOptions(questionType) {
