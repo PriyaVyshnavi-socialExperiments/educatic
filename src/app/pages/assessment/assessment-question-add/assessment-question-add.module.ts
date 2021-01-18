@@ -1,6 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LazyLoadImageModule, LAZYLOAD_IMAGE_HOOKS } from 'ng-lazyload-image';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,12 +17,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
-
 import { IonicModule } from '@ionic/angular';
 
 import { AssessmentQuestionAddPageRoutingModule } from './assessment-question-add-routing.module';
-
 import { AssessmentQuestionAddPage } from './assessment-question-add.page';
+import { LazyLoadImageHooks } from 'src/app/_helpers/lazy-load-image-hook';
 
 @NgModule({
   imports: [
@@ -44,9 +44,11 @@ import { AssessmentQuestionAddPage } from './assessment-question-add.page';
     MatTabsModule,
     MatMenuModule,
     MaterialFileInputModule,
-    AssessmentQuestionAddPageRoutingModule
+    AssessmentQuestionAddPageRoutingModule,
+    LazyLoadImageModule
   ],
   declarations: [AssessmentQuestionAddPage],
+  providers: [{ provide: LAZYLOAD_IMAGE_HOOKS, useClass: LazyLoadImageHooks }],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AssessmentQuestionAddPageModule {}

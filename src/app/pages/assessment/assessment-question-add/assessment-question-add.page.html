@@ -45,7 +45,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-sm-12" [ngClass]="{'col-md-6 col-xl-6 col-lg-6': isImageSelect}">
+            <div class="col-sm-12" [ngClass]="{'col-md-6 col-xl-6 col-lg-6': questionImagePath}">
             <mat-form-field class="example-full-width" appearance="outline">
               <mat-label>Question</mat-label>
               <textarea matInput placeholder="Question" value="" formControlName="question" required autocomplete="off"
@@ -57,13 +57,14 @@
               </mat-error>
             </mat-form-field>
           </div>
-          <div class="col-md-6 col-xl-6 col-lg-6 col-sm-12" *ngIf="isImageSelect && questionImagePath">
+          <div class="col-md-6 col-xl-6 col-lg-6 col-sm-12" *ngIf="questionImagePath">
             <ion-card class="item-card">
               <ion-card-content>
                 <div class="contact-grid" (click)="editImage()">
               <ion-icon class="header-dropdown m-r--5" (click)="editImage()" name="camera" slot="end">
               </ion-icon>
-              <ion-img [src]="questionImagePath"></ion-img>
+              <img [decode]="isImageSelect" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+               [lazyLoad]="questionImagePath" />
               </div>
             </ion-card-content>
             </ion-card>
