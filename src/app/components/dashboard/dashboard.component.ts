@@ -2,12 +2,12 @@ import { Component, AfterViewInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ModalPopUpComponent } from '../dashboard-helpers/modal-pop-up/modal-pop-up.component';
 import { DashboardService } from '../../_services/dashboard/dashboard.service';
-import { ChartService }from '../../_services/dashboard/chart.service';
+import { ChartService } from '../../_services/dashboard/chart.service';
 import { Chart } from 'chart.js';
-import { IDashboardCity } from '../../_models/dashboard-models/dashboard-city'; 
-import { IDashboardSchool } from '../../_models/dashboard-models/dashboard-school'; 
-import { IDashboardClassRoom } from '../../_models/dashboard-models/dashboard-classroom'; 
-import { IDashboardStudent } from '../../_models/dashboard-models/dashboard-student'; 
+import { IDashboardCity } from '../../_models/dashboard-models/dashboard-city';
+import { IDashboardSchool } from '../../_models/dashboard-models/dashboard-school';
+import { IDashboardClassRoom } from '../../_models/dashboard-models/dashboard-classroom';
+import { IDashboardStudent } from '../../_models/dashboard-models/dashboard-student';
 import { IDashboardTeacher } from '../../_models/dashboard-models/dashboard-teacher';
 import { ToastController } from  '@ionic/angular';
  
@@ -28,24 +28,24 @@ export class DashboardComponent implements AfterViewInit {
   schools: IDashboardSchool[] = [];
   classes: IDashboardClassRoom[] = [];
   students: IDashboardStudent[] = [];
-  teachers: IDashboardTeacher[] = []; 
+  teachers: IDashboardTeacher[] = [];
 
   // All cities, all schools that correspond to the selected cities, and all classes corresponding to the selected schools. 
-  // Used to populate the select options. 
-  allCities: IDashboardCity[] = []; 
+  // Used to populate the select options.
+  allCities: IDashboardCity[] = [];
   allSchools: IDashboardSchool[] = [];
   allClasses: IDashboardClassRoom[] = [];
 
-  // Ids of canvas's where charts will be displayed 
-  cityAttendanceChartId: string = 'city-attendance';
-  schoolAttendanceChartId: string = 'school-attendance';
-  classAttendanceChartId: string = 'class-attendance';
-  genderAttendanceChartId: string = 'gender-attendance';
-  studentEnrollmentChartId: string = 'student-enrollment';
-  
+  // Ids of canvas's where charts will be displayed
+  cityAttendanceChartId = 'city-attendance';
+  schoolAttendanceChartId = 'school-attendance';
+  classAttendanceChartId = 'class-attendance';
+  genderAttendanceChartId = 'gender-attendance';
+  studentEnrollmentChartId = 'student-enrollment';
+
   // Object containg mappings from id of canvas you want chart displayed to the actual chart object 
   charts: any = {
-    [this.cityAttendanceChartId]: undefined, 
+    [this.cityAttendanceChartId]: undefined,
     [this.schoolAttendanceChartId]: undefined,
     [this.classAttendanceChartId]: undefined,
     [this.genderAttendanceChartId]: undefined,
@@ -53,35 +53,34 @@ export class DashboardComponent implements AfterViewInit {
   };
 
   // Used to display the static cards 
-  totalClasses: number = 0;
-  totalSchools: number = 0;
-  totalStudents: number = 0;
-  totalTeachers: number = 0; 
-  activeClasses: number = 0;
-  activeSchools: number = 0;
-  activeStudents: number = 0;
-  activeTeachers: number = 0; 
+  totalClasses = 0;
+  totalSchools = 0;
+  totalStudents = 0;
+  totalTeachers = 0;
+  activeClasses = 0;
+  activeSchools = 0;
+  activeStudents = 0;
+  activeTeachers = 0;
 
   constructor
     (
-      public modalController: ModalController, 
+      public modalController: ModalController,
       public dashboardService: DashboardService,
       public toastController: ToastController,
       public chartService: ChartService,
-    ) 
-    {}
+  ) { }
 
   /**
    * When a char is clicked, displays modal-pop-up with the selected chart
    * @param chart selected chart
    * @param type type of chart to be displayed (bar, line, scatter, etc....). 
    */
-  async presentModal(chart: Chart, type: String) {
+  async presentModal(chart: Chart, type: string) {
     const modal = await this.modalController.create({
       component: ModalPopUpComponent,
       componentProps: {
-        'chart': chart,
-        'type': type
+        chart,
+        type
       }
     })
     return await modal.present();
@@ -95,8 +94,10 @@ export class DashboardComponent implements AfterViewInit {
    */
   async ngAfterViewInit() {
     try {
-      if (!this.charts[this.cityAttendanceChartId] && !this.charts[this.schoolAttendanceChartId] && !this.charts[this.classAttendanceChartId] && !this.charts[this.genderAttendanceChartId] && !this.charts[this.studentEnrollmentChartId]) {
-        this.charts[this.cityAttendanceChartId] = this.chartService.getAttendanceBarChart(this.cityAttendanceChartId,'Cities', 'Percent Attendance', 'City Attendance'); 
+      if (!this.charts[this.cityAttendanceChartId] && !this.charts[this.schoolAttendanceChartId] &&
+        !this.charts[this.classAttendanceChartId] && !this.charts[this.genderAttendanceChartId] &&
+        !this.charts[this.studentEnrollmentChartId]) {
+        this.charts[this.cityAttendanceChartId] = this.chartService.getAttendanceBarChart(this.cityAttendanceChartId, 'Cities', 'Percent Attendance', 'City Attendance');
         this.charts[this.schoolAttendanceChartId] = this.chartService.getAttendanceBarChart(this.schoolAttendanceChartId, 'Schools', 'Percent Attendance', 'School Attendance');
         this.charts[this.classAttendanceChartId] = this.chartService.getAttendanceLineChart(this.classAttendanceChartId, 'Days', 'Percent Attendance', 'Class Attendance');
         this.charts[this.genderAttendanceChartId] = this.chartService.getAttendanceBarChart(this.genderAttendanceChartId, 'Gender', 'Percent Attendance', 'Gender Attendance');
@@ -104,9 +105,9 @@ export class DashboardComponent implements AfterViewInit {
       }
       this.refresh();
     } catch (error) {
-      await this.presentToast("Failed to initalize charts and/or dasboard infromation. Please try again later."); 
+      await this.presentToast('Failed to initialize charts and/or dashboard information. Please try again later.');
     }
-   
+
   }
 
   /**
@@ -116,20 +117,28 @@ export class DashboardComponent implements AfterViewInit {
   async refresh() {
     try {
       this.dashboardService.getData().subscribe(() => {
+        this.updateCities();
+        this.changeCities();
+        this.changeSchools();
+        this.changeClasses();
+        this.totalSchools = this.allSchools.length;
+        this.totalClasses = this.allClasses.length;
+        this.totalStudents = this.students.length;
+        this.totalTeachers = this.teachers.length;
         // After loading data, geocode the schools addresses to get latitude and longitude 
-        this.dashboardService.geocodeSchools().subscribe(() => {
-          this.updateCities(); 
-          this.changeCities();
-          this.changeSchools();
-          this.changeClasses();
-          this.totalSchools = this.allSchools.length;
-          this.totalClasses = this.allClasses.length;  
-          this.totalStudents = this.students.length; 
-          this.totalTeachers = this.teachers.length; 
-        })
+        // this.dashboardService.geocodeSchools().subscribe(() => {
+        //   this.updateCities();
+        //   this.changeCities();
+        //   this.changeSchools();
+        //   this.changeClasses();
+        //   this.totalSchools = this.allSchools.length;
+        //   this.totalClasses = this.allClasses.length;
+        //   this.totalStudents = this.students.length;
+        //   this.totalTeachers = this.teachers.length;
+        // })
       });
     } catch (error) {
-      await this.presentToast("Error: Failed to load data");
+      await this.presentToast('Error: Failed to load data');
     }
   }
 
@@ -140,14 +149,14 @@ export class DashboardComponent implements AfterViewInit {
   async updateCities() {
     try {
       this.allCities = this.dashboardService.getCities();
-      for (let city of this.allCities) {
+      for (const city of this.allCities) {
         city.averageAttendance = this.dashboardService.getAverageCityAttendance(city, this.start, this.end);
       }
-      this.cities = this.allCities; 
+      this.cities = this.allCities;
     } catch (error) {
-      await this.presentToast("Error: Failed to update cities");
+      await this.presentToast('Error: Failed to update cities');
     }
-    
+
   }
 
   /**
@@ -165,11 +174,11 @@ export class DashboardComponent implements AfterViewInit {
           this.allSchools = this.allSchools.concat(city.schools);
         });
         // Calculate average attendance
-        for (let school of this.allSchools) {
+        for (const school of this.allSchools) {
           school.averageAttendance = this.dashboardService.getAverageSchoolAttendance(school, this.start, this.end);
         }
         // Sorts schools based on average attendance 
-        this.schools = this.allSchools; 
+        this.schools = this.allSchools;
         this.schools.sort((s1: IDashboardSchool, s2: IDashboardSchool) => {
           return s1.averageAttendance > s2.averageAttendance ? -1 : 1;
         })
@@ -178,7 +187,7 @@ export class DashboardComponent implements AfterViewInit {
       this.changeSchools();
       this.updateCityChartData();
     } catch (error) {
-      await this.presentToast("Error: Failed to change cities");
+      await this.presentToast('Error: Failed to change cities');
     }
   }
 
@@ -195,18 +204,18 @@ export class DashboardComponent implements AfterViewInit {
       this.teachers = [];
       if (this.schools) {
         this.schools.forEach((school) => {
-          this.teachers = this.teachers.concat(school.teachers); 
-          this.allClasses = this.allClasses.concat(school.classRooms); 
+          this.teachers = this.teachers.concat(school.teachers);
+          this.allClasses = this.allClasses.concat(school.classRooms);
         });
         // Calculate average attendance for each class
-        for (let classRoom of this.allClasses) {
-          classRoom.averageAttendance = this.dashboardService.getAverageClassRoomAttendance(classRoom, this.start, this.end); 
+        for (const classRoom of this.allClasses) {
+          classRoom.averageAttendance = this.dashboardService.getAverageClassRoomAttendance(classRoom, this.start, this.end);
         }
 
         // Sort classes based on attendance 
-        this.classes = this.allClasses; 
+        this.classes = this.allClasses;
         this.classes.sort((c1: IDashboardClassRoom, c2: IDashboardClassRoom) => {
-          return c1.averageAttendance > c2.averageAttendance ? -1: 1;
+          return c1.averageAttendance > c2.averageAttendance ? -1 : 1;
         });
 
         // Updates active schools and active teachers 
@@ -214,10 +223,10 @@ export class DashboardComponent implements AfterViewInit {
         this.activeTeachers = this.dashboardService.getActiveTeachers(this.teachers, this.start, this.end);
       }
       // Updates classes to reflect newly selected schools and updates school attendance chart. 
-      this.changeClasses(); 
+      this.changeClasses();
       this.updateSchoolChartData();
     } catch (error) {
-      await this.presentToast("Error: Failed to change schools");
+      await this.presentToast('Error: Failed to change schools');
     }
   }
 
@@ -229,7 +238,7 @@ export class DashboardComponent implements AfterViewInit {
       this.students = [];
       if (this.classes) {
         this.classes.forEach((classRoom) => {
-          this.students = this.students.concat(classRoom.students); 
+          this.students = this.students.concat(classRoom.students);
         });
         // Updates active classes and students 
         this.activeClasses = this.dashboardService.getActiveClasses(this.classes, this.start, this.end);
@@ -238,9 +247,9 @@ export class DashboardComponent implements AfterViewInit {
       // Updates student enrollment chart, gender attendance chart, and class chart. 
       this.updateStudentEnrollmentChartData();
       this.updateGenderChartData();
-      this.updateClassChartData(); 
+      this.updateClassChartData();
     } catch (error) {
-      await this.presentToast("Error: Failed to change classes.");
+      await this.presentToast('Error: Failed to change classes.');
     }
   }
 
@@ -249,51 +258,51 @@ export class DashboardComponent implements AfterViewInit {
   // the approprate "change" method (changeClasses, changeSchools, changeCities)). 
   async updateGenderChartData() {
     try {
-      let genderChartData = this.chartService.updateGenderAttendanceBarChart(this.classes, 'classes', this.start, this.end);
-      this.updateChart(this.genderAttendanceChartId, genderChartData); 
+      const genderChartData = this.chartService.updateGenderAttendanceBarChart(this.classes, 'classes', this.start, this.end);
+      this.updateChart(this.genderAttendanceChartId, genderChartData);
     } catch (error) {
-      await this.presentToast("Error: Failed to update gender attendance chart");
+      await this.presentToast('Error: Failed to update gender attendance chart');
     }
-    
+
   }
 
   // Updates class chart data. updateAttendanceLineChart takes the data, the type (classes, schools, or cities), and the 
-  // start/end date. 
+  // start/end date.
   async updateClassChartData() {
     try {
-      let classChartData = this.chartService.updateAttendanceLineChart(this.classes, 'classes', this.start, this.end);
-      this.updateChart(this.classAttendanceChartId, classChartData); 
+      const classChartData = this.chartService.updateAttendanceLineChart(this.classes, 'classes', this.start, this.end);
+      this.updateChart(this.classAttendanceChartId, classChartData);
     } catch (error) {
-      await this.presentToast("Error: Failed to update class attendance chart");
+      await this.presentToast('Error: Failed to update class attendance chart');
     }
   }
 
   async updateSchoolChartData() {
     try {
-      let schoolChartData = this.chartService.updateAttendanceBarChart(this.schools, 'schools', this.start, this.end);
-      this.updateChart(this.schoolAttendanceChartId, schoolChartData); 
+      const schoolChartData = this.chartService.updateAttendanceBarChart(this.schools, 'schools', this.start, this.end);
+      this.updateChart(this.schoolAttendanceChartId, schoolChartData);
     } catch (error) {
-      await this.presentToast("Error: Failed to update school attendance chart");
+      await this.presentToast('Error: Failed to update school attendance chart');
     }
-   
+
   }
 
   async updateCityChartData() {
     try {
-      let cityChartData = this.chartService.updateAttendanceBarChart(this.cities, 'cities', this.start, this.end); 
+      const cityChartData = this.chartService.updateAttendanceBarChart(this.cities, 'cities', this.start, this.end);
       this.updateChart(this.cityAttendanceChartId, cityChartData);
     } catch (error) {
-      await this.presentToast("Error: Failed to update city attendance chart");
+      await this.presentToast('Error: Failed to update city attendance chart');
     }
 
   }
 
   async updateStudentEnrollmentChartData() {
     try {
-      let studentEnrollmentChartData = this.chartService.updateStudentEnrollmentLineChart(this.students, this.start, this.end);
+      const studentEnrollmentChartData = this.chartService.updateStudentEnrollmentLineChart(this.students, this.start, this.end);
       this.updateChart(this.studentEnrollmentChartId, studentEnrollmentChartData);
     } catch (error) {
-      await this.presentToast("Error: Failed to update student enrollment chart");
+      await this.presentToast('Error: Failed to update student enrollment chart');
     }
   }
 
@@ -305,32 +314,32 @@ export class DashboardComponent implements AfterViewInit {
   async updateChart(id: string, chartData: any) {
     try {
       if (this.charts[id]) {
-        this.charts[id].data.datasets = chartData.datasets; 
+        this.charts[id].data.datasets = chartData.datasets;
         this.charts[id].data.labels = chartData.labels;
         this.charts[id].update();
       }
     } catch (error) {
-      await this.presentToast("Error: Failed to update charts");
+      await this.presentToast('Error: Failed to update charts');
     }
-    
+
   }
 
   /**
    * Changes the start data. First checks to see if start < end, if it is, sets start to be new startData
    */
-  async changeStartDate() {
+  async changeStartDate(event) {
     try {
-      let start = new Date(this.startDate); 
+      const start = new Date(this.startDate);
       if (this.end && start >= this.end) {
-        await this.presentToast("Start date must be before end date");
-        this.startDate = this.start.toString(); 
+        await this.presentToast('Start date must be before end date');
+        this.startDate = this.start.toString();
       } else {
-        this.start = start; 
+        this.start = start;
       }
       this.updateCities();
       this.changeCities();
     } catch (error) {
-      await this.presentToast("Faile to change start date");
+      await this.presentToast('Fail to change start date');
     }
 
   }
@@ -338,24 +347,24 @@ export class DashboardComponent implements AfterViewInit {
   /**
    * Changes the end data. First checks to see if end > staart. If it is, sets end to be new endDate. 
    */
-  async changeEndDate() {
+  async changeEndDate(event) {
     try {
-      let end = new Date(this.endDate); 
+      const end = new Date(this.endDate);
       if (this.start && end <= this.start) {
-        await await this.presentToast("End date must be after start date");
+        await await this.presentToast('End date must be after start date');
         this.endDate = this.end.toString();
       } else {
-        this.end = end; 
+        this.end = end;
       }
-      this.updateCities(); 
-      this.changeCities(); 
+      this.updateCities();
+      this.changeCities();
     } catch (error) {
-      await this.presentToast("Error: Failed to change end date");
-    }  
+      await this.presentToast('Error: Failed to change end date');
+    }
   }
 
   /**
-   * Error message to be displayed to user 
+   * Error message to be displayed to user
    * @param msg error message to be displayed
    */
   private async presentToast(msg: string) {

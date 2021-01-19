@@ -1,12 +1,16 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
+import { Guid } from 'guid-typescript';
+import * as blobUtil from 'blob-util';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { IUser } from 'src/app/_models';
 import { IAssessment, IQuestion } from 'src/app/_models/assessment';
 import { QuestionType } from 'src/app/_models/question-type';
 import { AuthenticationService } from 'src/app/_services';
 import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
+import { dateFormat } from 'src/app/_helpers';
 
 @Component({
   selector: 'app-assessment-question-add',
@@ -15,6 +19,7 @@ import { AssessmentService } from 'src/app/_services/assessment/assessment.servi
 })
 export class AssessmentQuestionAddPage implements OnInit {
   @ViewChild('documentEditForm') documentEditForm: FormGroupDirective;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
   question: IQuestion;
   subjectName: string;
@@ -25,6 +30,9 @@ export class AssessmentQuestionAddPage implements OnInit {
   optionAnswer = 0;
   backURL = '';
   assessmentId = '';
+  isImageSelect = false;
+  questionImagePath: string | ArrayBuffer = '';
+  questionImageFile: File ;
 
   constructor(private formBuilder: FormBuilder,
     private assessmentService: AssessmentService,
@@ -69,6 +77,7 @@ export class AssessmentQuestionAddPage implements OnInit {
                   this.f.question.setValue(this.question.questionDescription);
                   this.f.questionType.setValue(this.question.questionType);
                   this.fillAnswersOptions(this.question.questionType);
+                  this.questionImagePath = this.question.questionImagePath;
                 }
               }
             }
@@ -90,7 +99,7 @@ export class AssessmentQuestionAddPage implements OnInit {
     } else {
       const selectedQuestionType = this.f.questionType.value;
       const question = {
-        id: this.question? this.question.id : '',
+        id: this.question? this.question.id : Guid.create().toString(),
         questionDescription: this.f.question.value,
         questionType: selectedQuestionType,
         active: true
@@ -116,10 +125,31 @@ export class AssessmentQuestionAddPage implements OnInit {
         this.presentToast('Please select/enter answer.', 'warning');
         return;
       }
-      this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId, this.subjectName).subscribe((res) => {
-        this.presentToast('Assessment quiz question update successfully.', 'success');
-        this.router.navigateByUrl(this.backURL + `?d=${Math.floor(Math.random() * 1000000000)}`);
-      });
+
+      if (this.questionImageFile) {
+        const fileExt = this.questionImageFile.type.split('/').pop();
+        let blobDataURL = `${this.currentUser.defaultSchool.id}_${this.currentUser.defaultSchool.name}`;
+        blobDataURL = `${blobDataURL}/${this.subjectName}`;
+        blobDataURL = `${blobDataURL}/${question.id}_${dateFormat(new Date())}.${fileExt}`;
+        question.questionImagePath = blobDataURL;
+        this.questionImageFile.arrayBuffer().then((buffer) => {
+          const blobData = blobUtil.arrayBufferToBlob(buffer);
+          const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
+          this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId, this.subjectName, fileData)
+          .subscribe((res) => {
+            if (res['message']) {
+              this.presentToast('Assessment quiz question update successfully.', 'success');
+            } else {
+              console.log('Progress: ', res['progress']);
+            }
+          });
+        });
+      } else {
+        this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId, this.subjectName).subscribe((res) => {
+          this.presentToast('Assessment quiz question update successfully.', 'success');
+          this.router.navigateByUrl(this.backURL + `?d=${Math.floor(Math.random() * 1000000000)}`);
+        });
+      }
     }
   }
 
@@ -133,6 +163,38 @@ export class AssessmentQuestionAddPage implements OnInit {
 
   onChangeQuestionType(questionType) {
     this.fillAnswersOptions(questionType.value);
+  }
+
+  imageSelectToggle() {
+    this.isImageSelect = !this.isImageSelect;
+    if(this.isImageSelect && !this.questionImagePath) {
+      //this.questionImagePath = '';
+      this.fileInput.nativeElement.click();
+    }
+  }
+
+  editImage() {
+    this.fileInput.nativeElement.click();
+  }
+
+  uploadFile(event: EventTarget) {
+    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
+    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
+    this.questionImageFile = target.files[0];
+    const fileExt = this.questionImageFile.type.split('/').pop();
+    if ((ContentHelper.ImgSupported.indexOf(fileExt.toLowerCase()) > -1)) {
+
+      const reader = new FileReader();
+      reader.readAsDataURL(this.questionImageFile);
+
+      reader.onload = () => {
+        this.questionImagePath = reader.result;
+      };
+      
+     // this.UploadAssignment(null, file);
+    } else {
+      this.presentToast(`This file type is not supported.`, 'danger');
+    }
   }
 
   private fillAnswersOptions(questionType) {

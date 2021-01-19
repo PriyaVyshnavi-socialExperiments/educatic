@@ -29,7 +29,7 @@
                     </ion-item>
                     <ion-item>
                         <ion-label>End Date</ion-label>
-                        <ion-datetime [(ngModel)]="this.endDate" placeholder="Select Date" (ionChange)="changeEndDate(value)"></ion-datetime>
+                        <ion-datetime [(ngModel)]="this.endDate" placeholder="Select Date" (ionChange)="changeEndDate($event)"></ion-datetime>
                     </ion-item>    
                 </ion-list>
             </ion-col>
