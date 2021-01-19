@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ModalPopUpComponent } from '../dashboard-helpers/modal-pop-up/modal-pop-up.component';
 import { DashboardService } from '../../_services/dashboard/dashboard.service';
@@ -10,7 +10,6 @@ import { IDashboardClassRoom } from '../../_models/dashboard-models/dashboard-cl
 import { IDashboardStudent } from '../../_models/dashboard-models/dashboard-student'; 
 import { IDashboardTeacher } from '../../_models/dashboard-models/dashboard-teacher';
 import { ToastController } from  '@ionic/angular';
-import { SchoolService } from '../../_services/school/school.service';
  
 @Component({
   selector: 'app-dashboard',
@@ -69,7 +68,6 @@ export class DashboardComponent implements AfterViewInit {
       public dashboardService: DashboardService,
       public toastController: ToastController,
       public chartService: ChartService,
-      public schoolService: SchoolService,
     ) 
     {}
 

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpBackend } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
-import { SchoolService } from '../../_services/school/school.service';
+import { ISchool } from '../../_models/school';
+import { IClassRoom } from '../../_models/class-room';
 import { IDashboardCity } from '../../_models/dashboard-models/dashboard-city'; 
 import { IDashboardSchool } from '../../_models/dashboard-models/dashboard-school'; 
 import { IDashboardClassRoom } from '../../_models/dashboard-models/dashboard-classroom'; 
@@ -9,6 +10,8 @@ import { IDashboardStudent } from '../../_models/dashboard-models/dashboard-stud
 import { IDashboardTeacher } from '../../_models/dashboard-models/dashboard-teacher';
 import {  IAttendance } from '../../_models/dashboard-models/dashboard-attendance';
 import {catchError, tap } from 'rxjs/operators'; 
+import { HttpService } from '../http-client/http.client';
+import { IStudent } from 'src/app/_models';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +32,7 @@ export class DashboardService {
     teachers: new Map<string, { teacher: IDashboardTeacher, attendance: Map<string, boolean>}>(),
   }
 
-  // Used to bypass interceptor to avoid page reload if error in retrieving data. This would otherwise cause 
+ // Used to bypass interceptor to avoid page reload if error in retrieving data. This would otherwise cause 
   // constant reloads and eventually log the user out. 
   httpWithoutInterceptor: HttpClient;
   // Used to geocode addresses of cities into lat/long
@@ -45,8 +48,10 @@ export class DashboardService {
   teacherSAS = "?sv=2018-03-28&si=Teacher-1771750061F&tn=teacher&sig=k0RuIibr2W9DAENFCZMoARZP7ZQVE7QPHcbY9Dht3xk%3D";
   classRoomSAS = "?sv=2018-03-28&si=ClassRoom-177174FA20F&tn=classroom&sig=ZvEUzBXGV%2B0%2BEnL5pajekE3HAuO9f8u1ss9DN%2F78sfQ%3D"; 
 
+
   constructor(
     private httpBackend: HttpBackend,
+    private http: HttpService
   ) { 
     this.httpWithoutInterceptor = new HttpClient(this.httpBackend); 
   }
@@ -58,11 +63,11 @@ export class DashboardService {
   public getData() { 
     let schoolTable = this.getSchoolTable(); // Will contain classes and students within individual school entries
     let attendanceTable = this.getAttendanceTable() // No backend set up, so done manually 
-    let studentTable = this.getStudentTable();
-    let teacherTable = this.getTeacherTable();
-    let classRoomTable = this .getClassRoomTable();
-    return forkJoin([schoolTable, attendanceTable, studentTable, teacherTable, classRoomTable]).pipe(
-      tap((result) => this.processData(result[0], result[1], result[2], result[3], result[4])),
+    let studentEnrollment = this.getStudentEnrollment();
+    return forkJoin([schoolTable, attendanceTable, studentEnrollment]).pipe(
+      tap((result) => {
+        this.processData(result[0], result[1], result[2]);
+      }),
       catchError((err) => {
         throw err
       })
@@ -75,67 +80,62 @@ export class DashboardService {
    * @param schoolTable ISchool array of all active schools 
    * @param attendanceTable array of attendance entries 
    */
-  public processData(schoolTable: any, attendanceTable: any, studentTable: any, teacherTable: any, classRooomTable: any) {
+  public processData(schoolTable: ISchool[], attendanceTable: any, studentEnrollment: any) {
     this.data.cities.clear();
     this.data.classes.clear();
     this.data.schools.clear();
     this.data.students.clear(); 
 
-    this.processSchoolTable(schoolTable.value);
-    this.processTeacherTable(teacherTable.value);
-    this.processClassRoomTable(classRooomTable.value);
-    this.processStudentTable(studentTable.value); 
-    this.processAttendanceTable(attendanceTable.value);
-    console.log(this.data); 
+    this.processSchoolTable(schoolTable);
+    this.processStudentEnrollment(studentEnrollment); 
+    this.processAttendanceTable(attendanceTable);
   }
   
   /**
    * Processes the school table by creating a mapping from cities and schoolId's to information about the 
    * schools and cities including attendance. 
    */
-  private processSchoolTable(schoolTable: any) {
+  private processSchoolTable(schoolTable: ISchool[]) {
     // Map schoolId to city, will likely want to map schoolId to school so that 
     // all student information could be accessed. This is done in order to decrease database calls
     // which could be costly 
     for (let school of schoolTable) {
-      if (school.Active) {
-        let classRooms: IDashboardClassRoom[] = [];
-        let teachers: IDashboardTeacher[] = [];
+      let classRooms: IDashboardClassRoom[] = this.processClassRooms(school);
+      let teachers: IDashboardTeacher[] = this.processTeachers(school);
 
-        let dashSchool: IDashboardSchool = {
-          name: school.Name,
-          id: school.PartitionKey,
-          address1: school.Address1,
-          address2: school.Address2,
-          country: school.Country,
-          state: school.State,
-          city: school.City,
-          zip: school.Zip,
-          latitude: school.Latitude,
-          longitude: school.Longitude,
-          classRooms: classRooms,
-          teachers: teachers,
-          averageAttendance: 0,
-        }
-        
-        this.data.schools.set(dashSchool.id, { 
-          school: dashSchool,
+      let dashSchool: IDashboardSchool = {
+        name: school.name,
+        id: school.id,
+        address1: school.address1,
+        address2: school.address1,
+        country: school.country,
+        state: school.state,
+        city: school.city,
+        zip: school.zip,
+        latitude: school.latitude,
+        longitude: school.longitude,
+        classRooms: classRooms,
+        teachers: teachers,
+        averageAttendance: 0,
+      }
+      
+      this.data.schools.set(school.id, { 
+        school: dashSchool,
+        attendance: new Map<string, IAttendance>()
+      });
+      if (this.data.cities.get(school.city) === undefined) {
+        let city = {
+          name: school.city,
+          id: school.city,
+          schools: [],
+          averageAttendance: 0
+        };
+        this.data.cities.set(school.city, {
+          city: city,
           attendance: new Map<string, IAttendance>()
         });
-        if (this.data.cities.get(school.City) === undefined) {
-          let city = {
-            name: school.City,
-            id: school.City,
-            schools: [],
-            averageAttendance: 0
-          };
-          this.data.cities.set(school.City, {
-            city: city,
-            attendance: new Map<string, IAttendance>()
-          });
-        } 
-        this.data.cities.get(school.City).city.schools.push(dashSchool);
-      }
+      } 
+      this.data.cities.get(school.city).city.schools.push(dashSchool);
     }
   }
 
@@ -145,32 +145,31 @@ export class DashboardService {
    * as the number of teachers at the current school. 
    * @param classRooms all classes within a given school 
    */
-  private processClassRoomTable(classRoomTable: any) {
-    classRoomTable.forEach((classRoom) => {
-      if (classRoom.Active && this.data.schools.get(classRoom.PartitionKey)) {
-        let students: IDashboardStudent[] = []; 
-        let school = this.data.schools.get(classRoom.PartitionKey).school;
-        let temp = {
-          name: classRoom.ClassRoomName,
-          id: classRoom.RowKey,
-          school: school.name,
-          schoolId: school.id,
-          city: school.city,
-          classDivision: classRoom.ClassDivision,
-          students: students,
-          numTeachers: school.teachers.length,
-          averageAttendance: 0,
-        }
-  
-        if (this.data.classes.get(temp.id) == undefined) {
-          this.data.classes.set(temp.id, {
-            classRoom: temp,
-            attendance: new Map<string, IAttendance>()
-          })
-        }
-        this.data.schools.get(temp.schoolId).school.classRooms.push(temp);
+  private processClassRooms(school: ISchool): IDashboardClassRoom[] {
+    let classes: IDashboardClassRoom[] = [];
+    school.classRooms.forEach((classRoom) => {
+      let students: IDashboardStudent[] = this.processStudents(classRoom); 
+      let temp = {
+        name: classRoom.classRoomName,
+        id: classRoom.classId,
+        school: school.name,
+        schoolId: school.id,
+        city: school.city,
+        classDivision: classRoom.classDivision,
+        students: students,
+        numTeachers: school.teachers.length,
+        averageAttendance: 0,
+      }
+      classes.push(temp); 
+
+      if (this.data.classes.get(temp.id) == undefined) {
+        this.data.classes.set(temp.id, {
+          classRoom: temp,
+          attendance: new Map<string, IAttendance>()
+        })
       }
     })
+    return classes; 
   }
 
   /**
@@ -178,68 +177,79 @@ export class DashboardService {
    * including when they were enrolled. 
    * @param students Array of students in a given class 
    */
-  private processStudentTable(studentTable: any) {
-    studentTable.forEach((student) => {
-      if (student.Active) {
-        let tempTimeStamp: Date = new Date(student.TimeStamp);
-        let tempUpdatedOn: Date = new Date(student.UpdatedOn);
-        // Converts to string in order to count enrollments that occured on the same data identically. 
-        let timeStamp: string = "" + (tempTimeStamp.getMonth() + 1) + "/" + tempTimeStamp.getDate() + "/" + tempTimeStamp.getFullYear();
-        let updatedOn: string = "" + (tempUpdatedOn.getMonth() + 1) + "/" + tempUpdatedOn.getDate() + "/" + tempUpdatedOn.getFullYear();
-        let enrollmentDate: string = tempTimeStamp < tempUpdatedOn ? timeStamp: updatedOn;
+  private processStudents(classRoom: IClassRoom): IDashboardStudent[] {
+    let dashStudents: IDashboardStudent[] = []; 
+    classRoom.students.forEach((student) => {
+      let temp: IDashboardStudent = {
+        name: student.firstName + " " + student.lastName,
+        id: student.id,
+        classId: student.classId,
+        schoolId: student.schoolId,
+        city: student.city,
+        gender: student.gender,
+        enrollmentDate: "" + student.syncDateTime,
+        enrollmentNumber: student.enrolmentNo
+      }
+      dashStudents.push(temp);
 
-        let temp: IDashboardStudent = {
-          name: student.FirstName + " " + student.LastName,
-          id: student.RowKey,
-          classId: student.ClassId,
-          schoolId: student.PartitionKey,
-          city: student.City,
-          gender: student.Gender,
-          enrollmentDate: enrollmentDate,
-          enrollmentNumber: student.EnrolmentNo
-        }
-  
-        if (this.data.students.get(temp.id) == undefined) {
-          this.data.students.set(temp.id, {
-            student: temp,
-            attendance: new Map<string, boolean>()
-          });
-        }
-        if (this.data.classes.get(temp.classId)) {
-          this.data.classes.get(temp.classId).classRoom.students.push(temp); 
-        }
+      if (this.data.students.get(student.id) == undefined) {
+        this.data.students.set(student.id, {
+          student: temp,
+          attendance: new Map<string, boolean>()
+        });
       }
     })
+    return dashStudents; 
   }
+
+  /**
+   * Process the raw student table data from azure, updates student stored in this.data to include 
+   * the updatedOn time stamp which represents when student was enrolled. 
+   * @param studentEnrollment Azure student table
+   */
+  private processStudentEnrollment(studentEnrollment: any[]) {
+    for (let student of studentEnrollment) {
+      let id: string = student.RowKey;      
+      let tempTimeStamp: Date = new Date(student.TimeStamp);
+      let tempUpdatedOn: Date = new Date(student.UpdatedOn);
+      // Converts to string in order to count enrollments that occured on the same data identically. 
+      let timeStamp: string = "" + (tempTimeStamp.getMonth() + 1) + "/" + tempTimeStamp.getDate() + "/" + tempTimeStamp.getFullYear();
+      let updatedOn: string = "" + (tempUpdatedOn.getMonth() + 1) + "/" + tempUpdatedOn.getDate() + "/" + tempUpdatedOn.getFullYear();
+      
+      let enrollmentDate: string = tempTimeStamp < tempUpdatedOn ? timeStamp: updatedOn;
+      if (this.data.students.get(id) != undefined) {
+        this.data.students.get(id).student.enrollmentDate = enrollmentDate; 
+      }
+    }
+  }
+
 
   /**
    * Parses teachers at given school
    * @param school school that teacher is in
    * @returns Array of teachers at school
    */
-  private processTeacherTable(teacherTable: any) {
-    teacherTable.forEach((teacher) => {
-      if (teacher.Active) {
-        let temp = {
-          name: teacher.FirstName + " " + teacher.LastName,
-          id: teacher.RowKey,
-          schoolId: teacher.PartitionKey
-        }
-  
-        if (this.data.teachers.get(temp.id) == undefined) {
-          this.data.teachers.set(temp.id, {
-            teacher: temp,
-            attendance: new Map<string, boolean>()
-          })
-        }
-        if (this.data.schools.get(temp.schoolId)) {
-          this.data.schools.get(temp.schoolId).school.teachers.push(temp); 
-        }
+  private processTeachers(school: ISchool): IDashboardTeacher[] {
+    let teachers: IDashboardTeacher[] = [];
+    for (let teacher of school.teachers) {
+      let temp = {
+        name: teacher.firstName + " " + teacher.lastName,
+        id: teacher.id,
+        schoolId: teacher.schoolId
       }
-    })
+      teachers.push(temp); 
+
+      if (this.data.teachers.get(temp.id) == undefined) {
+        this.data.teachers.set(temp.id, {
+          teacher: temp,
+          attendance: new Map<string, boolean>()
+        })
+      }
+    }
+    return teachers; 
   }
 
-  /**
+ /**
    * Attendance is stored as individual entries in the Attendance Table. As a result, in order to format 
    * the data, I go through each table entry and update the attendance data of the city, school, and class that 
    * this student was in. I also update the gender attendance for each city, school, and class. I keep track of 
@@ -417,30 +427,16 @@ export class DashboardService {
   }
 
   private getAttendanceTable() {
-    let endpoint = this.url + "Attentdance()" + this.attendanceSAS;
-    return this.getRequest(endpoint);
+    return this.getDashboardAttendance();
   }
 
   private getSchoolTable() {
-    let endpoint = this.url + "School()" + this.schoolSAS;
-    return this.getRequest(endpoint); 
+    return this.getDashboardSchools();
   }
   
-  private getStudentTable() {
-    let endpoint = this.url + "Student()" + this.studentSAS; 
-    return this.getRequest(endpoint); 
+  private getStudentEnrollment() {
+    return this.getDashboardStudents();
   }
-
-  private getClassRoomTable() {
-    let endpoint = this.url + "ClassRoom()" + this.classRoomSAS; 
-    return this.getRequest(endpoint); 
-  }
-
-  private getTeacherTable() {
-    let endpoint = this.url + "Teacher()" + this.teacherSAS;
-    return this.getRequest(endpoint); 
-  }
-
 
   private getRequest(endpoint: string) {
     return this.httpWithoutInterceptor.get(endpoint);
@@ -528,6 +524,17 @@ export class DashboardService {
     return this.getAverageAttendance(data, 'cities', start, end); 
   }
 
+  public getDashboardStudents() {
+    return this.http.Get<IStudent[]>('/dashboard/students')
+  }
+
+  public getDashboardAttendance() {
+    return this.http.Get<ISchool[]>('/dashboard/attendance')
+  }
+
+  public getDashboardSchools() {
+    return this.http.Get<ISchool[]>('/dashboard/schools')
+  }
   /**
    * Calculates average attendance over time interval 
    * @param data list of selected schools, classes, or cities 
