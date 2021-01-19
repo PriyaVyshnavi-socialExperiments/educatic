@@ -37,16 +37,16 @@ export class DashboardService {
   httpWithoutInterceptor: HttpClient;
   // Used to geocode addresses of cities into lat/long
   geocodingURl = "http://dev.virtualearth.net/REST/v1/Locations";
-  bingMapsKey = "Agl1OUJpxhobILNXiGeeP92f2mQnWP3b1dloH9Sj56LGR1poYMRNYhLZyQZeY3Mu"; 
+  bingMapsKey = ""; 
   // URL of azure tables to get data from 
-  url = "https://takmil.table.core.windows.net/";
+  url = "";
   // Secure Access Signature of attendance table
-  attendanceSAS = "?sv=2018-03-28&si=Attentdance-177174F8606&tn=attentdance&sig=%2Bq5CMfKfbRSueO%2FJv2su5f8eUNqTFIjw1nA795E%2BzP8%3D";
+  attendanceSAS = "";
   // Secure Access Signature of the student table 
-  studentSAS = "?sv=2018-03-28&si=Student-177174FF18E&tn=student&sig=cltoYnkxYMODK%2F%2Baj4RpQV9DF4O%2Bpfe%2FWpoYv0qh3kQ%3D";
-  schoolSAS = "?sv=2018-03-28&si=School-177174FD239&tn=school&sig=aODGX%2FfoZVd0OnoRSfacvC%2BTNZ%2BgGm2FKq7ahmfy1g0%3D";
-  teacherSAS = "?sv=2018-03-28&si=Teacher-1771750061F&tn=teacher&sig=k0RuIibr2W9DAENFCZMoARZP7ZQVE7QPHcbY9Dht3xk%3D";
-  classRoomSAS = "?sv=2018-03-28&si=ClassRoom-177174FA20F&tn=classroom&sig=ZvEUzBXGV%2B0%2BEnL5pajekE3HAuO9f8u1ss9DN%2F78sfQ%3D"; 
+  studentSAS = "";
+  schoolSAS = "";
+  teacherSAS = "";
+  classRoomSAS = ""; 
 
 
   constructor(
