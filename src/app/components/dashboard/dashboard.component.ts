@@ -10,17 +10,19 @@ import { IDashboardClassRoom } from '../../_models/dashboard-models/dashboard-cl
 import { IDashboardStudent } from '../../_models/dashboard-models/dashboard-student'; 
 import { IDashboardTeacher } from '../../_models/dashboard-models/dashboard-teacher';
 import { ToastController } from  '@ionic/angular';
-
+import { SchoolService } from '../../_services/school/school.service';
+ 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements AfterViewInit { 
-  startDate: string = "5-26-2020"; 
-  endDate: string = "12-26-2020";
+  
   start: Date = new Date("5-26-2020"); // Need to convert the startDate/endDate to dates to allow comparison 
-  end: Date = new Date("12-26-2020");
+  end: Date = new Date();
+  startDate: string = "5-26-2020"; 
+  endDate: string = this.end.toString();
 
   // Currently selected cities, schools, classes, students, and teachers
   cities: IDashboardCity[] = [];
@@ -67,6 +69,7 @@ export class DashboardComponent implements AfterViewInit {
       public dashboardService: DashboardService,
       public toastController: ToastController,
       public chartService: ChartService,
+      public schoolService: SchoolService,
     ) 
     {}
 

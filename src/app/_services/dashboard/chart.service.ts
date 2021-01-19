@@ -35,6 +35,14 @@ export class ChartService {
           datasets: []
       },
       options: {
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              let item = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+              return item.y + " new students";
+            }
+          }
+        },
         legend: {
           display: true
         },
@@ -90,6 +98,18 @@ export class ChartService {
           datasets: []
       },
       options: {
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              let item = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+              return item.y + '%'; //Add percentage
+            },
+            afterLabel: function(tooltipItem, data) {
+              let item = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+              return "Cumulative Total Students: " + item.total + "\nCumulative Present Students: " + item.present;
+            } 
+          }
+        },
         legend: {
           display: false
         },
@@ -145,6 +165,18 @@ export class ChartService {
           datasets: []
       },
       options: {
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              let item = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+              return item.y + '%'; //Add percentage
+            },
+            afterLabel: function(tooltipItem, data) {
+              let item = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+              return "Total Students: " + item.total + "\nPresent Students: " + item.present;
+            } 
+          }
+       },
         legend: {
           display: true
         },
@@ -221,7 +253,7 @@ export class ChartService {
         let students: number = entry[1];
         data.push({
           x: dateEntry,
-          y: students
+          y: students,
         })
       }
       data.sort((a, b) => {
@@ -264,8 +296,14 @@ export class ChartService {
             present += entry[1].present;
           }
           let attendance = this.getAttendancePercentage(total, present);
-          data.push(attendance); 
-          chart.labels.push(entity.name); 
+          let obj = {
+            x: entity.name,
+            y: attendance,
+            total: total,
+            present: present
+          }
+          chart.labels.push(entity.name);
+          data.push(obj); 
         }
       }
       chart.datasets.push({
@@ -299,10 +337,19 @@ export class ChartService {
             let attendance = this.getAttendancePercentage(total, present);
             let data = {
               x: entry[0],
-              y: attendance
+              y: attendance,
+              total: total,
+              present: present
             }
             entryData.push(data);
           }
+          entryData.sort((a, b) => {
+            if (a.x > b.x) {
+              return 1;
+            } else {
+              return -1;
+            }
+          })
           let graphDataEntry = {
             data: entryData,
             label: entity.name,
@@ -347,9 +394,26 @@ export class ChartService {
           }
         }
       }
+      let maleObj = {
+        x: "male",
+        y: this.getAttendancePercentage(maleTotal, malePresent),
+        total: maleTotal,
+        present: malePresent,
+      };
+      let femaleObj = {
+        x: "female",
+        y: this.getAttendancePercentage(femaleTotal, femalePresent),
+        total: femaleTotal,
+        present: femalePresent,
+      }; 
+      let nonBinaryObj = {
+        x: "non-binary",
+        y: this.getAttendancePercentage(nonBinaryTotal, nonBinaryPresent),
+        total: nonBinaryTotal,
+        present: nonBinaryPresent,
+      }
       chart.datasets.push({
-        data: [this.getAttendancePercentage(maleTotal, malePresent), this.getAttendancePercentage(femaleTotal, femalePresent), 
-          this.getAttendancePercentage(nonBinaryTotal, nonBinaryPresent)],
+        data: [maleObj, femaleObj, nonBinaryObj],
         fill: true
       })
     }
