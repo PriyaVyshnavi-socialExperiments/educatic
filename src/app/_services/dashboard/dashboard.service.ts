@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpBackend } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
-import { SchoolService } from '../../_services/school/school.service';
 import { ISchool } from '../../_models/school';
 import { IClassRoom } from '../../_models/class-room';
 import { IDashboardCity } from '../../_models/dashboard-models/dashboard-city'; 
@@ -11,6 +10,8 @@ import { IDashboardStudent } from '../../_models/dashboard-models/dashboard-stud
 import { IDashboardTeacher } from '../../_models/dashboard-models/dashboard-teacher';
 import {  IAttendance } from '../../_models/dashboard-models/dashboard-attendance';
 import {catchError, tap } from 'rxjs/operators'; 
+import { HttpService } from '../http-client/http.client';
+import { IStudent } from 'src/app/_models';
 
 @Injectable({
   providedIn: 'root'
@@ -45,8 +46,8 @@ export class DashboardService {
   studentSAS = "<Student SAS Here>";
 
   constructor(
-    private schoolService: SchoolService,
-    private httpBackend: HttpBackend
+    private httpBackend: HttpBackend,
+    private http: HttpService
   ) { 
     this.httpWithoutInterceptor = new HttpClient(this.httpBackend); 
   }
@@ -60,7 +61,9 @@ export class DashboardService {
     let attendanceTable = this.getAttendanceTable() // No backend set up, so done manually 
     let studentEnrollment = this.getStudentEnrollment();
     return forkJoin([schoolTable, attendanceTable, studentEnrollment]).pipe(
-      tap((result) => this.processData(result[0], result[1], result[2])),
+      tap((result) => {
+        this.processData(result[0], result[1], result[2]);
+      }),
       catchError((err) => {
         throw err
       })
@@ -80,8 +83,8 @@ export class DashboardService {
     this.data.students.clear(); 
 
     this.processSchoolTable(schoolTable);
-    this.processStudentEnrollment(studentEnrollment.value); 
-    this.processAttendanceTable(attendanceTable.value);
+    this.processStudentEnrollment(studentEnrollment); 
+    this.processAttendanceTable(attendanceTable);
   }
   
   /**
@@ -407,17 +410,15 @@ export class DashboardService {
   }
 
   private getAttendanceTable() {
-    let endpoint = this.url + "Attentdance()" + "?" + this.attendanceSAS;
-    return this.getRequest(endpoint);
+    return this.getDashboardAttendance();
   }
 
   private getSchoolTable() {
-    return this.schoolService.GetSchools();
+    return this.getDashboardSchools();
   }
   
   private getStudentEnrollment() {
-    let endpoint = this.url + "Student()" + "?$select=RowKey,UpdatedOn,Timestamp&" + this.studentSAS; 
-    return this.getRequest(endpoint); 
+    return this.getDashboardStudents();
   }
 
   private getRequest(endpoint: string) {
@@ -506,6 +507,17 @@ export class DashboardService {
     return this.getAverageAttendance(data, 'cities', start, end); 
   }
 
+  public getDashboardStudents() {
+    return this.http.Get<IStudent[]>('/dashboard/students')
+  }
+
+  public getDashboardAttendance() {
+    return this.http.Get<ISchool[]>('/dashboard/attendance')
+  }
+
+  public getDashboardSchools() {
+    return this.http.Get<ISchool[]>('/dashboard/schools')
+  }
   /**
    * Calculates average attendance over time interval 
    * @param data list of selected schools, classes, or cities 

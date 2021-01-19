@@ -116,17 +116,25 @@ export class DashboardComponent implements AfterViewInit {
   async refresh() {
     try {
       this.dashboardService.getData().subscribe(() => {
+        this.updateCities();
+        this.changeCities();
+        this.changeSchools();
+        this.changeClasses();
+        this.totalSchools = this.allSchools.length;
+        this.totalClasses = this.allClasses.length;
+        this.totalStudents = this.students.length;
+        this.totalTeachers = this.teachers.length;
         // After loading data, geocode the schools addresses to get latitude and longitude 
-        this.dashboardService.geocodeSchools().subscribe(() => {
-          this.updateCities();
-          this.changeCities();
-          this.changeSchools();
-          this.changeClasses();
-          this.totalSchools = this.allSchools.length;
-          this.totalClasses = this.allClasses.length;
-          this.totalStudents = this.students.length;
-          this.totalTeachers = this.teachers.length;
-        })
+        // this.dashboardService.geocodeSchools().subscribe(() => {
+        //   this.updateCities();
+        //   this.changeCities();
+        //   this.changeSchools();
+        //   this.changeClasses();
+        //   this.totalSchools = this.allSchools.length;
+        //   this.totalClasses = this.allClasses.length;
+        //   this.totalStudents = this.students.length;
+        //   this.totalTeachers = this.teachers.length;
+        // })
       });
     } catch (error) {
       await this.presentToast('Error: Failed to load data');
