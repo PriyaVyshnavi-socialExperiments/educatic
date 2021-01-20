@@ -209,14 +209,14 @@ export class DashboardService {
    */
   private processStudentEnrollment(studentEnrollment: any[]) {
     for (let student of studentEnrollment) {
-      let id: string = student.RowKey;      
-      let tempTimeStamp: Date = new Date(student.TimeStamp);
-      let tempUpdatedOn: Date = new Date(student.UpdatedOn);
+      let id: string = student.id;      
+      let tempTimeStamp: Date = new Date(student.timestamp);
+      let tempUpdatedOn: Date = new Date(student.updatedOn);
       // Converts to string in order to count enrollments that occured on the same data identically. 
-      let timeStamp: string = "" + (tempTimeStamp.getMonth() + 1) + "/" + tempTimeStamp.getDate() + "/" + tempTimeStamp.getFullYear();
+      let timestamp: string = "" + (tempTimeStamp.getMonth() + 1) + "/" + tempTimeStamp.getDate() + "/" + tempTimeStamp.getFullYear();
       let updatedOn: string = "" + (tempUpdatedOn.getMonth() + 1) + "/" + tempUpdatedOn.getDate() + "/" + tempUpdatedOn.getFullYear();
       
-      let enrollmentDate: string = tempTimeStamp < tempUpdatedOn ? timeStamp: updatedOn;
+      let enrollmentDate: string = tempTimeStamp < tempUpdatedOn ? timestamp: updatedOn;
       if (this.data.students.get(id) != undefined) {
         this.data.students.get(id).student.enrollmentDate = enrollmentDate; 
       }
@@ -260,17 +260,17 @@ export class DashboardService {
       // if (this.data.students.get(entry.StudentId) == undefined) {
       //   console.log("Attendance Not Taken " + entry.StudentId);
       // }
-      if (this.data.schools.get(entry.PartitionKey) != undefined && this.data.classes.get(entry.ClassRoomId) != undefined) {
-        let city = this.data.schools.get(entry.PartitionKey).school.city;
-        let schoolId = entry.PartitionKey; 
-        let classId = entry.ClassRoomId;
-        let studentId = entry.StudentId;
-        let teacherId = entry.TeacherId
+      if (this.data.schools.get(entry.schoolId) != undefined && this.data.classes.get(entry.classRoomId) != undefined) {
+        let city = this.data.schools.get(entry.schoolId).school.city;
+        let schoolId = entry.schoolId; 
+        let classId = entry.classRoomId;
+        let studentId = entry.studentId;
+        let teacherId = entry.teacherId
         
 
         // Convert datetime to JavaScript Date and then convert into readable date format to ensure 
         // attendance taken at slightly different times of the same day still counts as the same day 
-        let date = new Date(entry.Timestamp);
+        let date = new Date(entry.timestamp);
         let dateKey = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
 
         // Initailize the schoolAttendance map from day to cumulative attendance 
@@ -338,7 +338,7 @@ export class DashboardService {
 
         // Get gender of student if possible
         if (this.data.students.get(studentId) != undefined) {
-          gender = this.data.students.get(entry.StudentId).student.gender;
+          gender = this.data.students.get(studentId).student.gender;
         }
 
         // Teacher attendance is marked for each day that attendance was taken (Even if all students are absent)
@@ -355,7 +355,7 @@ export class DashboardService {
           this.data.classes.get(classId).attendance.get(dateKey).total++; 
 
           // Update present attendance for cities, schools, and classes 
-          if (entry.Present) {
+          if (entry.present) {
             this.data.cities.get(city).attendance.get(dateKey).present++;
             this.data.schools.get(schoolId).attendance.get(dateKey).present++;
             this.data.classes.get(classId).attendance.get(dateKey).present++;
@@ -368,7 +368,7 @@ export class DashboardService {
           this.data.cities.get(city).attendance.get(dateKey)[gender].total++;
           this.data.schools.get(schoolId).attendance.get(dateKey)[gender].total++;
           this.data.classes.get(classId).attendance.get(dateKey)[gender].total++;
-          if (entry.Present) {
+          if (entry.present) {
             this.data.cities.get(city).attendance.get(dateKey)[gender].present++;
             this.data.schools.get(schoolId).attendance.get(dateKey)[gender].present++;
             this.data.classes.get(classId).attendance.get(dateKey)[gender].present++;
@@ -378,16 +378,16 @@ export class DashboardService {
         // Student attendance marked. (If for some reason attendance was taken multiple times, updates attendance for student 
         // to be true if one of those entries is true). 
         if (this.data.students.get(studentId) != undefined && this.data.students.get(studentId).attendance.get(dateKey) === undefined) {
-          this.data.students.get(studentId).attendance.set(dateKey, entry.Present);
-          gender = this.data.students.get(entry.StudentId).student.gender;
+          this.data.students.get(studentId).attendance.set(dateKey, entry.present);
+          gender = this.data.students.get(studentId).student.gender;
         }
         
         // Set the latitude and longitude of a school if it has not already been set. The attendance 
         // tracks the latitude and longitude in which attendance was taken, so, assuming it's at the school location, 
         // this should be the most accurate latitude and longitude for the school. 
-        if (entry.Latitude && entry.Longitude) {
-          this.data.schools.get(schoolId).school.latitude = entry.Latitude;
-          this.data.schools.get(schoolId).school.longitude = entry.Longitude; 
+        if (entry.latitude && entry.longitude) {
+          this.data.schools.get(schoolId).school.latitude = entry.latitude;
+          this.data.schools.get(schoolId).school.longitude = entry.longitude; 
         }
       }
     })
