@@ -32,18 +32,22 @@ export class DashboardService {
     teachers: new Map<string, { teacher: IDashboardTeacher, attendance: Map<string, boolean>}>(),
   }
 
-  // Used to bypass interceptor to avoid page reload if error in retrieving data. This would otherwise cause 
+ // Used to bypass interceptor to avoid page reload if error in retrieving data. This would otherwise cause 
   // constant reloads and eventually log the user out. 
   httpWithoutInterceptor: HttpClient;
   // Used to geocode addresses of cities into lat/long
   geocodingURl = "http://dev.virtualearth.net/REST/v1/Locations";
-  bingMapsKey = "<Bing Maps API Key Here>"; 
+  bingMapsKey = ""; 
   // URL of azure tables to get data from 
-  url = "<URL Of Azure Tables Here>";
+  url = "";
   // Secure Access Signature of attendance table
-  attendanceSAS = "<Attendance SAS Here>";
+  attendanceSAS = "";
   // Secure Access Signature of the student table 
-  studentSAS = "<Student SAS Here>";
+  studentSAS = "";
+  schoolSAS = "";
+  teacherSAS = "";
+  classRoomSAS = ""; 
+
 
   constructor(
     private httpBackend: HttpBackend,
@@ -183,7 +187,8 @@ export class DashboardService {
         schoolId: student.schoolId,
         city: student.city,
         gender: student.gender,
-        enrollmentDate: "" + student.syncDateTime
+        enrollmentDate: "" + student.syncDateTime,
+        enrollmentNumber: student.enrolmentNo
       }
       dashStudents.push(temp);
 
@@ -204,14 +209,14 @@ export class DashboardService {
    */
   private processStudentEnrollment(studentEnrollment: any[]) {
     for (let student of studentEnrollment) {
-      let id: string = student.RowKey;      
-      let tempTimeStamp: Date = new Date(student.TimeStamp);
-      let tempUpdatedOn: Date = new Date(student.UpdatedOn);
+      let id: string = student.id;      
+      let tempTimeStamp: Date = new Date(student.timestamp);
+      let tempUpdatedOn: Date = new Date(student.updatedOn);
       // Converts to string in order to count enrollments that occured on the same data identically. 
-      let timeStamp: string = "" + (tempTimeStamp.getMonth() + 1) + "/" + tempTimeStamp.getDate() + "/" + tempTimeStamp.getFullYear();
+      let timestamp: string = "" + (tempTimeStamp.getMonth() + 1) + "/" + tempTimeStamp.getDate() + "/" + tempTimeStamp.getFullYear();
       let updatedOn: string = "" + (tempUpdatedOn.getMonth() + 1) + "/" + tempUpdatedOn.getDate() + "/" + tempUpdatedOn.getFullYear();
       
-      let enrollmentDate: string = tempTimeStamp < tempUpdatedOn ? timeStamp: updatedOn;
+      let enrollmentDate: string = tempTimeStamp < tempUpdatedOn ? timestamp: updatedOn;
       if (this.data.students.get(id) != undefined) {
         this.data.students.get(id).student.enrollmentDate = enrollmentDate; 
       }
@@ -244,7 +249,7 @@ export class DashboardService {
     return teachers; 
   }
 
-  /**
+ /**
    * Attendance is stored as individual entries in the Attendance Table. As a result, in order to format 
    * the data, I go through each table entry and update the attendance data of the city, school, and class that 
    * this student was in. I also update the gender attendance for each city, school, and class. I keep track of 
@@ -255,20 +260,17 @@ export class DashboardService {
       // if (this.data.students.get(entry.StudentId) == undefined) {
       //   console.log("Attendance Not Taken " + entry.StudentId);
       // }
-      if (this.data.schools.get(entry.PartitionKey) != undefined && this.data.students.get(entry.StudentId) != undefined && this.data.teachers.get(entry.TeacherId) != undefined) {
-        let city = this.data.schools.get(entry.PartitionKey).school.city;
-        let schoolId = entry.PartitionKey; 
-        let classId = entry.ClassRoomId;
-        let gender = this.data.students.get(entry.StudentId).student.gender; 
-        let studentId = entry.StudentId;
-        let teacherId = entry.TeacherId
-        if (gender !== "male" && gender !== "female") {
-          gender = "nonBinary";
-        }
+      if (this.data.schools.get(entry.schoolId) != undefined && this.data.classes.get(entry.classRoomId) != undefined) {
+        let city = this.data.schools.get(entry.schoolId).school.city;
+        let schoolId = entry.schoolId; 
+        let classId = entry.classRoomId;
+        let studentId = entry.studentId;
+        let teacherId = entry.teacherId
+        
 
         // Convert datetime to JavaScript Date and then convert into readable date format to ensure 
         // attendance taken at slightly different times of the same day still counts as the same day 
-        let date = new Date(entry.Timestamp);
+        let date = new Date(entry.timestamp);
         let dateKey = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
 
         // Initailize the schoolAttendance map from day to cumulative attendance 
@@ -332,45 +334,60 @@ export class DashboardService {
           });
         }
 
-        // Student attendance marked. (If for some reason attendance was taken multiple times, updates attendance for student 
-        // to be true if one of those entries is true). 
-        if (this.data.students.get(studentId).attendance.get(dateKey) === undefined || !this.data.students.get(studentId).attendance.get(dateKey)) {
-          this.data.students.get(studentId).attendance.set(dateKey, entry.Present)
+        let gender = "unknown"; // Need to add 4th column to chart 
+
+        // Get gender of student if possible
+        if (this.data.students.get(studentId) != undefined) {
+          gender = this.data.students.get(studentId).student.gender;
         }
 
         // Teacher attendance is marked for each day that attendance was taken (Even if all students are absent)
-        if (this.data.teachers.get(teacherId).attendance.get(dateKey) === undefined) {
+        if (this.data.teachers.get(teacherId) != undefined && this.data.teachers.get(teacherId).attendance.get(dateKey) === undefined) {
           this.data.teachers.get(teacherId).attendance.set(dateKey, true);
         }
 
-        // Update total number of students in class for cities, schools, classes 
-        this.data.schools.get(schoolId).attendance.get(dateKey).total++;
-        this.data.cities.get(city).attendance.get(dateKey).total++;
-        this.data.classes.get(classId).attendance.get(dateKey).total++; 
+        // Only update attendance if this student has not already been tracked. This makes sure that if attendance 
+        // is double counted for a student, it isn't counted. 
+        if (this.data.students.get(studentId) == undefined || this.data.students.get(studentId).attendance.get(dateKey) === undefined) {
+          // Update total number of students in class for cities, schools, classes 
+          this.data.schools.get(schoolId).attendance.get(dateKey).total++;
+          this.data.cities.get(city).attendance.get(dateKey).total++;
+          this.data.classes.get(classId).attendance.get(dateKey).total++; 
 
-        // Update present attendance for cities, schools, and classes 
-        if (entry.Present) {
-          this.data.cities.get(city).attendance.get(dateKey).present++;
-          this.data.schools.get(schoolId).attendance.get(dateKey).present++;
-          this.data.classes.get(classId).attendance.get(dateKey).present++;
-        } 
-
-        // Update cumulative gender attendance for cities, schools, and classes
-        this.data.cities.get(city).attendance.get(dateKey)[gender].total++;
-        this.data.schools.get(schoolId).attendance.get(dateKey)[gender].total++;
-        this.data.classes.get(classId).attendance.get(dateKey)[gender].total++;
-        if (entry.Present) {
-          this.data.cities.get(city).attendance.get(dateKey)[gender].present++;
-          this.data.schools.get(schoolId).attendance.get(dateKey)[gender].present++;
-          this.data.classes.get(classId).attendance.get(dateKey)[gender].present++;
+          // Update present attendance for cities, schools, and classes 
+          if (entry.present) {
+            this.data.cities.get(city).attendance.get(dateKey).present++;
+            this.data.schools.get(schoolId).attendance.get(dateKey).present++;
+            this.data.classes.get(classId).attendance.get(dateKey).present++;
+          } 
+          
+          if (gender !== "male" && gender !== "female") {
+            gender = "nonBinary";
+          }
+          // Update cumulative gender attendance for cities, schools, and classes
+          this.data.cities.get(city).attendance.get(dateKey)[gender].total++;
+          this.data.schools.get(schoolId).attendance.get(dateKey)[gender].total++;
+          this.data.classes.get(classId).attendance.get(dateKey)[gender].total++;
+          if (entry.present) {
+            this.data.cities.get(city).attendance.get(dateKey)[gender].present++;
+            this.data.schools.get(schoolId).attendance.get(dateKey)[gender].present++;
+            this.data.classes.get(classId).attendance.get(dateKey)[gender].present++;
+          }
         }
 
+        // Student attendance marked. (If for some reason attendance was taken multiple times, updates attendance for student 
+        // to be true if one of those entries is true). 
+        if (this.data.students.get(studentId) != undefined && this.data.students.get(studentId).attendance.get(dateKey) === undefined) {
+          this.data.students.get(studentId).attendance.set(dateKey, entry.present);
+          gender = this.data.students.get(studentId).student.gender;
+        }
+        
         // Set the latitude and longitude of a school if it has not already been set. The attendance 
         // tracks the latitude and longitude in which attendance was taken, so, assuming it's at the school location, 
         // this should be the most accurate latitude and longitude for the school. 
-        if (entry.Latitude && entry.Longitude) {
-          this.data.schools.get(schoolId).school.latitude = entry.Latitude;
-          this.data.schools.get(schoolId).school.longitude = entry.Longitude; 
+        if (entry.latitude && entry.longitude) {
+          this.data.schools.get(schoolId).school.latitude = entry.latitude;
+          this.data.schools.get(schoolId).school.longitude = entry.longitude; 
         }
       }
     })

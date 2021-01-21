@@ -7,4 +7,5 @@ export interface IDashboardStudent {
     city: string;
     gender: string;
     enrollmentDate: string;
+    enrollmentNumber: string;
 }
