@@ -33,13 +33,38 @@ export class AssessmentQuestionAddPage implements OnInit {
   isImageSelect = false;
   questionImagePath: string | ArrayBuffer = '';
   questionImageFile: File ;
+  listRightItems:  {
+    text: string,
+    imagePath: string,
+    id: number
+}[];
+  listLeftItems:  {
+    text: string,
+    imagePath: string,
+    answerId: number
+}[];
+  isLeftOptionWithImage = false;
+  isRightOptionWithImage = false;
+  imageUploadFor: string;
+  currentOptionIndex: number = -1;
 
   constructor(private formBuilder: FormBuilder,
     private assessmentService: AssessmentService,
     private authenticationService: AuthenticationService,
     private activatedRoute: ActivatedRoute,
     public router: Router,
-    private toastController: ToastController) { }
+    private toastController: ToastController) { 
+      this.listRightItems = [];
+      this.listLeftItems = [];
+    }
+
+    onRenderItems(event) {
+      console.log(`Moving item from ${event.detail.from} to ${event.detail.to}`);
+       let draggedItem = this.listRightItems.splice(event.detail.from,1)[0];
+       this.listRightItems.splice(event.detail.to,0,draggedItem)
+      //this.listRightItems = reorderArray(this.listItems, event.detail.from, event.detail.to);
+      event.detail.complete();
+    }
 
   ngOnInit() {
     this.questionForm = this.formBuilder.group({
@@ -51,6 +76,8 @@ export class AssessmentQuestionAddPage implements OnInit {
         Validators.required,
       ]),
       shortAnswer: new FormControl(``),
+      leftColValue: new FormControl(``),
+      rightColValue: new FormControl(``),
       answerOptions: new FormArray([])
     });
 
@@ -163,38 +190,119 @@ export class AssessmentQuestionAddPage implements OnInit {
 
   onChangeQuestionType(questionType) {
     this.fillAnswersOptions(questionType.value);
+    this.isRightOptionWithImage = false;
+    this.isLeftOptionWithImage = false;
   }
 
   imageSelectToggle() {
     this.isImageSelect = !this.isImageSelect;
     if(this.isImageSelect && !this.questionImagePath) {
-      //this.questionImagePath = '';
+      this.imageUploadFor = "Question";
       this.fileInput.nativeElement.click();
     }
   }
 
   editImage() {
+    this.imageUploadFor = "Question";
     this.fileInput.nativeElement.click();
   }
 
-  uploadFile(event: EventTarget) {
+  selectQuestionImage(event: EventTarget) {
+    
+    switch (this.imageUploadFor) {
+      case 'Question':
+        const callbackQuestion = result => {
+          this.questionImagePath = result;
+        }
+        this.selectImage(event, callbackQuestion);
+        break;
+      case 'LeftOption':
+        const callbackLeftOption = result => {
+            this.listLeftItems[this.currentOptionIndex].imagePath = result;
+        }
+        this.selectImage(event, callbackLeftOption);
+        break;
+      case 'RightOption':
+        const callbackRightOption = result => {
+          this.listRightItems[this.currentOptionIndex].imagePath = result;
+        }
+        this.selectImage(event, callbackRightOption);
+        break;
+    
+      default:
+        break;
+    }
+  }
+
+  selectImage(event: EventTarget, callback) {
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    this.questionImageFile = target.files[0];
-    const fileExt = this.questionImageFile.type.split('/').pop();
+    const imageFile = target.files[0];
+    const fileExt = imageFile.type.split('/').pop();
     if ((ContentHelper.ImgSupported.indexOf(fileExt.toLowerCase()) > -1)) {
 
       const reader = new FileReader();
-      reader.readAsDataURL(this.questionImageFile);
+      reader.readAsDataURL(imageFile);
 
       reader.onload = () => {
-        this.questionImagePath = reader.result;
+        callback(reader.result);
+        this.currentOptionIndex = -1;
       };
-      
-     // this.UploadAssignment(null, file);
     } else {
       this.presentToast(`This file type is not supported.`, 'danger');
     }
+  }
+
+  addLeftCol() {
+    if(this.isLeftOptionWithImage) {
+      this.imageUploadFor = "LeftOption";
+      this.fileInput.nativeElement.click();
+    }
+    const leftColValue = this.f.leftColValue.value;
+    const leftItems = this.listLeftItems.map(value => value.text.toLowerCase());
+
+    if(leftColValue && leftItems.indexOf(leftColValue.toLowerCase()) === -1) {
+      const option =  {
+        text: leftColValue,
+        imagePath: ''
+      }
+      this.listLeftItems.push(option)
+      this.currentOptionIndex = this.listLeftItems.length - 1;
+      this.f.leftColValue.setValue("");
+    }
+  }
+
+  addRightCol() {
+    if(this.isRightOptionWithImage) {
+      this.imageUploadFor = "RightOption";
+      this.fileInput.nativeElement.click();
+    }
+    const rightColValue = this.f.rightColValue.value;
+    const rightItems = this.listRightItems.map(value => value.text.toLowerCase());
+    if (rightColValue  && rightItems.indexOf(rightColValue.toLowerCase()) === -1) {
+      const option =  {
+        text: rightColValue,
+        imagePath: ''
+    }
+      this.listRightItems.push(option)
+      this.currentOptionIndex = this.listRightItems.length - 1;
+      this.f.rightColValue.setValue("");
+    }
+  }
+
+  
+  refreshOptionsId(options) {
+    for (var i = 0, len = options.length; i < len; i++) {
+      this.listLeftItems[options[i].id] = options[i];
+    }
+  }
+
+  deleteLeftCol(index){
+    this.listLeftItems.splice(index, 1);
+  }
+
+  deleteRightCol(index) {
+    this.listRightItems.splice(index, 1);
   }
 
   private fillAnswersOptions(questionType) {
