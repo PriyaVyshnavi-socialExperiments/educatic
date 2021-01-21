@@ -264,7 +264,8 @@ export class AssessmentQuestionAddPage implements OnInit {
     if(leftColValue && leftItems.indexOf(leftColValue.toLowerCase()) === -1) {
       const option =  {
         text: leftColValue,
-        imagePath: ''
+        imagePath: '',
+        answerId: 0,
       }
       this.listLeftItems.push(option)
       this.currentOptionIndex = this.listLeftItems.length - 1;
@@ -282,7 +283,8 @@ export class AssessmentQuestionAddPage implements OnInit {
     if (rightColValue  && rightItems.indexOf(rightColValue.toLowerCase()) === -1) {
       const option =  {
         text: rightColValue,
-        imagePath: ''
+        imagePath: '',
+        id: 0
     }
       this.listRightItems.push(option)
       this.currentOptionIndex = this.listRightItems.length - 1;
