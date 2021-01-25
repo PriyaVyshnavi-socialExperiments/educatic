@@ -40,6 +40,7 @@ export interface IQuestion {
   };
   questionType: QuestionType;
   shortAnswer: string;
+  questionImagePath: string;
   optionAnswer: number;
   active: boolean;
 }

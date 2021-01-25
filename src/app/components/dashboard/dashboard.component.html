@@ -1,0 +1,244 @@
+<ion-content>
+    <ion-grid>
+        <ion-row>
+            <ion-col>
+                <ion-list>
+                    <ion-item>
+                        <ion-label>City</ion-label>
+                        <ion-select placeholder="Select One" multiple="true" [(ngModel)]="this.cities" (ionChange)="changeCities()">
+                        <ion-select-option *ngFor="let city of this.allCities" [value]="city">{{city.name}}</ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                    
+                    <ion-item>
+                        <ion-label>School</ion-label>
+                        <ion-select [interfaceOptions]="{'cssClass': 'filter-wider-popover'}" placeholder="Select One" multiple="true" [(ngModel)]="this.schools" (ionChange)="changeSchools()">
+                        <ion-select-option *ngFor="let school of allSchools" [value]="school" >{{school.name}} - {{school.city}}</ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                    
+                    <ion-item>
+                        <ion-label>Class</ion-label>
+                        <ion-select [interfaceOptions]="{'cssClass': 'filter-wider-popover'}" placeholder="Select One" multiple="true" [(ngModel)]="this.classes" (ionChange)="changeClasses()">
+                        <ion-select-option *ngFor="let class of allClasses" [value]="class">{{class.name}} - {{class.school}}</ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>Start Date</ion-label>
+                        <ion-datetime [(ngModel)]="this.startDate" placeholder="Select Date" (ionChange)="changeStartDate($event)"></ion-datetime>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>End Date</ion-label>
+                        <ion-datetime [(ngModel)]="this.endDate" placeholder="Select Date" (ionChange)="changeEndDate($event)"></ion-datetime>
+                    </ion-item>    
+                </ion-list>
+            </ion-col>
+        </ion-row>
+        <ion-row class="top-row">
+            <ion-col size="6" size-sm="3">
+                <ion-card>
+                    #Total Schools
+                    <br>
+                    <span class="static-cards">{{this.totalSchools}}</span>
+                    <br>
+                    #Active Schools 
+                    <br>
+                    <span class="static-cards">{{this.activeSchools}}</span>
+                    <br>
+                </ion-card>
+            </ion-col>
+            <ion-col size="6" size-sm="3">
+                <ion-card >
+                    #Total Teachers
+                    <br>
+                    <span class="static-cards">{{this.totalTeachers}}</span>
+                    <br>
+                    #Active Teachers
+                    <br>
+                    <span class="static-cards">{{this.activeTeachers}}</span>
+                    <br>
+                </ion-card>
+            </ion-col>
+            <ion-col size="6" size-sm="3">
+                <ion-card>
+                    #Total Students
+                    <br>
+                    <span class="static-cards">{{this.totalStudents}}</span>
+                    <br>
+                    #Active Students
+                    <br>
+                    <span class="static-cards">{{this.activeStudents}}</span>
+                    <br>
+                </ion-card>
+            </ion-col>
+            <ion-col size="6" size-sm="3">
+                <ion-card>
+                    #Total Classes
+                    <br>
+                    <span class="static-cards">{{this.totalClasses}}</span>
+                    <br>
+                    #Active Classes
+                    <br>
+                    <span class="static-cards">{{this.activeClasses}}</span>
+                    <br>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12">
+                <ion-card (click)="presentModal(this.charts[this.classAttendanceChartId], 'line')" >
+                    <canvas [id]="this.classAttendanceChartId"></canvas>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size="12" size-sm="6">
+                <ion-card>
+                    <bing-map [(schools)]="this.schools"></bing-map>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12" size-sm="6">
+                <ion-card (click)="presentModal(this.charts[this.studentEnrollmentChartId], 'line')">
+                    <canvas [id]="this.studentEnrollmentChartId"></canvas>>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+        <ion-row class="bottom-row">
+            <ion-col size="12" size-sm="4">
+                <ion-card (click)="presentModal(this.charts[this.cityAttendanceChartId], 'bar')" >
+                   <canvas [id]="this.cityAttendanceChartId"></canvas>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12" size-sm="4">
+                <ion-card (click)="presentModal(this.charts[this.schoolAttendanceChartId], 'bar')" >
+                    <canvas [id]="this.schoolAttendanceChartId"></canvas>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12" size-sm="4">
+                <ion-card (click)="presentModal(this.charts[this.genderAttendanceChartId], 'bar')" >
+                    <canvas [id]=this.genderAttendanceChartId></canvas>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+            <ion-col size="12" size-sm="12">
+                <ion-card style="overflow: scroll;">
+                    <span style="font-size: large">Classes by #attendance</span>
+                    <ion-grid>
+                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: medium">
+                            <ion-col>
+                                City
+                            </ion-col>
+                            <ion-col>
+                                School
+                            </ion-col>
+                            <ion-col>
+                                Class
+                            </ion-col>
+                            <ion-col>
+                                Attendance 
+                            </ion-col>
+                            <ion-col>
+                                #Students 
+                            </ion-col>
+                            <ion-col>
+                                #Teachers
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngFor="let class of this.classes" style="text-align: left; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid;">
+                            <ion-col>
+                                {{class.city}}
+                            </ion-col>
+                            <ion-col>
+                                {{class.school}}
+                            </ion-col>
+                            <ion-col>
+                                {{class.name}}
+                            </ion-col>
+                            <ion-col>
+                                {{class.averageAttendance}}%
+                            </ion-col>
+                            <ion-col>
+                                {{class.students.length}}
+                            </ion-col>
+                            <ion-col>
+                                {{class.numTeachers}}
+                            </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size="12" size-sm="6">
+                <ion-card style="overflow: scroll;">
+                    <span style="font-size: large">Five schools with lowest attendance</span>
+                    <ion-grid>
+                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: medium">
+                            <ion-col>
+                                City
+                            </ion-col>
+                            <ion-col>
+                                School
+                            </ion-col>
+                            <ion-col>
+                                Attendance 
+                            </ion-col>
+                            <ion-col>
+                                #Teachers
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngFor="let school of this.schools.slice().reverse().slice(0, 5)" style="text-align: left; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid;">
+                            <ion-col>
+                                {{school.city}}
+                            </ion-col>
+                            <ion-col>
+                                {{school.name}}
+                            </ion-col>
+                            <ion-col>
+                                {{school.averageAttendance}}%
+                            </ion-col>
+                            <ion-col>
+                                {{school.teachers.length}}
+                            </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                </ion-card>
+            </ion-col>
+            <ion-col size="12" size-sm="6">
+                <ion-card style="overflow: scroll;">
+                    <span style="font-size: large">Five schools with highest attendance</span>
+                    <ion-grid>
+                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: medium">
+                            <ion-col>
+                                City
+                            </ion-col>
+                            <ion-col>
+                                School
+                            </ion-col>
+                            <ion-col>
+                                Attendance 
+                            </ion-col>
+                            <ion-col>
+                                #Teachers
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngFor="let school of this.schools.slice(0, 5)" style="text-align: left; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid;">
+                            <ion-col>
+                                {{school.city}}
+                            </ion-col>
+                            <ion-col>
+                                {{school.name}}
+                            </ion-col>
+                            <ion-col>
+                                {{school.averageAttendance}}%
+                            </ion-col>
+                            <ion-col>
+                                {{school.teachers.length}}
+                            </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>
+

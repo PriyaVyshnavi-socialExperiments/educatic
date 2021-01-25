@@ -33,6 +33,14 @@
                     <ion-list>
 
                       <ion-label><b>Q{{i+1}}. {{question.questionDescription}}</b></ion-label>
+                      <div class="col-md-6 col-xl-6 col-lg-6 col-sm-12" *ngIf="question.questionImagePath">
+                        <ion-card class="item-card">
+                          <ion-card-content>
+                          <img defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                           [lazyLoad]="question.questionImagePath" />
+                        </ion-card-content>
+                        </ion-card>
+                      </div>
 
                       <div [ngSwitch]="question.questionType">
                         <ion-item-group *ngSwitchCase="'ShortAnswer'">

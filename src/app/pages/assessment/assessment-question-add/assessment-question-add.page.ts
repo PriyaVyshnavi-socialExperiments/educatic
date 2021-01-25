@@ -1,12 +1,16 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
+import { Guid } from 'guid-typescript';
+import * as blobUtil from 'blob-util';
+import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { IUser } from 'src/app/_models';
 import { IAssessment, IQuestion } from 'src/app/_models/assessment';
 import { QuestionType } from 'src/app/_models/question-type';
 import { AuthenticationService } from 'src/app/_services';
 import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
+import { dateFormat } from 'src/app/_helpers';
 
 @Component({
   selector: 'app-assessment-question-add',
@@ -15,6 +19,7 @@ import { AssessmentService } from 'src/app/_services/assessment/assessment.servi
 })
 export class AssessmentQuestionAddPage implements OnInit {
   @ViewChild('documentEditForm') documentEditForm: FormGroupDirective;
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
   question: IQuestion;
   subjectName: string;
@@ -25,13 +30,40 @@ export class AssessmentQuestionAddPage implements OnInit {
   optionAnswer = 0;
   backURL = '';
   assessmentId = '';
+  isImageSelect = false;
+  questionImagePath: string | ArrayBuffer = '';
+  questionImageFile: File ;
+  listRightItems:  {
+    text: string,
+    imagePath: string,
+    id: number
+}[];
+  listLeftItems:  {
+    text: string,
+    imagePath: string,
+    id: number
+}[];
+  isLeftOptionWithImage = false;
+  isRightOptionWithImage = false;
+  imageUploadFor: string;
 
   constructor(private formBuilder: FormBuilder,
     private assessmentService: AssessmentService,
     private authenticationService: AuthenticationService,
     private activatedRoute: ActivatedRoute,
     public router: Router,
-    private toastController: ToastController) { }
+    private toastController: ToastController) { 
+      this.listRightItems = [];
+      this.listLeftItems = [];
+    }
+
+    onRenderItems(event) {
+      console.log(`Moving item from ${event.detail.from} to ${event.detail.to}`);
+       let draggedItem = this.listRightItems.splice(event.detail.from,1)[0];
+       this.listRightItems.splice(event.detail.to,0,draggedItem)
+      //this.listRightItems = reorderArray(this.listItems, event.detail.from, event.detail.to);
+      event.detail.complete();
+    }
 
   ngOnInit() {
     this.questionForm = this.formBuilder.group({
@@ -43,6 +75,8 @@ export class AssessmentQuestionAddPage implements OnInit {
         Validators.required,
       ]),
       shortAnswer: new FormControl(``),
+      leftColValue: new FormControl(``),
+      rightColValue: new FormControl(``),
       answerOptions: new FormArray([])
     });
 
@@ -69,6 +103,7 @@ export class AssessmentQuestionAddPage implements OnInit {
                   this.f.question.setValue(this.question.questionDescription);
                   this.f.questionType.setValue(this.question.questionType);
                   this.fillAnswersOptions(this.question.questionType);
+                  this.questionImagePath = this.question.questionImagePath;
                 }
               }
             }
@@ -90,7 +125,7 @@ export class AssessmentQuestionAddPage implements OnInit {
     } else {
       const selectedQuestionType = this.f.questionType.value;
       const question = {
-        id: this.question? this.question.id : '',
+        id: this.question? this.question.id : Guid.create().toString(),
         questionDescription: this.f.question.value,
         questionType: selectedQuestionType,
         active: true
@@ -116,10 +151,31 @@ export class AssessmentQuestionAddPage implements OnInit {
         this.presentToast('Please select/enter answer.', 'warning');
         return;
       }
-      this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId, this.subjectName).subscribe((res) => {
-        this.presentToast('Assessment quiz question update successfully.', 'success');
-        this.router.navigateByUrl(this.backURL + `?d=${Math.floor(Math.random() * 1000000000)}`);
-      });
+
+      if (this.questionImageFile) {
+        const fileExt = this.questionImageFile.type.split('/').pop();
+        let blobDataURL = `${this.currentUser.defaultSchool.id}_${this.currentUser.defaultSchool.name}`;
+        blobDataURL = `${blobDataURL}/${this.subjectName}`;
+        blobDataURL = `${blobDataURL}/${question.id}_${dateFormat(new Date())}.${fileExt}`;
+        question.questionImagePath = blobDataURL;
+        this.questionImageFile.arrayBuffer().then((buffer) => {
+          const blobData = blobUtil.arrayBufferToBlob(buffer);
+          const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
+          this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId, this.subjectName, fileData)
+          .subscribe((res) => {
+            if (res['message']) {
+              this.presentToast('Assessment quiz question update successfully.', 'success');
+            } else {
+              console.log('Progress: ', res['progress']);
+            }
+          });
+        });
+      } else {
+        this.assessmentService.CreateUpdateAssessmentQuestion(question, this.assessmentId, this.subjectName).subscribe((res) => {
+          this.presentToast('Assessment quiz question update successfully.', 'success');
+          this.router.navigateByUrl(this.backURL + `?d=${Math.floor(Math.random() * 1000000000)}`);
+        });
+      }
     }
   }
 
@@ -133,6 +189,123 @@ export class AssessmentQuestionAddPage implements OnInit {
 
   onChangeQuestionType(questionType) {
     this.fillAnswersOptions(questionType.value);
+    this.isRightOptionWithImage = false;
+    this.isLeftOptionWithImage = false;
+  }
+
+  imageSelectToggle() {
+    this.isImageSelect = !this.isImageSelect;
+    if(this.isImageSelect && !this.questionImagePath) {
+      this.imageUploadFor = "Question";
+      this.fileInput.nativeElement.click();
+    }
+  }
+
+  editImage() {
+    this.imageUploadFor = "Question";
+    this.fileInput.nativeElement.click();
+  }
+
+  selectQuestionImage(event: EventTarget) {
+    
+    switch (this.imageUploadFor) {
+      case 'Question':
+        const callbackQuestion = result => {
+          this.questionImagePath = result;
+        }
+        this.selectImage(event, callbackQuestion);
+        break;
+
+      case 'LeftOption':
+        const callbackLeftOption = result => {
+          this.addCol(this.f.leftColValue, this.listLeftItems).then(() => {
+            this.listLeftItems[0].imagePath = result;
+          });
+        }
+        this.selectImage(event, callbackLeftOption);
+        break;
+
+      case 'RightOption':
+        const callbackRightOption = result => {
+          this.addCol(this.f.rightColValue, this.listRightItems).then(() => {
+            this.listRightItems[0].imagePath = result;
+          });
+        }
+        this.selectImage(event, callbackRightOption);
+        break;
+    
+      default:
+        break;
+    }
+  }
+
+  selectImage(event: EventTarget, callback) {
+    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
+    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
+    const imageFile = target.files[0];
+    const fileExt = imageFile.type.split('/').pop();
+    if ((ContentHelper.ImgSupported.indexOf(fileExt.toLowerCase()) > -1)) {
+
+      const reader = new FileReader();
+      reader.readAsDataURL(imageFile);
+
+      reader.onload = () => {
+        callback(reader.result);
+      };
+    } else {
+      this.presentToast(`This file type is not supported.`, 'danger');
+    }
+  }
+
+  addLeftCol() {
+    if(this.isLeftOptionWithImage) {
+      this.imageUploadFor = "LeftOption";
+      this.fileInput.nativeElement.click();
+    } else {
+      this.addCol(this.f.leftColValue, this.listLeftItems);
+    }
+  }
+
+  addRightCol() {
+    if(this.isRightOptionWithImage) {
+      this.imageUploadFor = "RightOption";
+      this.fileInput.nativeElement.click();
+    } else {
+      this.addCol(this.f.rightColValue, this.listRightItems);
+    }
+  }
+
+  addCol(formControl: any, listItems: any) {
+    return new Promise<void>((resolve, reject) => {
+      const colValue = formControl.value;
+      const items = listItems.map(value => value.text.toLowerCase());
+
+    if(items.indexOf(colValue.toLowerCase()) === -1) {
+      const option =  {
+        text: colValue,
+        imagePath: '',
+        id: 0,
+      }
+      listItems.unshift(option)
+      formControl.setValue("");
+      resolve();
+    }
+    });
+  }
+
+  
+  refreshOptionsId(options) {
+    for (var i = 0, len = options.length; i < len; i++) {
+      this.listLeftItems[options[i].id] = options[i];
+    }
+  }
+
+  deleteLeftCol(index){
+    this.listLeftItems.splice(index, 1);
+  }
+
+  deleteRightCol(index) {
+    this.listRightItems.splice(index, 1);
   }
 
   private fillAnswersOptions(questionType) {

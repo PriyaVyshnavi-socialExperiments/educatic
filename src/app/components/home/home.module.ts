@@ -4,7 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgxPowerBiModule } from 'ngx-powerbi';
-
+import { DashboardModule } from 'src/app/components/dashboard/dashboard.module';
 import { HomePage } from './home.page';
 
 @NgModule({
@@ -13,6 +13,7 @@ import { HomePage } from './home.page';
     FormsModule,
     IonicModule,
     NgxPowerBiModule,
+    DashboardModule,
     RouterModule.forChild([
       {
         path: '',
@@ -20,7 +21,9 @@ import { HomePage } from './home.page';
       }
     ])
   ],
-  declarations: [HomePage]
+  declarations: [
+    HomePage, 
+  ]
 })
 
 export class HomePageModule { }
