@@ -41,12 +41,11 @@ export class AssessmentQuestionAddPage implements OnInit {
   listLeftItems:  {
     text: string,
     imagePath: string,
-    answerId: number
+    id: number
 }[];
   isLeftOptionWithImage = false;
   isRightOptionWithImage = false;
   imageUploadFor: string;
-  currentOptionIndex: number = -1;
 
   constructor(private formBuilder: FormBuilder,
     private assessmentService: AssessmentService,
@@ -216,15 +215,21 @@ export class AssessmentQuestionAddPage implements OnInit {
         }
         this.selectImage(event, callbackQuestion);
         break;
+
       case 'LeftOption':
         const callbackLeftOption = result => {
-            this.listLeftItems[this.currentOptionIndex].imagePath = result;
+          this.addCol(this.f.leftColValue, this.listLeftItems).then(() => {
+            this.listLeftItems[0].imagePath = result;
+          });
         }
         this.selectImage(event, callbackLeftOption);
         break;
+
       case 'RightOption':
         const callbackRightOption = result => {
-          this.listRightItems[this.currentOptionIndex].imagePath = result;
+          this.addCol(this.f.rightColValue, this.listRightItems).then(() => {
+            this.listRightItems[0].imagePath = result;
+          });
         }
         this.selectImage(event, callbackRightOption);
         break;
@@ -246,7 +251,6 @@ export class AssessmentQuestionAddPage implements OnInit {
 
       reader.onload = () => {
         callback(reader.result);
-        this.currentOptionIndex = -1;
       };
     } else {
       this.presentToast(`This file type is not supported.`, 'danger');
@@ -257,19 +261,8 @@ export class AssessmentQuestionAddPage implements OnInit {
     if(this.isLeftOptionWithImage) {
       this.imageUploadFor = "LeftOption";
       this.fileInput.nativeElement.click();
-    }
-    const leftColValue = this.f.leftColValue.value;
-    const leftItems = this.listLeftItems.map(value => value.text.toLowerCase());
-
-    if(leftColValue && leftItems.indexOf(leftColValue.toLowerCase()) === -1) {
-      const option =  {
-        text: leftColValue,
-        imagePath: '',
-        answerId: 0,
-      }
-      this.listLeftItems.push(option)
-      this.currentOptionIndex = this.listLeftItems.length - 1;
-      this.f.leftColValue.setValue("");
+    } else {
+      this.addCol(this.f.leftColValue, this.listLeftItems);
     }
   }
 
@@ -277,19 +270,27 @@ export class AssessmentQuestionAddPage implements OnInit {
     if(this.isRightOptionWithImage) {
       this.imageUploadFor = "RightOption";
       this.fileInput.nativeElement.click();
+    } else {
+      this.addCol(this.f.rightColValue, this.listRightItems);
     }
-    const rightColValue = this.f.rightColValue.value;
-    const rightItems = this.listRightItems.map(value => value.text.toLowerCase());
-    if (rightColValue  && rightItems.indexOf(rightColValue.toLowerCase()) === -1) {
+  }
+
+  addCol(formControl: any, listItems: any) {
+    return new Promise<void>((resolve, reject) => {
+      const colValue = formControl.value;
+      const items = listItems.map(value => value.text.toLowerCase());
+
+    if(items.indexOf(colValue.toLowerCase()) === -1) {
       const option =  {
-        text: rightColValue,
+        text: colValue,
         imagePath: '',
-        id: 0
+        id: 0,
+      }
+      listItems.unshift(option)
+      formControl.setValue("");
+      resolve();
     }
-      this.listRightItems.push(option)
-      this.currentOptionIndex = this.listRightItems.length - 1;
-      this.f.rightColValue.setValue("");
-    }
+    });
   }
 
   
