@@ -97,13 +97,13 @@ export class CourseAddPage implements OnInit {
           this.addImage(CameraSource.Camera);
         }
       },
-      {
-        text: 'Choose From Photos Photo',
-        icon: 'image',
-        handler: () => {
-          this.addImage(CameraSource.Photos);
-        }
-      },
+      // {
+      //   text: 'Choose From Photos Photo',
+      //   icon: 'image',
+      //   handler: () => {
+      //     this.addImage(CameraSource.Photos);
+      //   }
+      // },
       {
         text: 'Cancel',
         icon: 'close',
@@ -115,7 +115,7 @@ export class CourseAddPage implements OnInit {
     ];
 
     // Only allow file selection inside a browser
-    if (!this.plt.is('hybrid')) {
+    //if (!this.plt.is('hybrid')) {
       buttons.push({
         text: 'Choose a File',
         icon: 'attach',
@@ -123,7 +123,7 @@ export class CourseAddPage implements OnInit {
           this.fileInput.nativeElement.click();
         }
       });
-    }
+    //}
 
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Select Course Source',
@@ -149,7 +149,7 @@ export class CourseAddPage implements OnInit {
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const file: File = target.files[0];
     const fileExt = file.type.split('/').pop();
-    if ((ContentHelper.ImgSupported.indexOf(fileExt.toLowerCase()) > -1)) {
+    if ((ContentHelper.ContentUploadSupported.indexOf(fileExt.toLowerCase()) > -1)) {
       this.UploadCourseContent(null, file);
     } else {
       this.presentToast(`This file type is not supported.`, 'danger');
