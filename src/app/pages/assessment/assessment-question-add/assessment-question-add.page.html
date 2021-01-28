@@ -108,7 +108,7 @@
                         <ion-card *ngIf="item.imagePath" class="item-card column-card-image">
                         <ion-card-content>
                           <div class="contact-grid">
-                        <img [decode]="isImageSelectLeft" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                        <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
                          [lazyLoad]="item.imagePath" />
                         </div>
                       </ion-card-content>
@@ -143,7 +143,7 @@
                             <ion-card *ngIf="item.imagePath" class="item-card column-card-image">
                             <ion-card-content>
                               <div class="contact-grid">
-                            <img [decode]="isImageSelectRight" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                            <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
                              [lazyLoad]="item.imagePath" />
                             </div>
                           </ion-card-content>

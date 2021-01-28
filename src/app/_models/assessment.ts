@@ -40,7 +40,8 @@ export interface IQuestion {
       text: string,
       imagePath: string,
       file: File,
-      id: number
+      id: number,
+      isAzurePath: boolean,
   }[];
   };
   questionOptions: {
