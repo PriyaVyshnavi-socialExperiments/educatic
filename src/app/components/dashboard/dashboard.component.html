@@ -1,85 +1,96 @@
 <ion-content>
-    <ion-grid>
+    <ion-grid >
+        <ion-button *ngIf="this.menu == true" (click)="this.menu = !this.menu" color="danger" expand="block" >Hide Filters</ion-button>
+        <ion-button *ngIf="this.menu == false" (click)="this.menu = !this.menu" color="success" expand="block" >Show Filters</ion-button>
+        <ion-list *ngIf="this.menu">
+            <ion-item >
+                <ion-label>City</ion-label>
+                <ion-select placeholder="Select One" multiple="true" [(ngModel)]="this.cities" (ionChange)="changeCities()">
+                <ion-select-option *ngFor="let city of this.allCities" [value]="city">{{city.name}}</ion-select-option>
+                </ion-select>
+                <ion-button *ngIf="this.selectCities == false" (click)="this.selectAllCities()">Select All</ion-button>
+                <ion-button *ngIf="this.selectCities == true" (click)="this.selectAllCities()" color="danger">Unselect All</ion-button>
+            </ion-item>
+        
+            <ion-item>
+                <ion-label>School</ion-label>
+                <ion-select [interfaceOptions]="{'cssClass': 'filter-wider-popover'}" placeholder="Select One" multiple="true" [(ngModel)]="this.schools" (ionChange)="changeSchools()">
+                <ion-select-option *ngFor="let school of allSchools" [value]="school" >{{school.name}} - {{school.city}}</ion-select-option>
+                </ion-select>
+                <ion-button *ngIf="this.selectSchools == false" (click)="this.selectAllSchools()">Select All</ion-button>
+                <ion-button *ngIf="this.selectSchools == true" (click)="this.selectAllSchools()" color="danger">Unselect All</ion-button>
+            </ion-item>
+            <ion-item>
+                <ion-label>Class</ion-label>
+                <ion-select [interfaceOptions]="{'cssClass': 'filter-wider-popover'}" placeholder="Select One" multiple="true" [(ngModel)]="this.classes" (ionChange)="changeClasses()">
+                <ion-select-option *ngFor="let class of allClasses" [value]="class">{{class.name}} - {{class.school}}</ion-select-option>
+                </ion-select>
+                <ion-button *ngIf="this.selectClasses == false" (click)="this.selectAllClasses()">Select All</ion-button>
+                <ion-button *ngIf="this.selectClasses == true" (click)="this.selectAllClasses()" color="danger">Unselect All</ion-button>
+            </ion-item>
+            <ion-item >
+                <ion-label>Start Date</ion-label>
+                <ion-datetime [(ngModel)]="this.startDate" placeholder="Select Date" (ionChange)="changeStartDate($event)"></ion-datetime>
+            </ion-item>                      
+            <ion-item>
+                <ion-label>End Date</ion-label>
+                <ion-datetime [(ngModel)]="this.endDate" placeholder="Select Date" (ionChange)="changeEndDate($event)"></ion-datetime>
+            </ion-item>    
+        </ion-list>
         <ion-row>
-            <ion-col>
-                <ion-list>
-                    <ion-item>
-                        <ion-label>City</ion-label>
-                        <ion-select placeholder="Select One" multiple="true" [(ngModel)]="this.cities" (ionChange)="changeCities()">
-                        <ion-select-option *ngFor="let city of this.allCities" [value]="city">{{city.name}}</ion-select-option>
-                        </ion-select>
-                    </ion-item>
-                    
-                    <ion-item>
-                        <ion-label>School</ion-label>
-                        <ion-select [interfaceOptions]="{'cssClass': 'filter-wider-popover'}" placeholder="Select One" multiple="true" [(ngModel)]="this.schools" (ionChange)="changeSchools()">
-                        <ion-select-option *ngFor="let school of allSchools" [value]="school" >{{school.name}} - {{school.city}}</ion-select-option>
-                        </ion-select>
-                    </ion-item>
-                    
-                    <ion-item>
-                        <ion-label>Class</ion-label>
-                        <ion-select [interfaceOptions]="{'cssClass': 'filter-wider-popover'}" placeholder="Select One" multiple="true" [(ngModel)]="this.classes" (ionChange)="changeClasses()">
-                        <ion-select-option *ngFor="let class of allClasses" [value]="class">{{class.name}} - {{class.school}}</ion-select-option>
-                        </ion-select>
-                    </ion-item>
-                    <ion-item>
-                        <ion-label>Start Date</ion-label>
-                        <ion-datetime [(ngModel)]="this.startDate" placeholder="Select Date" (ionChange)="changeStartDate($event)"></ion-datetime>
-                    </ion-item>
-                    <ion-item>
-                        <ion-label>End Date</ion-label>
-                        <ion-datetime [(ngModel)]="this.endDate" placeholder="Select Date" (ionChange)="changeEndDate($event)"></ion-datetime>
-                    </ion-item>    
-                </ion-list>
+            <ion-col size="6">
+                <ion-button (click) = "this.setIntervalToWeek()" expand="block">Show Past Week</ion-button>
+            </ion-col>
+            <ion-col size="6">   
+                <ion-button (click) = "this.setIntervalToMonth()" expand="block">Show Past Month</ion-button>
             </ion-col>
         </ion-row>
         <ion-row class="top-row">
-            <ion-col size="6" size-sm="3">
-                <ion-card>
+            <ion-col size="6" size-sm="3" >
+                <ion-card class="static-cards">
                     #Total Schools
                     <br>
-                    <span class="static-cards">{{this.totalSchools}}</span>
+                    <span class="static-card-font">{{this.totalSchools}}</span>
                     <br>
                     #Active Schools 
                     <br>
-                    <span class="static-cards">{{this.activeSchools}}</span>
+                    <span class="static-card-font">{{this.activeSchools}}</span>
                     <br>
                 </ion-card>
             </ion-col>
-            <ion-col size="6" size-sm="3">
-                <ion-card >
+            <ion-col size="6" size-sm="3" >
+                <ion-card class="static-cards">
                     #Total Teachers
                     <br>
-                    <span class="static-cards">{{this.totalTeachers}}</span>
+                    <span class="static-card-font">{{this.totalTeachers}}</span>
                     <br>
                     #Active Teachers
                     <br>
-                    <span class="static-cards">{{this.activeTeachers}}</span>
+                    <span class="static-card-font">{{this.activeTeachers}}</span>
                     <br>
                 </ion-card>
             </ion-col>
             <ion-col size="6" size-sm="3">
-                <ion-card>
+                <ion-card class="static-cards">
                     #Total Students
                     <br>
-                    <span class="static-cards">{{this.totalStudents}}</span>
+                    <span class="static-card-font">{{this.totalStudents}}</span>
                     <br>
                     #Active Students
                     <br>
-                    <span class="static-cards">{{this.activeStudents}}</span>
+                    <span class="static-card-font">{{this.activeStudents}}</span>
                     <br>
                 </ion-card>
             </ion-col>
             <ion-col size="6" size-sm="3">
-                <ion-card>
+                <ion-card class="static-cards">
                     #Total Classes
                     <br>
-                    <span class="static-cards">{{this.totalClasses}}</span>
+                    <span class="static-card-font">{{this.totalClasses}}</span>
                     <br>
                     #Active Classes
                     <br>
-                    <span class="static-cards">{{this.activeClasses}}</span>
+                    <span class="static-card-font">{{this.activeClasses}}</span>
                     <br>
                 </ion-card>
             </ion-col>

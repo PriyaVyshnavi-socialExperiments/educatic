@@ -4,8 +4,16 @@
   --max-width: 400px;
 }
 
+.no-col-padding {
+    padding: 2px !important; 
+}
+
 ion-grid {
-    --ion-grid-padding: 0px; 
+    padding: 0px !important;
+}
+
+ion-item {
+    padding: 0px;
 }
 
 ion-card {
@@ -16,8 +24,12 @@ ion-card {
     overflow: hidden;
 }
 
-.static-cards {
+.static-card-font {
     font-size: xx-large;
+}
+
+.static-cards {
+    height: 100%;
 }
 
 ion-icon {
