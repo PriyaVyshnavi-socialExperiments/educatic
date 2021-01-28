@@ -51,8 +51,8 @@ export class AssessmentQuestionsPage implements OnInit {
           if (subjectWiseAssessments) {
             this.subjectName = subjectWiseAssessments.subjectName;
             this.assessment = subjectWiseAssessments.assessments?.find((a) => a.id === assessmentId) || {};
-            if (this.assessment) {
-              this.assessment.assessmentQuestions = this.assessment?.assessmentQuestions.filter(q=>q.active);
+            if (this.assessment?.assessmentQuestions) {
+              this.assessment.assessmentQuestions = this.assessment?.assessmentQuestions?.filter(q=>q.active);
               this.questions = [...this.assessment.assessmentQuestions]
             }
           }
