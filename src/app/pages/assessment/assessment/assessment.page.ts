@@ -21,6 +21,19 @@ export class AssessmentPage implements OnInit {
   questionCount = 0;
   isNext = false;
   currentUser: IUser;
+  listRightItems: {
+    text: string,
+    imagePath: string,
+    id: number,
+    isAzurePath: boolean
+  }[];
+  listLeftItems: {
+    text: string,
+    imagePath: string,
+    id: number,
+    isAzurePath: boolean,
+  }[];
+  
 
   constructor(
     private router: Router,
@@ -28,7 +41,10 @@ export class AssessmentPage implements OnInit {
     private assessmentService: AssessmentService,
     private authenticationService: AuthenticationService,
     private toastController: ToastController,
-  ) { }
+  ) { 
+    this.listRightItems = [];
+    this.listLeftItems = [];
+  }
 
   ngOnInit() {
     this.authenticationService.currentUser?.subscribe((user) => {
@@ -106,6 +122,14 @@ export class AssessmentPage implements OnInit {
       this.presentToast('Assessment quiz submit successfully.', 'success');
       this.router.navigateByUrl(`/assessments`);
     });
+  }
+
+  onRenderItems(event) {
+    console.log(`Moving item from ${event.detail.from} to ${event.detail.to}`);
+    let draggedItem = this.listRightItems.splice(event.detail.from, 1)[0];
+    this.listRightItems.splice(event.detail.to, 0, draggedItem)
+    //this.listRightItems = reorderArray(this.listItems, event.detail.from, event.detail.to);
+    event.detail.complete();
   }
 
   private async presentToast(msg, type) {

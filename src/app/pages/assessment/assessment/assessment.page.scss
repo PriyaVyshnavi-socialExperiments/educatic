@@ -4,7 +4,7 @@
     }
 
     .item-card {
-        cursor: pointer;
+        //cursor: pointer;
         height          : 100% !important;
         width           : 100% !important;
     }
@@ -38,4 +38,39 @@
     text-align     : center;
     justify-content: center;
     cursor: pointer;
+}
+
+.match-column {
+    // .item-card {
+    //     cursor: pointer;
+    //     // max-height: 200px !important;
+    //     // width: 100%;
+    //     img{
+    //         width: 100% !important;
+    //         max-height: 200px !important;
+    //     }
+    // }
+    
+    .column-card-image {
+        max-width: 300px !important;
+        max-height: 300px !important;
+    }
+
+    @media only screen and (max-width: 980px) {
+        .column-card-image {
+            max-width: 150px !important;
+            max-height: 150px !important;
+        }
+    }
+    
+    .contact-grid {
+        float: unset !important;
+    
+        ion-icon {
+            font-size: x-large;
+            position : absolute;
+            right    : 30px;
+            top      : 27px;
+        }
+    }
 }

@@ -38,9 +38,16 @@
 }
 
 .column-card-image {
-    max-width: 150px !important;
-    max-height: 150px !important;
+    min-width: 100px !important;
+        min-height: 100px !important;
 }
+
+// @media only screen and (max-width: 980px) {
+//     .column-card-image {
+//         max-width: 150px !important;
+//         max-height: 150px !important;
+//     }
+// }
 
 .contact-grid {
     float: unset !important;
