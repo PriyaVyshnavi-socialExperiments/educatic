@@ -111,7 +111,7 @@ export class DashboardComponent implements AfterViewInit {
         this.charts[this.genderAttendanceChartId] = this.chartService.getAttendanceBarChart(this.genderAttendanceChartId, 'Gender', 'Percent Attendance', 'Gender Attendance');
         this.charts[this.studentEnrollmentChartId] = this.chartService.getStudentEnrollmentLineChart(this.studentEnrollmentChartId, 'Days', 'Number of Students', 'Student Enrollment');
       }
-      this.refresh();
+      //this.refresh();
     } catch (error) {
       await this.presentToast('Failed to initialize charts and/or dashboard information. Please try again later.');
     }
@@ -124,22 +124,28 @@ export class DashboardComponent implements AfterViewInit {
    */
   async refresh() {
     try {
-      this.dashboardService.getData().subscribe(() => {
+      this.dashboardService.getData().subscribe(
+        res => {
         //After loading data, geocode the schools addresses to get latitude and longitude 
-        this.dashboardService.geocodeSchools().subscribe(() => {
-          this.allCities = this.dashboardService.getCities();
-          this.cities = this.allCities;
-          this.changeCities();
-          this.schools = this.allSchools;
-          this.changeSchools();
-          this.classes = this.allClasses;
-          this.changeClasses();
-          this.totalSchools = this.allSchools.length;
-          this.totalClasses = this.allClasses.length;
-          this.totalStudents = this.students.length;
-          this.totalTeachers = this.teachers.length;
-        })
-      });
+          this.dashboardService.geocodeSchools().subscribe(
+            res => console.log("sucess"),
+            async (err) => await this.presentToast('Error: Failed to load geographic data')
+          ).add(() => {
+            this.allCities = this.dashboardService.getCities();
+            this.cities = this.allCities;
+            this.changeCities();
+            this.schools = this.allSchools;
+            this.changeSchools();
+            this.classes = this.allClasses;
+            this.changeClasses();
+            this.totalSchools = this.allSchools.length;
+            this.totalClasses = this.allClasses.length;
+            this.totalStudents = this.students.length;
+            this.totalTeachers = this.teachers.length;
+          })
+        },
+        async (err) => await this.presentToast('Error: Failed to load data')
+      );
     } catch (error) {
       await this.presentToast('Error: Failed to load data');
     }

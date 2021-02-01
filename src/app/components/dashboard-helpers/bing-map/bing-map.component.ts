@@ -20,8 +20,7 @@ export class BingMapComponent implements OnInit, OnChanges {
   @ViewChild('myMap') myMap; // using ViewChild to reference the div instead of setting an id
   @Input() schools: IDashboardSchool[] = [];
   map: Microsoft.Maps.Map;  
-  bingMapsApiKey: string = 'Agl1OUJpxhobILNXiGeeP92f2mQnWP3b1dloH9Sj56LGR1poYMRNYhLZyQZeY3Mu';
-
+  bingMapsApiKey: string = '';
 
   /**
    * When the currently selected schools changes, updates the map. 
