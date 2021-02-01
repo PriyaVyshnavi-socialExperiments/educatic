@@ -20,7 +20,7 @@ export class BingMapComponent implements OnInit, OnChanges {
   @ViewChild('myMap') myMap; // using ViewChild to reference the div instead of setting an id
   @Input() schools: IDashboardSchool[] = [];
   map: Microsoft.Maps.Map;  
-  bingMapsApiKey: string = '';
+  bingMapsApiKey: string = 'Agl1OUJpxhobILNXiGeeP92f2mQnWP3b1dloH9Sj56LGR1poYMRNYhLZyQZeY3Mu';
 
 
   /**
@@ -28,9 +28,9 @@ export class BingMapComponent implements OnInit, OnChanges {
    */
   ngOnChanges() { 
     try {
+      this.map.layers.clear();
       if (this.map && this.schools && this.schools.length > 0) {
         // Gets rid of what's currently on the map 
-        this.map.layers.clear();
         let layer: Microsoft.Maps.Layer = new Microsoft.Maps.Layer();
         let locations: Microsoft.Maps.Location[] = []; 
         for (let school of this.schools) {

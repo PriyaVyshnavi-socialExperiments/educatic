@@ -32,14 +32,10 @@ ion-card {
     height: 100%;
 }
 
+.border-right {
+    border-right: 1px solid;
+}
+
 ion-icon {
     float: right;
-}
-
-.odd-row {
-    color: gray; 
-}
-
-.even-row {
-    color: white; 
 }

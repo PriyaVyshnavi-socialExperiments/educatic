@@ -39,10 +39,10 @@
         </ion-list>
         <ion-row>
             <ion-col size="6">
-                <ion-button (click) = "this.setIntervalToWeek()" expand="block">Show Past Week</ion-button>
+                <ion-button (click) = "this.setIntervalToWeek()" expand="block">Past Week</ion-button>
             </ion-col>
             <ion-col size="6">   
-                <ion-button (click) = "this.setIntervalToMonth()" expand="block">Show Past Month</ion-button>
+                <ion-button (click) = "this.setIntervalToMonth()" expand="block">Past Month</ion-button>
             </ion-col>
         </ion-row>
         <ion-row class="top-row">
@@ -134,43 +134,43 @@
                 <ion-card style="overflow: scroll;">
                     <span style="font-size: large">Classes by #attendance</span>
                     <ion-grid>
-                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: medium">
-                            <ion-col>
+                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: x-small">
+                            <ion-col size="2.5">
                                 City
                             </ion-col>
-                            <ion-col>
+                            <ion-col size="2.5">
                                 School
                             </ion-col>
-                            <ion-col>
+                            <ion-col size="2.5">
                                 Class
                             </ion-col>
-                            <ion-col>
+                            <ion-col size="1.5">
                                 Attendance 
                             </ion-col>
-                            <ion-col>
+                            <ion-col size="1.5">
                                 #Students 
                             </ion-col>
-                            <ion-col>
+                            <ion-col size="1.5">
                                 #Teachers
                             </ion-col>
                         </ion-row>
                         <ion-row *ngFor="let class of this.classes" style="text-align: left; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid;">
-                            <ion-col>
+                            <ion-col class="border-right" size="2.5">
                                 {{class.city}}
                             </ion-col>
-                            <ion-col>
+                            <ion-col class="border-right" size="2.5">
                                 {{class.school}}
                             </ion-col>
-                            <ion-col>
+                            <ion-col class="border-right" size="2.5">
                                 {{class.name}}
                             </ion-col>
-                            <ion-col>
+                            <ion-col class="border-right" size="1.5">
                                 {{class.averageAttendance}}%
                             </ion-col>
-                            <ion-col>
+                            <ion-col class="border-right" size="1.5">
                                 {{class.students.length}}
                             </ion-col>
-                            <ion-col>
+                            <ion-col size="1.5">
                                 {{class.numTeachers}}
                             </ion-col>
                         </ion-row>
@@ -183,7 +183,7 @@
                 <ion-card style="overflow: scroll;">
                     <span style="font-size: large">Five schools with lowest attendance</span>
                     <ion-grid>
-                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: medium">
+                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: x-small">
                             <ion-col>
                                 City
                             </ion-col>
@@ -198,13 +198,13 @@
                             </ion-col>
                         </ion-row>
                         <ion-row *ngFor="let school of this.schools.slice().reverse().slice(0, 5)" style="text-align: left; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid;">
-                            <ion-col>
+                            <ion-col class="border-right">
                                 {{school.city}}
                             </ion-col>
-                            <ion-col>
+                            <ion-col class="border-right">
                                 {{school.name}}
                             </ion-col>
-                            <ion-col>
+                            <ion-col class="border-right">
                                 {{school.averageAttendance}}%
                             </ion-col>
                             <ion-col>
@@ -218,7 +218,7 @@
                 <ion-card style="overflow: scroll;">
                     <span style="font-size: large">Five schools with highest attendance</span>
                     <ion-grid>
-                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: medium">
+                        <ion-row style="text-align: left; border-bottom: 1px solid; font-size: x-small">
                             <ion-col>
                                 City
                             </ion-col>
@@ -233,13 +233,13 @@
                             </ion-col>
                         </ion-row>
                         <ion-row *ngFor="let school of this.schools.slice(0, 5)" style="text-align: left; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid;">
-                            <ion-col>
+                            <ion-col class="border-right">
                                 {{school.city}}
                             </ion-col>
-                            <ion-col>
+                            <ion-col class="border-right">
                                 {{school.name}}
                             </ion-col>
-                            <ion-col>
+                            <ion-col class="border-right">
                                 {{school.averageAttendance}}%
                             </ion-col>
                             <ion-col>
