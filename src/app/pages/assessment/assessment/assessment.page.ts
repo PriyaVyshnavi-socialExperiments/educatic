@@ -7,6 +7,7 @@ import { IAnswer, IAssessment, IQuestion, IStudentAssessment } from 'src/app/_mo
 import { QuestionType } from 'src/app/_models/question-type';
 import { AuthenticationService } from 'src/app/_services';
 import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
+import { join } from 'path';
 
 @Component({
   selector: 'app-assessment',
@@ -22,6 +23,7 @@ export class AssessmentPage implements OnInit {
   questionCount = 0;
   isNext = false;
   currentUser: IUser;
+  isSortAllow = true;
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -110,22 +112,32 @@ export class AssessmentPage implements OnInit {
 
   onRenderItems(event: CustomEvent<ItemReorderEventDetail>, question) {
     const matchColumns = question.matchColumns;
-    matchColumns["Right"] = event.detail.complete(matchColumns["Right"]);
+    // matchColumns["Right"] = event.detail.complete(matchColumns["Right"]);
+    let draggedItem = matchColumns["Right"].splice(event.detail.from, 1)[0];
+    matchColumns["Right"].splice(event.detail.to, 0, draggedItem)
+    // matchColumns["Right"] = this.reorderItems(matchColumns["Right"], event.detail.from, event.detail.to);
+    event.detail.complete();
     let allMatched = true;
     matchColumns["Right"].forEach((item, index) => {
-      if(matchColumns["Right"][index].id === matchColumns["Left"][index].id) {
-        matchColumns["Right"][index].validCSS = "validCSS";
+      if(item.id === matchColumns["Left"][index].id) {
+        item.validCSS = "validCSS";
       } else {
-        matchColumns["Right"][index].validCSS = "inValidCSS";
+        item.validCSS = "inValidCSS";
         allMatched = false;
       }
     });
-
     if(allMatched) {
       this.UpdateAnswer(question.id, 0, 'allMatched');
       this.isNext = allMatched;
     }
-    
+    this.isSortAllow = false;
+  }
+
+  reorderItems(items, from, to) {
+    let element = items[from];
+    items.splice(from, 1);
+    items.splice(to, 0, element);
+    return items;
   }
 
   private async presentToast(msg, type) {

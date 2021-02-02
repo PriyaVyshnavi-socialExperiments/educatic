@@ -107,7 +107,7 @@
                               <ion-col size="6">
                                   <ion-list>
                                       <ion-reorder-group (ionItemReorder)="onRenderItems($event, question)" disabled="false">
-                                        <ion-item *ngFor="let item of question.matchColumns['Right']|randomOrder;  let i = index" lines="full" class="col-item">
+                                        <ion-item *ngFor="let item of question.matchColumns['Right']|randomOrder : isSortAllow;  let i = index" lines="full" class="col-item">
                                           <ion-reorder>
                                             <ion-card class="item-card column-card-image" [ngClass]="item.validCSS">
                                               <ion-card-subtitle>
