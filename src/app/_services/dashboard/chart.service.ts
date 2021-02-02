@@ -43,8 +43,8 @@ export class ChartService {
             }
           }
         },
-        legend: {
-          display: true
+        legend: { 
+          display: false
         },
         plugins: {
           colorschemes: {
@@ -62,7 +62,7 @@ export class ChartService {
                 unit: 'day',
                 unitStepSize: 1,
                 displayFormats: {
-                  'day': 'MMM DD',
+                  'day': 'MM/DD/YY',
                 }
               }
             }],
@@ -176,9 +176,13 @@ export class ChartService {
               return "Total Students: " + item.total + "\nPresent Students: " + item.present;
             } 
           }
-       },
+        },
         legend: {
-          display: true
+          display: true,
+          fullSize: false,
+          labels: {
+            boxWidth: 20,
+          }
         },
         plugins: {
           colorschemes: {
@@ -196,7 +200,7 @@ export class ChartService {
                 unit: 'day',
                 unitStepSize: 1,
                 displayFormats: {
-                  'day': 'MMM DD',
+                  'day': 'MM/DD/YY',
                 }
               }
             }],
