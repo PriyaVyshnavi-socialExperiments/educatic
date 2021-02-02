@@ -385,10 +385,10 @@ export class DashboardService {
         // Set the latitude and longitude of a school if it has not already been set. The attendance 
         // tracks the latitude and longitude in which attendance was taken, so, assuming it's at the school location, 
         // this should be the most accurate latitude and longitude for the school. 
-        if (entry.latitude && entry.longitude) {
-          this.data.schools.get(schoolId).school.latitude = entry.latitude;
-          this.data.schools.get(schoolId).school.longitude = entry.longitude; 
-        }
+        // if (entry.latitude && entry.longitude) {
+        //   this.data.schools.get(schoolId).school.latitude = entry.latitude;
+        //   this.data.schools.get(schoolId).school.longitude = entry.longitude; 
+        // }
       }
     })
   }

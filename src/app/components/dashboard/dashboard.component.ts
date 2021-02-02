@@ -18,10 +18,11 @@ import { ToastController } from  '@ionic/angular';
 })
 export class DashboardComponent implements AfterViewInit { 
   
-  start: Date = new Date("5-26-2020"); // Need to convert the startDate/endDate to dates to allow comparison 
-  end: Date = new Date();
-  startDate: string = "5-26-2020"; 
-  endDate: string = this.end.toString();
+  end: Date;
+  start: Date; // Need to convert the startDate/endDate to dates to allow comparison 
+  
+  startDate: string; 
+  endDate: string;
 
   // Currently selected cities, schools, classes, students, and teachers
   cities: IDashboardCity[] = [];
@@ -63,7 +64,7 @@ export class DashboardComponent implements AfterViewInit {
   activeTeachers = 0;
 
   // Dispay menu  
-  menu = false;
+  menu: boolean = false;
 
   // Select All States
   selectClasses = true;
@@ -130,7 +131,17 @@ export class DashboardComponent implements AfterViewInit {
           this.dashboardService.geocodeSchools().subscribe(
             res => console.log("sucess"),
             async (err) => await this.presentToast('Error: Failed to load geographic data')
-          ).add(() => {
+          ).add(() => {       
+            this.selectClasses = true;
+            this.selectSchools = true;
+            this.selectCities = true;  
+            
+            this.start = new Date();
+            this.end = new Date();
+            this.start.setFullYear(this.start.getFullYear() - 1)
+            this.startDate = this.start.toString();
+            this.endDate = this.end.toString();
+
             this.allCities = this.dashboardService.getCities();
             this.cities = this.allCities;
             this.changeCities();
