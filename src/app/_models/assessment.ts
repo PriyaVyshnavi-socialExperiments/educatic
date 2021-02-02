@@ -35,6 +35,14 @@ export interface ISubjectAssessment {
 export interface IQuestion {
   id: string;
   questionDescription: string;
+  matchColumns: {
+    [key: string]:  {
+      text: string,
+      imagePath: string,
+      file: File,
+      id: number
+  }[];
+  };
   questionOptions: {
     [key: number]: string;
   };

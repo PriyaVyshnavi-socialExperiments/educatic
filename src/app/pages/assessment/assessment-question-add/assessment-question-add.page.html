@@ -31,13 +31,16 @@
                   <mat-option [value]="'ShortAnswer'">
                     Short Answer
                   </mat-option>
+                  <mat-option [value]="'MatchColumn'">
+                    Match Column
+                  </mat-option>
                 </mat-select>
                 <mat-error *ngIf="questionForm.get('questionType').hasError('required')">
                   Question type is required
                 </mat-error>
               </mat-form-field>
             </div>
-            <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+            <div *ngIf="selectedType.value && selectedType.value!=='MatchColumn'" class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
               <ion-item slot="start" lines="none" color="none">
                 <ion-label>Select image</ion-label>
                 <ion-toggle color="warning"  (ionChange)="imageSelectToggle()"></ion-toggle>
@@ -81,6 +84,81 @@
             </mat-form-field>
           </div>
           </div>
+          <div class="row" *ngIf="selectedType.value==='MatchColumn'">
+            <ion-row>
+              <ion-col size="6">
+                <ion-list>
+                  <ion-item lines="none" color="none">
+                    <ion-toggle color="warning" #isImageSelectLeft (ionChange)="isLeftOptionWithImage=!isLeftOptionWithImage"></ion-toggle>
+                    <ion-label>Option with image</ion-label>
+                  </ion-item>
+                  <ion-item lines="full">
+                    <mat-form-field class="example-full-width" appearance="outline">
+                      <mat-label> Left Column</mat-label>
+                      <input formControlName="leftColValue" matInput autocomplete="off">
+                      <mat-icon matSuffix>
+                        <ion-icon style="cursor:pointer;" (click) ="addLeftCol()" color="primary" name="add-circle"></ion-icon>
+                      </mat-icon>
+                    </mat-form-field>
+                  </ion-item>
+                    <ion-item *ngFor="let item of listLeftItems;  let i = index" lines="full">
+                      <ion-icon style="cursor:pointer;" color="danger" (click)="deleteLeftCol(i)" name="trash" class="mr-3"></ion-icon>
+                      {{ i + 1}}.  
+                      <div> 
+                        <ion-card *ngIf="item.imagePath" class="item-card column-card-image">
+                        <ion-card-content>
+                          <div class="contact-grid">
+                        <img [decode]="isImageSelectLeft" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                         [lazyLoad]="item.imagePath" />
+                        </div>
+                      </ion-card-content>
+                      </ion-card> 
+                      <ion-label>
+                        {{item.text}}
+                      </ion-label>
+                    </div>
+                    </ion-item>
+                </ion-list>
+              </ion-col>
+              <ion-col size="6">
+                  <ion-list>
+                    <ion-item lines="none" color="none">
+                      <ion-toggle #isImageSelectRight color="warning"  (ionChange)="isRightOptionWithImage=!isRightOptionWithImage"></ion-toggle>
+                      <ion-label>Option with image</ion-label>
+                    </ion-item>
+                      <ion-item lines="full">
+                        <mat-form-field class="example-full-width" appearance="outline">
+                          <mat-label> Right Column </mat-label>
+                          <input matInput formControlName="rightColValue" autocomplete="off">
+                          <mat-icon matSuffix>
+                            <ion-icon style="cursor:pointer;" (click) ="addRightCol()" color="primary" name="add-circle"></ion-icon>
+                          </mat-icon>
+                        </mat-form-field>
+                      </ion-item>
+                      <ion-reorder-group (ionItemReorder)="onRenderItems($event)" disabled="false">
+                        <ion-item *ngFor="let item of listRightItems;  let i = index" lines="full">
+                          <ion-icon style="cursor:pointer;" color="danger" (click)="deleteRightCol(i)" name="trash" class="mr-3"></ion-icon>
+                          {{ i + 1}}.  
+                          <div> 
+                            <ion-card *ngIf="item.imagePath" class="item-card column-card-image">
+                            <ion-card-content>
+                              <div class="contact-grid">
+                            <img [decode]="isImageSelectRight" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                             [lazyLoad]="item.imagePath" />
+                            </div>
+                          </ion-card-content>
+                          </ion-card> 
+                          <ion-label>
+                            {{item.text}}
+                          </ion-label>
+                        </div>
+                        <ion-reorder slot="end"></ion-reorder>
+                        </ion-item>
+                    </ion-reorder-group>
+                  </ion-list>
+              </ion-col>
+            </ion-row>
+            </div>
           <ion-radio-group *ngIf="selectedType.value!=='ShortAnswer'" [value]="question?.optionAnswer"
             (ionChange)="selectedAnswerOption($event)">
             <div class="row">
@@ -110,5 +188,5 @@
       </div>
     </div>
   </div>
-  <input type="file" #fileInput (change)="uploadFile($event)" hidden="true" accept="image/*" />
+  <input type="file" #fileInput (change)="selectQuestionImage($event)" hidden="true" accept="image/*" />
 </ion-content>
