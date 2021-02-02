@@ -234,19 +234,18 @@ export class AssessmentQuestionAddPage implements OnInit {
           leftCol.unshift( {
             text: col.text,
             imagePath: blobDataURL,
-            id: col.id,
+            id: i + 1,
           });
         } else {
           leftCol.unshift( {
             text: col.text,
             imagePath: col.isAzurePath? col.imagePath : '',
-            id: col.id,
+            id: i + 1,
           });
         }
       });
 
       cols['Left'] = leftCol;
-
       columns['Right'].forEach((col, i) => {
         const file = col.file;
         if (file) {
@@ -259,13 +258,13 @@ export class AssessmentQuestionAddPage implements OnInit {
           rightCol.unshift( {
             text: col.text,
             imagePath: blobDataURL,
-            id: col.id,
+            id: i + 1,
           });
         } else {
           rightCol.unshift( {
             text: col.text,
             imagePath: col.isAzurePath? col.imagePath : '',
-            id: col.id,
+            id: i + 1,
           });
         }
       });

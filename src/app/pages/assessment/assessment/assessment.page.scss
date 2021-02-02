@@ -52,16 +52,16 @@
     // }
     
     .column-card-image {
-        max-width: 300px !important;
-        max-height: 300px !important;
+        width: 150px !important;
+        height: 150px !important;
     }
 
-    @media only screen and (max-width: 980px) {
-        .column-card-image {
-            max-width: 150px !important;
-            max-height: 150px !important;
-        }
-    }
+    // @media only screen and (max-width: 980px) {
+    //     .column-card-image {
+    //         max-width: 150px !important;
+    //         max-height: 150px !important;
+    //     }
+    // }
     
     .contact-grid {
         float: unset !important;
@@ -73,4 +73,16 @@
             top      : 27px;
         }
     }
+
+    .col-item {
+        height: 180px;;
+    }
+}
+
+.validCSS {
+    border: 3px solid green;
+}
+
+.inValidCSS {
+    border: unset;
 }

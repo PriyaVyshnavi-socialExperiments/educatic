@@ -42,6 +42,7 @@ export interface IQuestion {
       file: File,
       id: number,
       isAzurePath: boolean,
+      validCSS: string
   }[];
   };
   questionOptions: {

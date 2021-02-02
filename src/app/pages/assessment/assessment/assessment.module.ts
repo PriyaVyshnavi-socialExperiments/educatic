@@ -11,6 +11,7 @@ import { AssessmentPage } from './assessment.page';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { LazyLoadImageHooks } from 'src/app/_helpers/lazy-load-image-hook';
+import { OrderByPipe, RandomOrderPipe } from 'src/app/_helpers/random-order.pipe';
 
 @NgModule({
   imports: [
@@ -24,6 +25,6 @@ import { LazyLoadImageHooks } from 'src/app/_helpers/lazy-load-image-hook';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [{ provide: LAZYLOAD_IMAGE_HOOKS, useClass: LazyLoadImageHooks }],
-  declarations: [AssessmentPage]
+  declarations: [AssessmentPage, RandomOrderPipe, OrderByPipe]
 })
 export class AssessmentPageModule {}

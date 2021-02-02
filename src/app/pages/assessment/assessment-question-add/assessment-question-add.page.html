@@ -135,13 +135,13 @@
                       <ion-reorder-group (ionItemReorder)="onRenderItems($event)" disabled="false">
                         <ion-item *ngFor="let item of listRightItems;  let i = index" lines="full">
                           <ion-reorder>
-                            <ion-card class="item-card">
+                            <ion-card class="item-card column-card-image">
                             <ion-card-content style="padding: 0px !important;">
                               <ion-item lines="none">
                                 {{ i + 1}}.{{item.text}}
                                   <ion-icon slot="end" style="cursor:pointer;" color="danger" (click)="deleteRightCol(i)" name="trash" class="mr-3"></ion-icon>
                               </ion-item>
-                              <div class="contact-grid  column-card-image" *ngIf="item.imagePath" style="padding: 5px !important;">
+                              <div class="contact-grid" *ngIf="item.imagePath" style="padding: 5px !important;">
                             <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
                              [lazyLoad]="item.imagePath" />
                             </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ItemReorderEventDetail } from '@ionic/core';
 import { ToastController } from '@ionic/angular';
 import { IUser } from 'src/app/_models';
 import { IAnswer, IAssessment, IQuestion, IStudentAssessment } from 'src/app/_models/assessment';
@@ -21,30 +22,13 @@ export class AssessmentPage implements OnInit {
   questionCount = 0;
   isNext = false;
   currentUser: IUser;
-  listRightItems: {
-    text: string,
-    imagePath: string,
-    id: number,
-    isAzurePath: boolean
-  }[];
-  listLeftItems: {
-    text: string,
-    imagePath: string,
-    id: number,
-    isAzurePath: boolean,
-  }[];
-  
-
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private assessmentService: AssessmentService,
     private authenticationService: AuthenticationService,
     private toastController: ToastController,
-  ) { 
-    this.listRightItems = [];
-    this.listLeftItems = [];
-  }
+  ) { }
 
   ngOnInit() {
     this.authenticationService.currentUser?.subscribe((user) => {
@@ -124,12 +108,24 @@ export class AssessmentPage implements OnInit {
     });
   }
 
-  onRenderItems(event) {
-    console.log(`Moving item from ${event.detail.from} to ${event.detail.to}`);
-    let draggedItem = this.listRightItems.splice(event.detail.from, 1)[0];
-    this.listRightItems.splice(event.detail.to, 0, draggedItem)
-    //this.listRightItems = reorderArray(this.listItems, event.detail.from, event.detail.to);
-    event.detail.complete();
+  onRenderItems(event: CustomEvent<ItemReorderEventDetail>, question) {
+    const matchColumns = question.matchColumns;
+    matchColumns["Right"] = event.detail.complete(matchColumns["Right"]);
+    let allMatched = true;
+    matchColumns["Right"].forEach((item, index) => {
+      if(matchColumns["Right"][index].id === matchColumns["Left"][index].id) {
+        matchColumns["Right"][index].validCSS = "validCSS";
+      } else {
+        matchColumns["Right"][index].validCSS = "inValidCSS";
+        allMatched = false;
+      }
+    });
+
+    if(allMatched) {
+      this.UpdateAnswer(question.id, 0, 'allMatched');
+      this.isNext = allMatched;
+    }
+    
   }
 
   private async presentToast(msg, type) {
