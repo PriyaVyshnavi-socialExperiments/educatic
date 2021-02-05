@@ -23,4 +23,14 @@
     --height: 100% !important;
 }
 
+@media screen and (min-width: 0px) and (max-width: 640px) {
+  .show-lg-only { display: none; }
+  .show-sm-only { display: block; }
+}
+
+@media screen and (min-width: 641px) {
+  .show-lg-only { display: block; }
+  .show-sm-only { display: none; }  
+}
+
 

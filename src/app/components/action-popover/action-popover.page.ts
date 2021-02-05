@@ -17,6 +17,7 @@ export class ActionPopoverPage implements OnInit {
     icon: string;
     id: string;
     name: string;
+    color?: string;
   }>;
 
 
@@ -125,6 +126,28 @@ export class ActionPopoverPage implements OnInit {
         ];
         break;
 
+        case 'course':
+          this.showMoreOptions = [
+            {
+              icon: 'share-social-sharp',
+              id: 'share',
+              name: 'Share',
+              color: 'secondary'
+            },
+            {
+              icon: 'cloud-download',
+              id: 'enableOffline',
+              name: 'Enable Offline',
+              color: 'primary'
+            },
+            {
+              icon: 'trash',
+              id: 'remove',
+              name: 'Remove',
+              color: 'danger'
+            }
+          ];
+          break;
       default:
         break;
     }

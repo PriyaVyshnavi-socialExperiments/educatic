@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ModalController, ToastController } from '@ionic/angular';
+import { AlertController, ModalController, PopoverController, ToastController } from '@ionic/angular';
 import { Role } from 'src/app/_models';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
 import { ICourseContentCategory } from 'src/app/_models/course-content-category';
@@ -9,6 +9,8 @@ import { ICategoryContentList, ICourseContent } from '../../../_models/course-co
 import { AuthenticationService } from '../../../_services/authentication/authentication.service';
 import { CourseSharePage } from '../course-share/course-share.page';
 import { ContentHelper } from 'src/app/_helpers/content-helper';
+import { ActionPopoverPage } from 'src/app/components/action-popover/action-popover.page';
+import { ContentOfflineService } from 'src/app/_services/content-offline/content-offline.service';
 
 @Component({
   selector: 'app-courses',
@@ -30,7 +32,9 @@ export class CoursesPage implements OnInit {
     private contentService: CourseContentService,
     private toastController: ToastController,
     private alertController: AlertController,
-    private router: Router,
+    private router: Router, 
+    private popoverController: PopoverController,
+    private contentOfflineService: ContentOfflineService
   ) { }
 
   ngOnInit() {
@@ -72,7 +76,7 @@ export class CoursesPage implements OnInit {
 
   ContentViewer(content: ICourseContent) {
     const contentType = content.courseURL.replace(/^.*\./, '').toLowerCase();
-
+    //this.contentOfflineService.offlineContent(content.courseURL, 'coursecontent');
     if (ContentHelper.PdfSupported.indexOf(contentType) > -1) {
       this.router.navigateByUrl(`content/${content.id}/pdf-viewer`, { state: content });
     } else if (ContentHelper.AudioVideoSupported.indexOf(contentType) > -1) {
@@ -107,6 +111,36 @@ export class CoursesPage implements OnInit {
     });
 
 
+  }
+
+  public async actionPopover(ev: any, course) {
+    const popover = await this.popoverController.create({
+      component: ActionPopoverPage,
+      mode: 'ios',
+      event: ev,
+      componentProps: { type: 'course' },
+      cssClass: 'pop-over-style',
+    });
+
+    popover.onDidDismiss().then((data) => {
+      if (!data.data) {
+        return;
+      }
+      const actionData = data?.data;
+      switch (actionData?.selectedOption) {
+        case 'enableOffline':
+          break;
+        case 'share':
+          this.ShareCourse(course.id);
+          break;
+        case 'remove':
+          this.confirmCourseDelete(course);
+          break;
+        default:
+          break;
+      }
+    });
+    return await popover.present();
   }
 
   async openViewer(imgContentURL: string, content: ICourseContent) {
