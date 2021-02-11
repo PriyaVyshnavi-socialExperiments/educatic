@@ -30,12 +30,16 @@ export class OfflineService {
   }
 
   public async GetOfflineData(table: string, key: string) {
+  
     const openStore = this.sqlStorageService.openStore(table);
     if (openStore) {
-      const item = await this.sqlStorageService.getItem(key).then(value => {
+     
+      return await this.sqlStorageService.getItem(key).then(value => {
+        console.log("table: ", JSON.parse(value));
         return JSON.parse(value);
       });
-      return item;
+      // console.log("table 2: ", table);
+      // return item;
     } else {
       throw new Error(`GetOfflineData(${key}): CapacitorDataStorageSqlite Service is not initialized.`);
     }

@@ -11,6 +11,7 @@ export class ActionPopoverPage implements OnInit {
   public currentId: any;
   public schoolId: any;
   public type: string;
+  public isOffline: boolean;
 
   /** Available options on popup */
   public showMoreOptions: Array<{
@@ -31,6 +32,7 @@ export class ActionPopoverPage implements OnInit {
     this.currentId = this.navParams.get('id');
     this.type = this.navParams.get('type');
     this.schoolId = this.navParams.get('schoolId');
+    this.isOffline =this.navParams.get('isOffline');
     /** Defines the available options */
     this.PopulateActionMenu(this.type);
   }
@@ -135,9 +137,9 @@ export class ActionPopoverPage implements OnInit {
               color: 'secondary'
             },
             {
-              icon: 'cloud-download',
-              id: 'enableOffline',
-              name: 'Enable Offline',
+              icon: this.isOffline? 'cloud-done' :'cloud-download',
+              id: this.isOffline? 'disableOffline' : 'enableOffline',
+              name: this.isOffline? 'Available Offline': 'Enable Offline',
               color: 'primary'
             },
             {

@@ -65,7 +65,7 @@ export class SqliteStorageService {
      * @param key string
      * @param value string
      */
-    async setItem(key: string, value: string): Promise<void> {
+    async setItem(key: string, value: any): Promise<void> {
         if (this.isService && key.length > 0) {
             await this.store.set({ key, value });
         }

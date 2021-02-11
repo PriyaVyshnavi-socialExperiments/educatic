@@ -38,7 +38,6 @@
 </ion-content>
 
 <ion-content *ngIf="courseContentDisplay">
-
     <ion-grid class="grid">
         <ion-row class="ion-justify-content-center">
 
@@ -61,13 +60,13 @@
                                     <h2>{{course.courseName | titlecase}}</h2>
                                     <p>{{course.courseDescription}}</p>
                                 </ion-label>
-                              
+
                                 <ion-button *ngIf="!isStudent" color="secondary" shape="round" fill="outline" (click)="ShareCourse(course.id)">
                                     <ion-icon name="share-social-sharp"></ion-icon>
                                 </ion-button>
                                 <ion-button color="primary" shape="round" fill="outline">
-                                    <ion-icon name="cloud-download"></ion-icon>
-                                    <ion-icon name="cloud-done"></ion-icon>
+                                    <ion-icon *ngIf="!course.isOffline" (click) = downloadContentToOffline(course) name="cloud-download"></ion-icon>
+                                    <ion-icon  *ngIf="course.isOffline" name="cloud-done"></ion-icon>
                                 </ion-button>
                                 <ion-button *ngIf="!isStudent" color="danger" shape="round" fill="outline" (click)="confirmCourseDelete(course)">
                                     <ion-icon name="trash"></ion-icon>
@@ -80,10 +79,13 @@
                                     <p>{{course.courseDescription}}</p>
                                 </ion-label>
                                 <ion-icon name="ellipsis-vertical" (click)="actionPopover($event, course)" slot="end"></ion-icon>
+
                             </ion-item>
+
                         </ion-list>
                     </ion-footer>
                 </div>
+
             </ion-card>
         </ion-row>
     </ion-grid>

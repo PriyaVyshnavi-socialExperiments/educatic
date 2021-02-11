@@ -11,6 +11,9 @@ import { CourseSharePage } from '../course-share/course-share.page';
 import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { ActionPopoverPage } from 'src/app/components/action-popover/action-popover.page';
 import { ContentOfflineService } from 'src/app/_services/content-offline/content-offline.service';
+import * as blobUtil from 'blob-util';
+import { HttpEventType } from '@angular/common/http';
+import { SpinnerVisibilityService } from 'ng-http-loader';
 
 @Component({
   selector: 'app-courses',
@@ -26,15 +29,17 @@ export class CoursesPage implements OnInit {
   courseContentDisplay = false;
   isStudent = false;
   title = '';
+
   constructor(
     private modalController: ModalController,
     private authService: AuthenticationService,
     private contentService: CourseContentService,
     private toastController: ToastController,
     private alertController: AlertController,
-    private router: Router, 
+    private router: Router,
     private popoverController: PopoverController,
-    private contentOfflineService: ContentOfflineService
+    private contentOfflineService: ContentOfflineService,
+    private spinner: SpinnerVisibilityService,
   ) { }
 
   ngOnInit() {
@@ -76,15 +81,19 @@ export class CoursesPage implements OnInit {
 
   ContentViewer(content: ICourseContent) {
     const contentType = content.courseURL.replace(/^.*\./, '').toLowerCase();
-    //this.contentOfflineService.offlineContent(content.courseURL, 'coursecontent');
     if (ContentHelper.PdfSupported.indexOf(contentType) > -1) {
       this.router.navigateByUrl(`content/${content.id}/pdf-viewer`, { state: content });
     } else if (ContentHelper.AudioVideoSupported.indexOf(contentType) > -1) {
       this.router.navigateByUrl(`content/${content.id}/video-viewer`, { state: content });
     } else if (ContentHelper.ImgSupported.indexOf(contentType.toLowerCase()) > -1) {
-      this.contentService.GetAzureContentURL(content.courseURL).subscribe((url) => {
-        this.openViewer(url, content);
-      })
+      if (content.isOffline) {
+        const blob = blobUtil.base64StringToBlob(content.offlineData, content.type);
+        this.openViewer(window.URL.createObjectURL(blob), content);
+      } else {
+        this.contentService.GetAzureContentURL(content.courseURL).subscribe((url) => {
+          this.openViewer(url, content);
+        })
+      }
     }
   }
 
@@ -100,25 +109,28 @@ export class CoursesPage implements OnInit {
       if (user.role === Role.Student) {
         this.isStudent = true;
       }
-      if (user.courseContent) {
-        setTimeout(() => {
-          this.contentService.GetCategoryWiseContent(user.courseContent).subscribe((groupResponse) => {
-            const contents = Object.values(groupResponse.reverse());
-            this.categoryWiseContent = [...contents];
-          });
-        }, 10);
-      }
+      this.contentService.getOfflineCourseContents().subscribe((courseContent) => {
+        if (courseContent) {
+          setTimeout(() => {
+            this.contentService.GetCategoryWiseContent(courseContent).subscribe((groupResponse) => {
+              const contents = Object.values(groupResponse.reverse());
+              this.categoryWiseContent = [...contents];
+            });
+          }, 10);
+        }
+      })
     });
 
 
   }
 
-  public async actionPopover(ev: any, course) {
+  public async actionPopover(ev: any, content) {
+    console.log("content: ", content);
     const popover = await this.popoverController.create({
       component: ActionPopoverPage,
       mode: 'ios',
       event: ev,
-      componentProps: { type: 'course' },
+      componentProps: { type: 'course', isOffline: content.isOffline },
       cssClass: 'pop-over-style',
     });
 
@@ -129,12 +141,13 @@ export class CoursesPage implements OnInit {
       const actionData = data?.data;
       switch (actionData?.selectedOption) {
         case 'enableOffline':
+          this.downloadContentToOffline(content);
           break;
         case 'share':
-          this.ShareCourse(course.id);
+          this.ShareCourse(content.id);
           break;
         case 'remove':
-          this.confirmCourseDelete(course);
+          this.confirmCourseDelete(content);
           break;
         default:
           break;
@@ -186,6 +199,32 @@ export class CoursesPage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  public downloadContentToOffline(content) {
+    this.contentOfflineService.offlineContent(content, 'coursecontent').subscribe(
+      (event) => {
+        console.log("Event: ", event);
+        if (event.type === HttpEventType.DownloadProgress) {
+          this.spinner.show();
+        }
+        if (event.type === HttpEventType.Response) {
+          this.spinner.hide();
+          const blob = event.body;
+          blobUtil.blobToBase64String(blob).then(streamData => {
+
+            content.isOffline = true;
+            content.offlineData = streamData;
+            content.type = blob.type;
+          })
+            .then(() => {
+              this.contentService.UpdateCourseContentOfflineList(content, content.id).then(() => {
+                console.log("refreshContent");
+                this.refreshContent();
+              });
+            })
+        }
+      });
   }
 
   private async presentToast(msg, type) {

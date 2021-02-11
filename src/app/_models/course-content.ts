@@ -12,6 +12,9 @@ export interface ICourseContent {
     createdBy: string;
     active: boolean;
     isBlobUrl: boolean;
+    isOffline: boolean;
+    offlineData: string;
+    type: string;
 }
 
 export interface ICategoryWiseContent {
