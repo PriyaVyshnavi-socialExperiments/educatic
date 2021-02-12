@@ -65,6 +65,10 @@ export class ContentOfflineService extends OfflineService {
     // });
   }
 
+  public getOfflineStatusIcon(isOffline: boolean): "close-circle" | "cloud-done" | "cloud-download" {
+    return isOffline ? "cloud-done" : "cloud-download";
+}
+
   private getRequest(endpoint: string) {
     return this.httpWithoutInterceptor.get(endpoint, {
       responseType: 'blob',

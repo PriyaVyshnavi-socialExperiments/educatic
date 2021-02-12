@@ -139,7 +139,7 @@ export class ActionPopoverPage implements OnInit {
             {
               icon: this.isOffline? 'cloud-done' :'cloud-download',
               id: this.isOffline? 'disableOffline' : 'enableOffline',
-              name: this.isOffline? 'Available Offline': 'Enable Offline',
+              name: this.isOffline? 'Disable Offline': 'Enable Offline',
               color: 'primary'
             },
             {

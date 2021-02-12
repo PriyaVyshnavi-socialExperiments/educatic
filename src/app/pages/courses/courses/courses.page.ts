@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, ModalController, PopoverController, ToastController } from '@ionic/angular';
 import { Role } from 'src/app/_models';
 import { ViewerModalComponent } from 'ngx-ionic-image-viewer';
@@ -29,6 +29,8 @@ export class CoursesPage implements OnInit {
   courseContentDisplay = false;
   isStudent = false;
   title = '';
+  contentKey: string = '';
+  displaySource: string = '';
 
   constructor(
     private modalController: ModalController,
@@ -37,28 +39,34 @@ export class CoursesPage implements OnInit {
     private toastController: ToastController,
     private alertController: AlertController,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private popoverController: PopoverController,
-    private contentOfflineService: ContentOfflineService,
+    public contentOfflineService: ContentOfflineService,
     private spinner: SpinnerVisibilityService,
   ) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ionViewDidEnter() {
     this.refreshContent();
   }
 
 
-  public ViewContent(content: ICourseContent[]) {
+  public ViewContent(content: ICourseContent[], key: string, isChange?: boolean) {
     this.courseContent = [...content];
     this.courseContentDisplay = true;
     this.title = 'Course content - ' + content[0].courseCategory;
+    this.contentKey = key;
+    if(!isChange) {
+      this.router.navigateByUrl(`/courses/${this.contentKey}`);
+    }
+   
   }
 
   public dismissModal() {
     this.courseContent = [];
-    this.courseContentDisplay = false;
+    this.courseContentDisplay = false; 
+    this.router.navigateByUrl(`/courses`);
   }
 
   public async ShareCourse(contentId) {
@@ -113,8 +121,19 @@ export class CoursesPage implements OnInit {
         if (courseContent) {
           setTimeout(() => {
             this.contentService.GetCategoryWiseContent(courseContent).subscribe((groupResponse) => {
-              const contents = Object.values(groupResponse.reverse());
-              this.categoryWiseContent = [...contents];
+              let contents = Object.values(groupResponse.reverse());
+              this.contentKey = this.activatedRoute.snapshot.paramMap.get('key');
+              this.displaySource = this.activatedRoute.snapshot.paramMap.get('device');
+              const content = contents.find((value)=> value.key === this.contentKey);
+              if(this.contentKey && this.displaySource === 'device') {
+                const contentData = content.content.filter((item) => item.isOffline)
+                this.ViewContent(contentData, this.contentKey, true);
+              } else if(this.contentKey) {
+                this.courseContentDisplay = true;
+                this.ViewContent(content.content, this.contentKey);
+              } else {
+                this.categoryWiseContent = [...contents];
+              }
             });
           }, 10);
         }
@@ -225,6 +244,14 @@ export class CoursesPage implements OnInit {
             })
         }
       });
+  }
+
+  public contentDisplayChanged(ev: any) {
+    if(ev.detail.value === 'cloud') {
+      this.router.navigateByUrl(`/courses/${this.contentKey}`);
+    } else {
+      this.router.navigateByUrl(`/courses/${this.contentKey}/device`);
+    }
   }
 
   private async presentToast(msg, type) {
