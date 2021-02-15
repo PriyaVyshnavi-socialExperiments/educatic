@@ -36,7 +36,7 @@ export class DashboardService {
   // constant reloads and eventually log the user out. 
   httpWithoutInterceptor: HttpClient;
   // Used to geocode addresses of cities into lat/long
-  geocodingURl = "http://dev.virtualearth.net/REST/v1/Locations";
+  geocodingURl = "https://dev.virtualearth.net/REST/v1/Locations";
   bingMapsKey = ""; 
   // URL of azure tables to get data from 
   url = "";
