@@ -12,6 +12,8 @@ import { environment } from 'src/environments/environment';
 })
 export class OfflineWebsitesPage implements OnInit {
 
+
+  // Need to populate array with Offline websites from azure
   offlineWebsites: IOfflineWebsite[] = [];
 
   public showPDF = false;
