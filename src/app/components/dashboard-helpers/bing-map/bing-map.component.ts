@@ -4,6 +4,7 @@
 
 import { Component, ViewChild, OnInit, OnChanges, Input } from '@angular/core';
 import { IDashboardSchool } from '../../../_models/dashboard-models/dashboard-school'; 
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -73,7 +74,7 @@ export class BingMapComponent implements OnInit, OnChanges {
   InitMap(){  // after the view completes initializaion, create the map. Uses my personal bing maps api key currently
     try {
       this.map = new Microsoft.Maps.Map(this.myMap.nativeElement, {
-        credentials: this.bingMapsApiKey
+        credentials: environment.bingMapsKey
       });
     } catch (error) {
       console.log("Error with loading bing maps, check credentials: " + error);
