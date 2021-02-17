@@ -149,7 +149,19 @@ export class CourseContentService extends OfflineService {
     );
   }
 
-  public async  UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string) {
+  public getOfflineContent(contentId: string) {
+    return from(this.GetOfflineData('CourseContent', contentId)).pipe(
+      map(response => {
+        if (response && response.length > 0) {
+          return response;
+        } else {
+          return of(false);
+        }
+      })
+    );
+  }
+
+  public async  UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string, streamData?: string) {
 
     const data = await this.GetOfflineData('CourseContent', 'course-content');
    
@@ -163,7 +175,10 @@ export class CourseContentService extends OfflineService {
     this.auth.currentUser.subscribe(async (currentUser) => {
       currentUser.courseContent = [...courseContentList] ;
       await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
-      console.log("UpdateCourseContentOfflineList");
+
+      if (content.isOffline) {
+        await this.SetOfflineData('CourseContent', content.id, streamData);
+      }
     });
   }
 

@@ -42,8 +42,11 @@ export class VideoViewerPage implements OnInit, AfterViewInit {
     this.VideoConfig();
     if (this.courseContent.isOffline) {
       if (this.courseContent.isOffline) {
-        const blob = blobUtil.base64StringToBlob(this.courseContent.offlineData, this.courseContent.type);
-        await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: window.URL.createObjectURL(blob) });
+        this.contentService.getOfflineContent(this.courseContent.id).subscribe(async (data) => {
+          const blob = blobUtil.base64StringToBlob(this.courseContent.id, this.courseContent.type);
+          await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: window.URL.createObjectURL(blob) });
+        });
+      
       } else if (this.courseContent.isBlobUrl) {
         await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: this.courseContent.courseURL });
       }
