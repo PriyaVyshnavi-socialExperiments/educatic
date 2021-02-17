@@ -95,8 +95,11 @@ export class CoursesPage implements OnInit {
       this.router.navigateByUrl(`content/${content.id}/video-viewer`, { state: content });
     } else if (ContentHelper.ImgSupported.indexOf(contentType.toLowerCase()) > -1) {
       if (content.isOffline) {
-        const blob = blobUtil.base64StringToBlob(content.offlineData, content.type);
-        this.openViewer(window.URL.createObjectURL(blob), content);
+        this.contentService.getOfflineContent(content.id).subscribe((data) => {
+          const blob = blobUtil.base64StringToBlob(data, content.type);
+          this.openViewer(window.URL.createObjectURL(blob), content);
+        })
+       
       } else {
         this.contentService.GetAzureContentURL(content.courseURL).subscribe((url) => {
           this.openViewer(url, content);
@@ -221,7 +224,7 @@ export class CoursesPage implements OnInit {
   }
 
   public downloadContentToOffline(content) {
-    this.contentOfflineService.offlineContent(content, 'coursecontent').subscribe(
+    this.contentOfflineService.downloadContent(content, 'coursecontent').subscribe(
       (event) => {
         console.log("Event: ", event);
         if (event.type === HttpEventType.DownloadProgress) {
@@ -231,14 +234,11 @@ export class CoursesPage implements OnInit {
           this.spinner.hide();
           const blob = event.body;
           blobUtil.blobToBase64String(blob).then(streamData => {
-
             content.isOffline = true;
-            content.offlineData = streamData;
             content.type = blob.type;
-          })
-            .then(() => {
-              this.contentService.UpdateCourseContentOfflineList(content, content.id).then(() => {
-                console.log("refreshContent");
+            return streamData;
+          }).then((streamData) => {
+              this.contentService.UpdateCourseContentOfflineList(content, content.id, streamData).then(() => {
                 this.refreshContent();
               });
             })

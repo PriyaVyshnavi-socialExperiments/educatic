@@ -13,7 +13,6 @@ export interface ICourseContent {
     active: boolean;
     isBlobUrl: boolean;
     isOffline: boolean;
-    offlineData: string;
     type: string;
 }
 

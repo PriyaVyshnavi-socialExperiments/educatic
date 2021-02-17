@@ -25,8 +25,11 @@ export class PdfViewerPage implements OnInit {
     }
     this.title = `${this.courseContent.courseCategory} - ${this.courseContent.courseName}`;
     if(this.courseContent.isOffline) {
-      const blob = blobUtil.base64StringToBlob(this.courseContent.offlineData, this.courseContent.type);
-      this.pdfContentURL =  window.URL.createObjectURL(blob);
+      this.contentService.getOfflineContent(this.courseContent.id).subscribe((data) => {
+        const blob = blobUtil.base64StringToBlob(data, this.courseContent.type);
+        this.pdfContentURL =  window.URL.createObjectURL(blob);
+      });
+    
     } else if (!this.courseContent.isTokenRequired) {
       this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe((url) => {
         this.pdfContentURL =url;
