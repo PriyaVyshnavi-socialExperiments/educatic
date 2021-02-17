@@ -11,12 +11,14 @@ export class ActionPopoverPage implements OnInit {
   public currentId: any;
   public schoolId: any;
   public type: string;
+  public isOffline: boolean;
 
   /** Available options on popup */
   public showMoreOptions: Array<{
     icon: string;
     id: string;
     name: string;
+    color?: string;
   }>;
 
 
@@ -30,6 +32,7 @@ export class ActionPopoverPage implements OnInit {
     this.currentId = this.navParams.get('id');
     this.type = this.navParams.get('type');
     this.schoolId = this.navParams.get('schoolId');
+    this.isOffline =this.navParams.get('isOffline');
     /** Defines the available options */
     this.PopulateActionMenu(this.type);
   }
@@ -125,6 +128,28 @@ export class ActionPopoverPage implements OnInit {
         ];
         break;
 
+        case 'course':
+          this.showMoreOptions = [
+            {
+              icon: 'share-social-sharp',
+              id: 'share',
+              name: 'Share',
+              color: 'secondary'
+            },
+            {
+              icon: this.isOffline? 'cloud-done' :'cloud-download',
+              id: this.isOffline? 'disableOffline' : 'enableOffline',
+              name: this.isOffline? 'Disable Offline': 'Enable Offline',
+              color: 'primary'
+            },
+            {
+              icon: 'trash',
+              id: 'remove',
+              name: 'Remove',
+              color: 'danger'
+            }
+          ];
+          break;
       default:
         break;
     }

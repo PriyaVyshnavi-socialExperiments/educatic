@@ -79,6 +79,60 @@
                             </ion-item>
                           </ion-radio-group>
                         </ion-item-group>
+                        <ion-item-group *ngSwitchCase="'MatchColumn'">
+                          <div class="row match-column">
+                            <ion-row>
+                              <ion-col size="6">
+                                <ion-list>
+                                    <ion-item *ngFor="let item of question.matchColumns['Left'] | orderBy:'id';  let i = index" lines="full" class="col-item">
+                                        <ion-card class="item-card column-card-image">
+                                          <ion-card-subtitle>
+                                            <ion-label>
+                                              <ion-chip color="secondary">
+                                                <ion-label>{{i + 1}}</ion-label>
+                                              </ion-chip>
+                                              {{item.text}}
+                                            </ion-label>
+                                          </ion-card-subtitle>
+                                          <ion-card-content *ngIf="item.imagePath" >
+                                          <div class="contact-grid">
+                                        <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                                         [lazyLoad]="item.imagePath" />
+                                        </div>
+                                      </ion-card-content>
+                                      </ion-card>
+                                    </ion-item>
+                                </ion-list>
+                              </ion-col>
+                              <ion-col size="6">
+                                  <ion-list>
+                                      <ion-reorder-group (ionItemReorder)="onRenderItems($event, question)" disabled="false">
+                                        <ion-item *ngFor="let item of question.matchColumns['Right']|randomOrder : isSortAllow;  let i = index" lines="full" class="col-item">
+                                          <ion-reorder>
+                                            <ion-card class="item-card column-card-image" [ngClass]="item.validCSS">
+                                              <ion-card-subtitle>
+                                                <ion-label>
+                                                  <ion-chip color="secondary">
+                                                    {{i + 1}}
+                                                  </ion-chip>
+                                                  {{item.text}}
+                                                </ion-label>
+                                              </ion-card-subtitle>
+                                            <ion-card-content >
+                                              <div class="contact-grid"  *ngIf="item.imagePath">
+                                            <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                                             [lazyLoad]="item.imagePath" />
+                                            </div>
+                                          </ion-card-content>
+                                          </ion-card>
+                                        </ion-reorder>
+                                        </ion-item>
+                                    </ion-reorder-group>
+                                  </ion-list>
+                              </ion-col>
+                            </ion-row>
+                            </div>
+                        </ion-item-group>
                       </div>
                       <ion-footer style="padding: 10px;">
                         <ion-button size="small" color="secondary" *ngIf="isNext && i!==questionCount" (click)="moveNextQuestion()"

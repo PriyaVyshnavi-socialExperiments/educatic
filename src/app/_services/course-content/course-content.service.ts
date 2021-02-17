@@ -137,7 +137,7 @@ export class CourseContentService extends OfflineService {
     );
   }
 
-  private getOfflineCourseContents() {
+  public getOfflineCourseContents() {
     return from(this.GetOfflineData('CourseContent', 'course-content')).pipe(
       tap(response => {
         if (response && response.length > 0) {
@@ -149,8 +149,22 @@ export class CourseContentService extends OfflineService {
     );
   }
 
-  private async  UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string) {
+  public getOfflineContent(contentId: string) {
+    return from(this.GetOfflineData('CourseContent', contentId)).pipe(
+      map(response => {
+        if (response && response.length > 0) {
+          return response;
+        } else {
+          return of(false);
+        }
+      })
+    );
+  }
+
+  public async  UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string, streamData?: string) {
+
     const data = await this.GetOfflineData('CourseContent', 'course-content');
+   
     const courseContents = data ? data as ICourseContent[] : [];
     const courseContentList = courseContents.filter((cc) => {
       return  cc.id !== (content ? content.id : contentId);
@@ -159,8 +173,12 @@ export class CourseContentService extends OfflineService {
       courseContentList.unshift(content);
     }
     this.auth.currentUser.subscribe(async (currentUser) => {
-      currentUser.courseContent = courseContentList;
+      currentUser.courseContent = [...courseContentList] ;
       await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
+
+      if (content.isOffline) {
+        await this.SetOfflineData('CourseContent', content.id, streamData);
+      }
     });
   }
 

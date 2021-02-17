@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { BlobDownloadResponseModel } from '@azure/storage-blob';
 import { from, OperatorFunction, Subject } from 'rxjs';
-import { map, mergeMap, startWith, switchMap, take } from 'rxjs/operators';
+import { map, mergeMap, startWith, switchMap, take, tap } from 'rxjs/operators';
 import { BlobContainerRequest, BlobItemDownload } from './azure-storage';
 import { BlobSharedViewStateService } from './blob-shared-view-state.service';
 import { BlobStorageService } from './blob-storage.service';
@@ -58,11 +58,11 @@ export class BlobDownloadsViewStateService {
         containerName: options.containerName,
         url
       })),
-      // startWith({
-      //   filename,
-      //   containerName: options.containerName,
-      //   url: ''
-      // })
+      startWith({
+        filename,
+        containerName: options.containerName,
+        url: ''
+      })
     );
 
   private getDownloadUrlFromResponse = (): OperatorFunction<

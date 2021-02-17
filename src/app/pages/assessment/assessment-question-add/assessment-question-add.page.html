@@ -102,21 +102,18 @@
                     </mat-form-field>
                   </ion-item>
                     <ion-item *ngFor="let item of listLeftItems;  let i = index" lines="full">
-                      <ion-icon style="cursor:pointer;" color="danger" (click)="deleteLeftCol(i)" name="trash" class="mr-3"></ion-icon>
-                      {{ i + 1}}.  
-                      <div> 
                         <ion-card *ngIf="item.imagePath" class="item-card column-card-image">
-                        <ion-card-content>
-                          <div class="contact-grid">
-                        <img [decode]="isImageSelectLeft" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                        <ion-card-content style="padding: 0px !important;">
+                          <ion-item lines="none">
+                            {{ i + 1}}.{{item.text}}
+                              <ion-icon slot="end" style="cursor:pointer;" color="danger" (click)="deleteLeftCol(i)" name="trash" class="mr-3"></ion-icon>
+                          </ion-item>
+                          <div class="contact-grid" style="padding: 5px !important;">
+                        <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
                          [lazyLoad]="item.imagePath" />
                         </div>
                       </ion-card-content>
                       </ion-card> 
-                      <ion-label>
-                        {{item.text}}
-                      </ion-label>
-                    </div>
                     </ion-item>
                 </ion-list>
               </ion-col>
@@ -137,22 +134,20 @@
                       </ion-item>
                       <ion-reorder-group (ionItemReorder)="onRenderItems($event)" disabled="false">
                         <ion-item *ngFor="let item of listRightItems;  let i = index" lines="full">
-                          <ion-icon style="cursor:pointer;" color="danger" (click)="deleteRightCol(i)" name="trash" class="mr-3"></ion-icon>
-                          {{ i + 1}}.  
-                          <div> 
-                            <ion-card *ngIf="item.imagePath" class="item-card column-card-image">
-                            <ion-card-content>
-                              <div class="contact-grid">
-                            <img [decode]="isImageSelectRight" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                          <ion-reorder>
+                            <ion-card class="item-card column-card-image">
+                            <ion-card-content style="padding: 0px !important;">
+                              <ion-item lines="none">
+                                {{ i + 1}}.{{item.text}}
+                                  <ion-icon slot="end" style="cursor:pointer;" color="danger" (click)="deleteRightCol(i)" name="trash" class="mr-3"></ion-icon>
+                              </ion-item>
+                              <div class="contact-grid" *ngIf="item.imagePath" style="padding: 5px !important;">
+                            <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
                              [lazyLoad]="item.imagePath" />
                             </div>
                           </ion-card-content>
                           </ion-card> 
-                          <ion-label>
-                            {{item.text}}
-                          </ion-label>
-                        </div>
-                        <ion-reorder slot="end"></ion-reorder>
+                        </ion-reorder>
                         </ion-item>
                     </ion-reorder-group>
                   </ion-list>

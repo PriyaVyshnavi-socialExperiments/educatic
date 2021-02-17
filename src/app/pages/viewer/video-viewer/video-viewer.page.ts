@@ -4,7 +4,7 @@ import { Plugins } from '@capacitor/core';
 import { NavController } from '@ionic/angular';
 import * as PluginsLibrary from 'capacitor-video-player';
 const { CapacitorVideoPlayer, Device } = Plugins;
-
+import * as blobUtil from 'blob-util';
 import { ICourseContent } from 'src/app/_models/course-content';
 import { CourseContentService } from 'src/app/_services/course-content/course-content.service';
 
@@ -40,13 +40,22 @@ export class VideoViewerPage implements OnInit, AfterViewInit {
     }
 
     this.VideoConfig();
-    if(this.courseContent.isBlobUrl) {
-      await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: this.courseContent.courseURL });
-    } else {
-      this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe(async (url) => {
-        const videoURL = url;
-        await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: videoURL });
-      })
+    if (this.courseContent.isOffline) {
+      if (this.courseContent.isOffline) {
+        this.contentService.getOfflineContent(this.courseContent.id).subscribe(async (data) => {
+          const blob = blobUtil.base64StringToBlob(this.courseContent.id, this.courseContent.type);
+          await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: window.URL.createObjectURL(blob) });
+        });
+      
+      } else if (this.courseContent.isBlobUrl) {
+        await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: this.courseContent.courseURL });
+      }
+      {
+        this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe(async (url) => {
+          const videoURL = url;
+          await this.videoPlayer.initPlayer({ mode: 'fullscreen', url: videoURL });
+        })
+      }
     }
   }
 

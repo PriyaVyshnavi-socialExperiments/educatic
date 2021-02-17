@@ -80,9 +80,24 @@ export class CourseAddPage implements OnInit {
       if (user.courseContent) {
         this.contentService.GetCategoryWiseContent(user.courseContent).subscribe((groupResponse) => {
           this.categoryWiseContent = Object.values(groupResponse);
+          console.log("this.categoryWiseContent: ", this.categoryWiseContent);
           this.courseCategory = this.categoryWiseContent.map((cat, index) => {
             return { id: index.toString(), name: cat.key } as ICourseContentCategory;
-          })
+          });
+
+          let index = 0;
+          let courseLevels = [];
+          this.categoryWiseContent.forEach((content) => {
+            const levels = content.content.map((item) => {
+              return { id: (++index).toString(), name: item.courseLevel } as ICourseContentCategory;
+            });
+            courseLevels = [...courseLevels, ...levels];
+            });
+            courseLevels = [...new Map(courseLevels.map(item => [item.name, item])).values()];
+
+            this.courseLevel = courseLevels.filter(function (el) {
+              return el.name !== null && el.name !== '';
+            });
         });
       }
     });
@@ -235,7 +250,7 @@ export class CourseAddPage implements OnInit {
           this.filepicker.blobFileName = selectedCategory.name;
           this.f.courseCategory.setValue(selectedCategory.name);
           this.courseCategory = [...this.courseCategory, ...categoryList];
-          this.courseCategory = [...new Map(this.courseCategory.map(item => [item.name, item])).values()]
+          this.courseCategory = [...new Map(this.courseCategory.map(item => [item.name, item])).values()];
         }
       });
     await modal.present();

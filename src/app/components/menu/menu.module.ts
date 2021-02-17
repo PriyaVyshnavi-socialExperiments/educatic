@@ -129,6 +129,16 @@ const routes: Routes = [
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
       },
       {
+        path: 'courses/:key',
+        loadChildren: () => import('../../pages/courses/courses/courses.module').then(m => m.CoursesPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+      },
+      {
+        path: 'courses/:key/:device',
+        loadChildren: () => import('../../pages/courses/courses/courses.module').then(m => m.CoursesPageModule),
+        data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
+      },
+      {
         path: 'course/add',
         loadChildren: () => import('../../pages/courses/course-add/course-add.module').then(m => m.CourseAddPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher] }

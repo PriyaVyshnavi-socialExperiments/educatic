@@ -4,6 +4,7 @@
 
 import { Component, ViewChild, OnInit, OnChanges, Input } from '@angular/core';
 import { IDashboardSchool } from '../../../_models/dashboard-models/dashboard-school'; 
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -22,15 +23,14 @@ export class BingMapComponent implements OnInit, OnChanges {
   map: Microsoft.Maps.Map;  
   bingMapsApiKey: string = '';
 
-
   /**
    * When the currently selected schools changes, updates the map. 
    */
   ngOnChanges() { 
     try {
+      this.map.layers.clear();
       if (this.map && this.schools && this.schools.length > 0) {
         // Gets rid of what's currently on the map 
-        this.map.layers.clear();
         let layer: Microsoft.Maps.Layer = new Microsoft.Maps.Layer();
         let locations: Microsoft.Maps.Location[] = []; 
         for (let school of this.schools) {
@@ -74,7 +74,7 @@ export class BingMapComponent implements OnInit, OnChanges {
   InitMap(){  // after the view completes initializaion, create the map. Uses my personal bing maps api key currently
     try {
       this.map = new Microsoft.Maps.Map(this.myMap.nativeElement, {
-        credentials: this.bingMapsApiKey
+        credentials: environment.bingMapsKey
       });
     } catch (error) {
       console.log("Error with loading bing maps, check credentials: " + error);

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpBackend } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { ISchool } from '../../_models/school';
 import { IClassRoom } from '../../_models/class-room';
 import { IDashboardCity } from '../../_models/dashboard-models/dashboard-city'; 
@@ -36,8 +37,7 @@ export class DashboardService {
   // constant reloads and eventually log the user out. 
   httpWithoutInterceptor: HttpClient;
   // Used to geocode addresses of cities into lat/long
-  geocodingURl = "http://dev.virtualearth.net/REST/v1/Locations";
-  bingMapsKey = ""; 
+  geocodingURl = "https://dev.virtualearth.net/REST/v1/Locations";
   // URL of azure tables to get data from 
   url = "";
   // Secure Access Signature of attendance table
@@ -385,10 +385,10 @@ export class DashboardService {
         // Set the latitude and longitude of a school if it has not already been set. The attendance 
         // tracks the latitude and longitude in which attendance was taken, so, assuming it's at the school location, 
         // this should be the most accurate latitude and longitude for the school. 
-        if (entry.latitude && entry.longitude) {
-          this.data.schools.get(schoolId).school.latitude = entry.latitude;
-          this.data.schools.get(schoolId).school.longitude = entry.longitude; 
-        }
+        // if (entry.latitude && entry.longitude) {
+        //   this.data.schools.get(schoolId).school.latitude = entry.latitude;
+        //   this.data.schools.get(schoolId).school.longitude = entry.longitude; 
+        // }
       }
     })
   }
@@ -414,7 +414,7 @@ export class DashboardService {
    * @param school School to geocode
    */
   private search(school: IDashboardSchool): Observable<Object> {
-    let endpoint = this.geocodingURl +  "?" + `countryRegion=${school.country}&lpostalCode=${school.zip}&addressLine=${school.address1}&locality=${school.city}&maxResults=${1}&key=${this.bingMapsKey}`;
+    let endpoint = this.geocodingURl +  "?" + `countryRegion=${school.country}&lpostalCode=${school.zip}&addressLine=${school.address1}&locality=${school.city}&maxResults=${1}&key=${environment.bingMapsKey}`;
     return this.getRequest(endpoint).pipe(
       tap((result: any) => {
         if (result && result.resourceSets.length > 0 && result.resourceSets[0].resources.length > 0) {

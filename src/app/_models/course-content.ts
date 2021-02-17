@@ -12,6 +12,8 @@ export interface ICourseContent {
     createdBy: string;
     active: boolean;
     isBlobUrl: boolean;
+    isOffline: boolean;
+    type: string;
 }
 
 export interface ICategoryWiseContent {

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { ICourseContent } from 'src/app/_models/course-content';
 import { CourseContentService } from 'src/app/_services/course-content/course-content.service';
+import * as blobUtil from 'blob-util';
 
 @Component({
   selector: 'app-pdf-viewer',
@@ -23,7 +24,13 @@ export class PdfViewerPage implements OnInit {
       this.navCtrl.back();
     }
     this.title = `${this.courseContent.courseCategory} - ${this.courseContent.courseName}`;
-    if (!this.courseContent.isTokenRequired) {
+    if(this.courseContent.isOffline) {
+      this.contentService.getOfflineContent(this.courseContent.id).subscribe((data) => {
+        const blob = blobUtil.base64StringToBlob(data, this.courseContent.type);
+        this.pdfContentURL =  window.URL.createObjectURL(blob);
+      });
+    
+    } else if (!this.courseContent.isTokenRequired) {
       this.contentService.GetAzureContentURL(this.courseContent.courseURL).subscribe((url) => {
         this.pdfContentURL =url;
       })

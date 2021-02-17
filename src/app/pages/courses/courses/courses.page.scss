@@ -23,4 +23,37 @@
     --height: 100% !important;
 }
 
+@media screen and (min-width: 0px) and (max-width: 640px) {
+  .show-lg-only { display: none; }
+  .show-sm-only { display: block; }
+}
+
+@media screen and (min-width: 641px) {
+  .show-lg-only { display: block; }
+  .show-sm-only { display: none; }  
+}
+
+.corner-ribbon-list {
+    background: rgba(0, 0, 0, .6);
+    border-radius: 20px;
+    bottom: 5px;
+    height: 40px;
+    left: 60px;
+    position: absolute;
+    width: 40px;
+
+    .icon {
+        color: rgba(255, 255, 255, .9);
+        font-size: 20px;
+        position: absolute;
+        right: 10px;
+        top: 11px;
+
+        &.ion-md-close-circle,
+        &.ion-ios-close-circle {
+            right: 11.5px;
+            top: 10.5px;
+        }
+    }
+}
 

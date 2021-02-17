@@ -18,10 +18,11 @@ import { ToastController } from  '@ionic/angular';
 })
 export class DashboardComponent implements AfterViewInit { 
   
-  start: Date = new Date("5-26-2020"); // Need to convert the startDate/endDate to dates to allow comparison 
-  end: Date = new Date();
-  startDate: string = "5-26-2020"; 
-  endDate: string = this.end.toString();
+  end: Date;
+  start: Date; // Need to convert the startDate/endDate to dates to allow comparison 
+  
+  startDate: string; 
+  endDate: string;
 
   // Currently selected cities, schools, classes, students, and teachers
   cities: IDashboardCity[] = [];
@@ -61,6 +62,14 @@ export class DashboardComponent implements AfterViewInit {
   activeSchools = 0;
   activeStudents = 0;
   activeTeachers = 0;
+
+  // Dispay menu  
+  menu: boolean = false;
+
+  // Select All States
+  selectClasses = true;
+  selectSchools = true;
+  selectCities = true;
 
   constructor
     (
@@ -103,7 +112,7 @@ export class DashboardComponent implements AfterViewInit {
         this.charts[this.genderAttendanceChartId] = this.chartService.getAttendanceBarChart(this.genderAttendanceChartId, 'Gender', 'Percent Attendance', 'Gender Attendance');
         this.charts[this.studentEnrollmentChartId] = this.chartService.getStudentEnrollmentLineChart(this.studentEnrollmentChartId, 'Days', 'Number of Students', 'Student Enrollment');
       }
-      this.refresh();
+      //this.refresh();
     } catch (error) {
       await this.presentToast('Failed to initialize charts and/or dashboard information. Please try again later.');
     }
@@ -116,47 +125,41 @@ export class DashboardComponent implements AfterViewInit {
    */
   async refresh() {
     try {
-      this.dashboardService.getData().subscribe(() => {
-        this.updateCities();
-        this.changeCities();
-        this.changeSchools();
-        this.changeClasses();
-        this.totalSchools = this.allSchools.length;
-        this.totalClasses = this.allClasses.length;
-        this.totalStudents = this.students.length;
-        this.totalTeachers = this.teachers.length;
-        // After loading data, geocode the schools addresses to get latitude and longitude 
-        // this.dashboardService.geocodeSchools().subscribe(() => {
-        //   this.updateCities();
-        //   this.changeCities();
-        //   this.changeSchools();
-        //   this.changeClasses();
-        //   this.totalSchools = this.allSchools.length;
-        //   this.totalClasses = this.allClasses.length;
-        //   this.totalStudents = this.students.length;
-        //   this.totalTeachers = this.teachers.length;
-        // })
-      });
+      this.dashboardService.getData().subscribe(
+        res => {
+        //After loading data, geocode the schools addresses to get latitude and longitude 
+          this.dashboardService.geocodeSchools().subscribe(
+            res => console.log("sucess"),
+            async (err) => await this.presentToast('Error: Failed to load geographic data')
+          ).add(() => {       
+            this.selectClasses = true;
+            this.selectSchools = true;
+            this.selectCities = true;  
+            
+            this.start = new Date();
+            this.end = new Date();
+            this.start.setFullYear(this.start.getFullYear() - 1)
+            this.startDate = this.start.toString();
+            this.endDate = this.end.toString();
+
+            this.allCities = this.dashboardService.getCities();
+            this.cities = this.allCities;
+            this.changeCities();
+            this.schools = this.allSchools;
+            this.changeSchools();
+            this.classes = this.allClasses;
+            this.changeClasses();
+            this.totalSchools = this.allSchools.length;
+            this.totalClasses = this.allClasses.length;
+            this.totalStudents = this.students.length;
+            this.totalTeachers = this.teachers.length;
+          })
+        },
+        async (err) => await this.presentToast('Error: Failed to load data')
+      );
     } catch (error) {
       await this.presentToast('Error: Failed to load data');
     }
-  }
-
-  /**
-   * This method updates the average attendance of each city and sorts them in order of average attendance to 
-   * ensure that cities with high attendance are displayed first on the list. 
-   */
-  async updateCities() {
-    try {
-      this.allCities = this.dashboardService.getCities();
-      for (const city of this.allCities) {
-        city.averageAttendance = this.dashboardService.getAverageCityAttendance(city, this.start, this.end);
-      }
-      this.cities = this.allCities;
-    } catch (error) {
-      await this.presentToast('Error: Failed to update cities');
-    }
-
   }
 
   /**
@@ -169,16 +172,22 @@ export class DashboardComponent implements AfterViewInit {
   async changeCities() {
     try {
       this.allSchools = [];
+      let schoolIds: string[] = [];
+      this.schools.forEach((school) => schoolIds.push(school.id));
+      this.schools = [];
       if (this.cities) {
         this.cities.forEach((city) => {
+          city.averageAttendance = this.dashboardService.getAverageCityAttendance(city, this.start, this.end);
           this.allSchools = this.allSchools.concat(city.schools);
         });
         // Calculate average attendance
-        for (const school of this.allSchools) {
-          school.averageAttendance = this.dashboardService.getAverageSchoolAttendance(school, this.start, this.end);
+        for (let i = 0; i < this.allSchools.length; i++) {
+          this.allSchools[i].averageAttendance = this.dashboardService.getAverageSchoolAttendance(this.allSchools[i], this.start, this.end);
+          if (schoolIds.includes(this.allSchools[i].id)) {
+            this.schools.push(this.allSchools[i]); 
+          }
         }
         // Sorts schools based on average attendance 
-        this.schools = this.allSchools;
         this.schools.sort((s1: IDashboardSchool, s2: IDashboardSchool) => {
           return s1.averageAttendance > s2.averageAttendance ? -1 : 1;
         })
@@ -201,6 +210,9 @@ export class DashboardComponent implements AfterViewInit {
   async changeSchools() {
     try {
       this.allClasses = [];
+      let classIds: string[] = [];
+      this.classes.forEach((classRoom) => classIds.push(classRoom.id));
+      this.classes = [];
       this.teachers = [];
       if (this.schools) {
         this.schools.forEach((school) => {
@@ -208,12 +220,13 @@ export class DashboardComponent implements AfterViewInit {
           this.allClasses = this.allClasses.concat(school.classRooms);
         });
         // Calculate average attendance for each class
-        for (const classRoom of this.allClasses) {
-          classRoom.averageAttendance = this.dashboardService.getAverageClassRoomAttendance(classRoom, this.start, this.end);
+        for (let i = 0; i < this.allClasses.length; i++) {
+          this.allClasses[i].averageAttendance = this.dashboardService.getAverageClassRoomAttendance(this.allClasses[i], this.start, this.end);
+          if (classIds.includes(this.allClasses[i].id)) {
+            this.classes.push(this.allClasses[i]);
+          }
         }
-
         // Sort classes based on attendance 
-        this.classes = this.allClasses;
         this.classes.sort((c1: IDashboardClassRoom, c2: IDashboardClassRoom) => {
           return c1.averageAttendance > c2.averageAttendance ? -1 : 1;
         });
@@ -336,7 +349,6 @@ export class DashboardComponent implements AfterViewInit {
       } else {
         this.start = start;
       }
-      this.updateCities();
       this.changeCities();
     } catch (error) {
       await this.presentToast('Fail to change start date');
@@ -356,11 +368,32 @@ export class DashboardComponent implements AfterViewInit {
       } else {
         this.end = end;
       }
-      this.updateCities();
       this.changeCities();
     } catch (error) {
       await this.presentToast('Error: Failed to change end date');
     }
+  }
+
+  setIntervalToWeek() {
+    let end = new Date();
+    let start = new Date();
+    start.setDate(start.getDate() - 7);
+    this.start = start;
+    this.end = end;
+    this.startDate = this.start.toString();
+    this.endDate = this.end.toString();
+    this.changeCities();
+  }
+
+  setIntervalToMonth() {
+    let end = new Date();
+    let start = new Date();
+    start.setMonth(start.getMonth() - 1);
+    this.start = start;
+    this.end = end;
+    this.startDate = this.start.toString();
+    this.endDate = this.end.toString();
+    this.changeCities();
   }
 
   /**
@@ -380,5 +413,26 @@ export class DashboardComponent implements AfterViewInit {
       ]
     });
     toast.present();
+  }
+
+  selectAllCities() {
+    this.cities = this.selectCities ? []: this.allCities;
+    this.selectCities = !this.selectCities;
+    this.selectSchools = false;
+    this.selectClasses = false;
+    this.changeCities();
+  }
+
+  selectAllSchools() {
+    this.schools = this.selectSchools ? []: this.allSchools;
+    this.selectSchools = !this.selectSchools;
+    this.selectClasses = false;
+    this.changeSchools();
+  }
+
+  selectAllClasses() {
+    this.classes = this.selectClasses ? []: this.allClasses;
+    this.selectClasses = !this.selectClasses;
+    this.changeClasses();
   }
 }

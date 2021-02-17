@@ -37,13 +37,15 @@ export class AssessmentQuestionAddPage implements OnInit {
     text: string,
     imagePath: string,
     id: number,
+    isAzurePath: boolean,
     file: File
   }[];
   listLeftItems: {
     text: string,
     imagePath: string,
     id: number,
-    file: File
+    file: File,
+    isAzurePath: boolean,
   }[];
   isLeftOptionWithImage = false;
   isRightOptionWithImage = false;
@@ -106,6 +108,11 @@ export class AssessmentQuestionAddPage implements OnInit {
                   this.f.questionType.setValue(this.question.questionType);
                   this.fillAnswersOptions(this.question.questionType);
                   this.questionImagePath = this.question.questionImagePath;
+                  if(this.question.matchColumns) {
+                    this.listLeftItems = this.question.matchColumns["Left"];
+                    this.listRightItems = this.question.matchColumns["Right"];
+                  }
+                  console.log(this.question.matchColumns);
                 }
               }
             }
@@ -211,6 +218,9 @@ export class AssessmentQuestionAddPage implements OnInit {
 
   generateBlobURL(columns: any, id) {
     return new Promise<any>((resolve, reject) => {
+      const cols = {};
+      const leftCol = [];
+      const rightCol = [];
       const fileData = [];
       columns['Left'].forEach((col, i) => {
         const file:File = col.file;
@@ -220,11 +230,22 @@ export class AssessmentQuestionAddPage implements OnInit {
           blobDataURL = `${blobDataURL}/${this.subjectName}/${id}`;
           blobDataURL = `${blobDataURL}/leftCol_${i}_${dateFormat(new Date())}.${fileExt}`;
           const blobData = blobUtil.dataURLToBlob(col.imagePath);
-          fileData.push(ContentHelper.blobToFile(blobData, blobDataURL));
-          col.imagePath = blobDataURL;
+          fileData.unshift(ContentHelper.blobToFile(blobData, blobDataURL));
+          leftCol.unshift( {
+            text: col.text,
+            imagePath: blobDataURL,
+            id: i + 1,
+          });
+        } else {
+          leftCol.unshift( {
+            text: col.text,
+            imagePath: col.isAzurePath? col.imagePath : '',
+            id: i + 1,
+          });
         }
       });
 
+      cols['Left'] = leftCol;
       columns['Right'].forEach((col, i) => {
         const file = col.file;
         if (file) {
@@ -233,11 +254,23 @@ export class AssessmentQuestionAddPage implements OnInit {
           blobDataURL = `${blobDataURL}/${this.subjectName}/${id}`;
           blobDataURL = `${blobDataURL}/rightCol_${i}_${dateFormat(new Date())}.${fileExt}`;
           const blobData = blobUtil.dataURLToBlob(col.imagePath);
-          fileData.push(ContentHelper.blobToFile(blobData, blobDataURL));
-          col.imagePath = blobDataURL;
+          fileData.unshift(ContentHelper.blobToFile(blobData, blobDataURL));
+          rightCol.unshift( {
+            text: col.text,
+            imagePath: blobDataURL,
+            id: i + 1,
+          });
+        } else {
+          rightCol.unshift( {
+            text: col.text,
+            imagePath: col.isAzurePath? col.imagePath : '',
+            id: i + 1,
+          });
         }
       });
-      resolve([fileData, columns]);
+
+      cols['Right'] = rightCol;
+      resolve([fileData, cols]);
     });
   }
 
