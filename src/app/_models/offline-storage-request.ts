@@ -4,5 +4,13 @@ export interface IStoredRequest {
     Type: string,
     Data: any,
     Time: number,
-    Id: string
+    Id: string,
+  }
+
+  export interface IStoredContentRequest {
+    tableName: string,
+    key: string,
+    contentURL: any,
+    contentType: string;
+    containerName: string;
   }

@@ -12,7 +12,7 @@ import { BlobStorageRequest } from '../../_services/azure-blob/azure-storage';
 import { SasGeneratorService } from '../../_services/azure-blob/sas-generator.service';
 import { BlobUploadsViewStateService } from '../azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../azure-blob/blob-shared-view-state.service';
-import { OfflineSyncURL } from 'src/app/_models';
+import { IStoredContentRequest, OfflineSyncURL } from 'src/app/_models';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +32,15 @@ export class CourseContentService extends OfflineService {
   }
 
   public SubmitCourseContent(courseContent: ICourseContent, file: File) {
+    const contentRequest = {
+      tableName: 'CourseContent',
+      key: courseContent.id,
+      contentURL: courseContent.courseURL,
+      contentType: courseContent.type,
+      containerName: 'coursecontent'
+    } as IStoredContentRequest;
+
+    courseContent.contentRequest = contentRequest;
     return forkJoin([this.UploadCourseFileContent(file), this.updateCourseAPI(courseContent)]);
   }
 
@@ -45,7 +54,7 @@ export class CourseContentService extends OfflineService {
   }
 
   private updateCourseAPI(courseContent) {
-    return this.http.Post<any>(OfflineSyncURL.CourseContent, courseContent);  
+    return this.http.Post<any>(OfflineSyncURL.CourseContent, courseContent);
   }
 
   private UploadCourseFileContent(courseFile: File) {
@@ -156,19 +165,19 @@ export class CourseContentService extends OfflineService {
     );
   }
 
-  public async  UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string, streamData?: string) {
+  public async UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string, streamData?: string) {
 
     const data = await this.GetOfflineData('CourseContent', 'course-content');
-   
+
     const courseContents = data ? data as ICourseContent[] : [];
     const courseContentList = courseContents.filter((cc) => {
-      return  cc.id !== (content ? content.id : contentId);
+      return cc.id !== (content ? content.id : contentId);
     });
     if (content) {
       courseContentList.unshift(content);
     }
     this.auth.currentUser.subscribe(async (currentUser) => {
-      currentUser.courseContent = [...courseContentList] ;
+      currentUser.courseContent = [...courseContentList];
       await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
 
       if (content.isOffline && streamData) {

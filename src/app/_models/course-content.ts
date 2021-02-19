@@ -1,3 +1,5 @@
+import { IStoredContentRequest } from "./offline-storage-request";
+
 export interface ICourseContent {
     id: string;
     schoolId: string;
@@ -14,6 +16,7 @@ export interface ICourseContent {
     isBlobUrl: boolean;
     isOffline: boolean;
     type: string;
+    contentRequest?: IStoredContentRequest;
 }
 
 export interface ICategoryWiseContent {
