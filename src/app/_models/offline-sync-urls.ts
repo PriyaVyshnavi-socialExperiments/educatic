@@ -3,7 +3,8 @@ export enum OfflineSyncURL {
     School = '/school',
     Teacher = '/teacher',
     Student = '/student',
-    ClassRoom = '/class-room'
+    ClassRoom = '/class-room',
+    CourseContent= '/content/create'
 }
 
 export class OfflineSync {

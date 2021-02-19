@@ -208,12 +208,12 @@ export class CoursesPage implements OnInit {
           text: 'Okay',
           handler: () => {
             course.active = false;
-            this.contentService.UpdateCourse(course, course.id).subscribe(() => {
+            this.contentService.deleteCourse(course).subscribe(async () => {
               this.presentToast('Course content delete successfully.', 'success');
-              setTimeout(() => {
+              await this.contentService.UpdateCourseContentOfflineList(undefined, course.id).then(() => {
                 this.refreshContent();
                 this.courseContentDisplay = false;
-              }, 10);
+              });
             });
           }
         }

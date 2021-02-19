@@ -1,6 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { concat, from, of } from 'rxjs';
+import { concat, forkJoin, from, of } from 'rxjs';
 import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
 import { ICourseContentDistribution } from '../../_models/course-content-distribution';
 import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
@@ -12,6 +12,7 @@ import { BlobStorageRequest } from '../../_services/azure-blob/azure-storage';
 import { SasGeneratorService } from '../../_services/azure-blob/sas-generator.service';
 import { BlobUploadsViewStateService } from '../azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../azure-blob/blob-shared-view-state.service';
+import { OfflineSyncURL } from 'src/app/_models';
 
 @Injectable({
   providedIn: 'root'
@@ -31,26 +32,20 @@ export class CourseContentService extends OfflineService {
   }
 
   public SubmitCourseContent(courseContent: ICourseContent, file: File) {
-    if (!courseContent.id) {
-      courseContent.id = Guid.create().toString();
-    }
-    return concat(this.UploadCourseFileContent(file), this.UpdateCourse(courseContent));
+    return forkJoin([this.UploadCourseFileContent(file), this.updateCourseAPI(courseContent)]);
   }
 
-  public UpdateCourse(courseContent: ICourseContent, contentId?: string) {
-    return this.http.Post<any>('/content/create', courseContent)
+  public deleteCourse(courseContent: ICourseContent) {
+    return this.updateCourseAPI(courseContent)
       .pipe(
         map(response => {
           return response;
-        }),
-        finalize(() => {
-          if(contentId) {
-            this.UpdateCourseContentOfflineList(undefined, contentId);
-          } else {
-            this.UpdateCourseContentOfflineList(courseContent);
-          }
         })
       );
+  }
+
+  private updateCourseAPI(courseContent) {
+    return this.http.Post<any>(OfflineSyncURL.CourseContent, courseContent);  
   }
 
   private UploadCourseFileContent(courseFile: File) {
@@ -176,7 +171,7 @@ export class CourseContentService extends OfflineService {
       currentUser.courseContent = [...courseContentList] ;
       await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
 
-      if (content.isOffline) {
+      if (content.isOffline && streamData) {
         await this.SetOfflineData('CourseContent', content.id, streamData);
       }
     });
