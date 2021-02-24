@@ -14,6 +14,7 @@ import { ContentOfflineService } from 'src/app/_services/content-offline/content
 import * as blobUtil from 'blob-util';
 import { HttpEventType } from '@angular/common/http';
 import { SpinnerVisibilityService } from 'ng-http-loader';
+import { removeSpecialSymbolSpace } from 'src/app/_helpers';
 
 @Component({
   selector: 'app-courses',
@@ -58,7 +59,8 @@ export class CoursesPage implements OnInit {
     this.title = 'Course content - ' + content[0].courseCategory;
     this.contentKey = key;
     if(!isChange) {
-      this.router.navigateByUrl(`/courses/${this.contentKey}`);
+      const param = removeSpecialSymbolSpace(this.contentKey);
+      this.router.navigateByUrl(`courses/${param}`, { state: { contentKey: this.contentKey } });
     }
    
   }
@@ -120,16 +122,19 @@ export class CoursesPage implements OnInit {
       if (user.role === Role.Student) {
         this.isStudent = true;
       }
+      this.courseContentDisplay = false;
       this.contentService.getOfflineCourseContents().subscribe((courseContent) => {
-        if (courseContent) {
+        if ( courseContent) {
           setTimeout(() => {
             this.contentService.GetCategoryWiseContent(courseContent).subscribe((groupResponse) => {
               let contents = Object.values(groupResponse.reverse());
-              this.contentKey = this.activatedRoute.snapshot.paramMap.get('key');
+              this.courseContent = history.state;
+              this.contentKey = history.state?.contentKey;
               this.displaySource = this.activatedRoute.snapshot.paramMap.get('device');
               const content = contents.find((value)=> value.key === this.contentKey);
               if(this.contentKey && this.displaySource === 'device') {
                 const contentData = content.content.filter((item) => item.isOffline)
+                this.courseContentDisplay = true;
                 this.ViewContent(contentData, this.contentKey, true);
               } else if(this.contentKey) {
                 this.courseContentDisplay = true;
@@ -247,10 +252,11 @@ export class CoursesPage implements OnInit {
   }
 
   public contentDisplayChanged(ev: any) {
+    const param = removeSpecialSymbolSpace(this.contentKey);
     if(ev.detail.value === 'cloud') {
-      this.router.navigateByUrl(`/courses/${this.contentKey}`);
+      this.router.navigateByUrl(`courses/${param}`, { state: { contentKey: this.contentKey } });
     } else {
-      this.router.navigateByUrl(`/courses/${this.contentKey}/device`);
+      this.router.navigateByUrl(`courses/${param}/device`, { state: { contentKey: this.contentKey } });
     }
   }
 
