@@ -1,13 +1,16 @@
 import { Injectable, Injector } from '@angular/core';
 import { Observable, from, of, forkJoin } from 'rxjs';
-import { switchMap, finalize } from 'rxjs/operators';
+import { switchMap, finalize, map } from 'rxjs/operators';
 import { ToastController } from '@ionic/angular';
-import { OfflineService } from '../offline/offline.service';
-import { IStoredRequest } from '../../_models';
+import * as blobUtil from 'blob-util';
 import { HttpClient, HttpRequest } from '@angular/common/http';
+
+import { OfflineService } from '../offline/offline.service';
+import { IStoredContentRequest, IStoredRequest } from '../../_models';
 import { environment } from '../../../environments/environment';
-
-
+import { BlobUploadsViewStateService } from '../azure-blob/blob-uploads-view-state.service';
+import { BlobSharedViewStateService } from '../azure-blob/blob-shared-view-state.service';
+import { ContentHelper } from '../../_helpers/content-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +20,9 @@ export class OfflineSyncManagerService extends OfflineService {
   constructor(
     private toastController: ToastController,
     private http: HttpClient,
-    public injector: Injector
+    public injector: Injector,
+    private blobUpload: BlobUploadsViewStateService,
+    private blobShared: BlobSharedViewStateService,
   ) {
     super(injector);
   }
@@ -65,16 +70,46 @@ export class OfflineSyncManagerService extends OfflineService {
   }
 
   private sendRequests(operations: IStoredRequest[]) {
-    const obs = [];
+    const operationsToSync = [];
 
-    for (const op of operations) {
-      console.log('Make one request: ', op);
-      const httpRequest = new HttpRequest(op.Type, environment.apiBaseUrl + op.URL, op.Data);
+    for (const operation of operations) {
+      const httpRequest = new HttpRequest(operation.Type, environment.apiBaseUrl + operation.URL, operation.Data);
       const oneObs = this.http.request(httpRequest);
-      obs.push(oneObs);
+      operationsToSync.push(oneObs);
+      if (operation.Data?.contentRequest) {
+        operationsToSync.push(this.storeContentRequest(operation.Data?.contentRequest));
+      }
     }
 
     // Send out all local events and return once they are finished
-    return forkJoin(obs);
+    return forkJoin(operationsToSync);
+  }
+
+  private storeContentRequest(contentDetails: IStoredContentRequest) {
+    return from(this.GetOfflineData(contentDetails.tableName, contentDetails.key)).pipe(
+      switchMap((storedContent) => {
+        const blobData = blobUtil.base64StringToBlob(storedContent, contentDetails.contentType);
+        const fileData = ContentHelper.blobToFile(blobData, contentDetails.contentURL);
+        return this.UploadFileContent(fileData, contentDetails.containerName)
+      })
+    );
+  }
+
+  public getOfflineContent(tableName: string, key: string) {
+    return from(this.GetOfflineData(tableName, key)).pipe(
+      map(response => {
+        if (response && response.length > 0) {
+          return response;
+        } else {
+          return of(false);
+        }
+      })
+    );
+  }
+
+  private UploadFileContent(contentFile: File, containerName: string) {
+    this.blobShared.setContainer$ = containerName;
+    this.blobShared.resetSasToken$ = true;
+    return this.blobUpload.uploadFile(contentFile);
   }
 }

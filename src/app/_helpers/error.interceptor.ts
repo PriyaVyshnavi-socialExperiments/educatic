@@ -5,11 +5,13 @@ import { catchError } from 'rxjs/operators';
 
 import { ApplicationInsightsService } from './application-insights';
 import { AuthenticationService } from '../_services/authentication/authentication.service';
+import { SpinnerVisibilityService } from 'ng-http-loader';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
     constructor(
         private authenticationService: AuthenticationService,
+        private spinner: SpinnerVisibilityService,
         private applicationInsights: ApplicationInsightsService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -22,6 +24,7 @@ export class ErrorInterceptor implements HttpInterceptor {
 
             this.applicationInsights.logException(err);
             const error = err.message || err.statusText;
+            this.spinner.hide();
             return throwError(error);
         }))
     }

@@ -1,6 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { concat, from, of } from 'rxjs';
+import { concat, forkJoin, from, of } from 'rxjs';
 import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
 import { ICourseContentDistribution } from '../../_models/course-content-distribution';
 import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
@@ -12,6 +12,7 @@ import { BlobStorageRequest } from '../../_services/azure-blob/azure-storage';
 import { SasGeneratorService } from '../../_services/azure-blob/sas-generator.service';
 import { BlobUploadsViewStateService } from '../azure-blob/blob-uploads-view-state.service';
 import { BlobSharedViewStateService } from '../azure-blob/blob-shared-view-state.service';
+import { IStoredContentRequest, OfflineSyncURL } from 'src/app/_models';
 
 @Injectable({
   providedIn: 'root'
@@ -31,26 +32,29 @@ export class CourseContentService extends OfflineService {
   }
 
   public SubmitCourseContent(courseContent: ICourseContent, file: File) {
-    if (!courseContent.id) {
-      courseContent.id = Guid.create().toString();
-    }
-    return concat(this.UploadCourseFileContent(file), this.UpdateCourse(courseContent));
+    const contentRequest = {
+      tableName: 'CourseContent',
+      key: courseContent.id,
+      contentURL: courseContent.courseURL,
+      contentType: courseContent.type,
+      containerName: 'coursecontent'
+    } as IStoredContentRequest;
+
+    courseContent.contentRequest = contentRequest;
+    return forkJoin([this.UploadCourseFileContent(file), this.updateCourseAPI(courseContent)]);
   }
 
-  public UpdateCourse(courseContent: ICourseContent, contentId?: string) {
-    return this.http.Post<any>('/content/create', courseContent)
+  public deleteCourse(courseContent: ICourseContent) {
+    return this.updateCourseAPI(courseContent)
       .pipe(
         map(response => {
           return response;
-        }),
-        finalize(() => {
-          if(contentId) {
-            this.UpdateCourseContentOfflineList(undefined, contentId);
-          } else {
-            this.UpdateCourseContentOfflineList(courseContent);
-          }
         })
       );
+  }
+
+  private updateCourseAPI(courseContent) {
+    return this.http.Post<any>(OfflineSyncURL.CourseContent, courseContent);
   }
 
   private UploadCourseFileContent(courseFile: File) {
@@ -161,22 +165,22 @@ export class CourseContentService extends OfflineService {
     );
   }
 
-  public async  UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string, streamData?: string) {
+  public async UpdateCourseContentOfflineList(content: ICourseContent, contentId?: string, streamData?: string) {
 
     const data = await this.GetOfflineData('CourseContent', 'course-content');
-   
+
     const courseContents = data ? data as ICourseContent[] : [];
     const courseContentList = courseContents.filter((cc) => {
-      return  cc.id !== (content ? content.id : contentId);
+      return cc.id !== (content ? content.id : contentId);
     });
     if (content) {
       courseContentList.unshift(content);
     }
     this.auth.currentUser.subscribe(async (currentUser) => {
-      currentUser.courseContent = [...courseContentList] ;
+      currentUser.courseContent = [...courseContentList];
       await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
 
-      if (content.isOffline) {
+      if (content.isOffline && streamData) {
         await this.SetOfflineData('CourseContent', content.id, streamData);
       }
     });
