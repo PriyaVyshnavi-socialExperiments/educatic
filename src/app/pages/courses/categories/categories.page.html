@@ -15,7 +15,18 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid class="grid">
+    <ion-grid style="height: 100%" *ngIf="!categoryWiseContent?.length">
+        <ion-row justify-content-center="justify-content-center" align-items-center="align-items-center" class="justify-center">
+            <div text-center="text-center">
+                <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+                <h4>No course content available!</h4>
+                <!-- <p>Looks like there are no classes available at this moment.
+                            </p> -->
+            </div>
+        </ion-row>
+    </ion-grid>
+
+  <ion-grid class="grid" *ngIf="categoryWiseContent?.length">
       <ion-row class="ion-justify-content-center">
           <ion-card class="item-card" *ngFor="let category of categoryWiseContent" (click)="ViewContent(category.content, category.key)">
               <ion-card-header>

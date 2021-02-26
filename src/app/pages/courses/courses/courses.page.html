@@ -22,20 +22,17 @@
 </ion-header>
 
 <ion-content>
-   
-
-    <ion-grid style="height: 100%" *ngIf="!courseContent.length">
-        <ion-row justify-content-center align-items-center class="justify-center">
-          <div text-center>
-            <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
-            <h4>No course content available!</h4>
-            <!-- <p>Looks like there are no classes available at this moment.
-            </p> -->
-          </div>
+    <ion-grid style="height: 100%" *ngIf="!courseContent?.length">
+        <ion-row justify-content-center="justify-content-center" align-items-center="align-items-center" class="justify-center">
+            <div text-center="text-center">
+                <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+                <h4>No course content available!</h4>
+                <!-- <p>Looks like there are no classes available at this moment.
+                            </p> -->
+            </div>
         </ion-row>
-      </ion-grid>
-
-    <ion-grid class="grid" *ngIf="courseContent.length">
+    </ion-grid>
+    <ion-grid class="grid" *ngIf="courseContent?.length">
         <ion-row class="ion-justify-content-center">
             <ion-card class="item-card level" *ngFor="let item of courseContent | categoryFilter | async">
                 <ion-item color="dark">

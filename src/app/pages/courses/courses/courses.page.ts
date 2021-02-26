@@ -133,6 +133,9 @@ export class CoursesPage implements OnInit {
         case 'enableOffline':
           this.downloadContentToOffline(content);
           break;
+        case 'disableOffline':
+          this.disableOffline([content]);
+          break;
         case 'share':
           this.ShareCourse(content.id);
           break;
@@ -189,12 +192,11 @@ export class CoursesPage implements OnInit {
 
     await alert.present();
   }
-   public downloadContentToOffline(content: ICourseContent) {
+  public downloadContentToOffline(content: ICourseContent) {
     content.saveProgress = 1;
     const onProgress = (event) => {
-      console.log(`You have download bytes: `, event);
       content.saveProgress = Math.round((100 * event.loaded) / event.total);
-      if(content.saveProgress === 100) {
+      if (content.saveProgress === 100) {
         content.isOffline = true;
         content.saveProgress = 0;
       }
@@ -216,6 +218,48 @@ export class CoursesPage implements OnInit {
       });
   }
 
+  public disableOffline(contents: ICourseContent[]) {
+    contents.forEach(content => {
+      content.isOffline = false;
+      this.contentService.UpdateCourseContentOfflineList(content, content.id).then(() => {
+        //this.refreshContent();
+      });
+    })
+  }
+
+  public bulkDownloadContentToOffline(contents: ICourseContent[]) {
+
+    contents = contents.filter(c => {
+      c.saveProgress = 1;
+      return c;
+    });
+
+    contents.forEach(content => {
+      const onProgress = (event) => {
+        content.saveProgress = Math.round((100 * event.loaded) / event.total);
+        if (content.saveProgress === 100) {
+          content.isOffline = true;
+          content.saveProgress = 0;
+        }
+      };
+
+      this.contentOfflineService.downloadContent(content, 'coursecontent', onProgress).subscribe(
+        (event) => {
+          if (event.type === HttpEventType.Response) {
+            const blob = event.body;
+            blobUtil.blobToBase64String(blob).then(streamData => {
+              return streamData;
+            }).then((streamData) => {
+              content.type = blob.type;
+              this.contentService.UpdateCourseContentOfflineList(content, content.id, streamData).then(() => {
+                //this.refreshContent();
+              });
+            })
+          }
+        });
+    });
+  }
+
   public contentDisplayChanged(ev: any) {
     if (ev.detail.value === 'cloud') {
       this.displaySource = 'cloud';
@@ -226,26 +270,16 @@ export class CoursesPage implements OnInit {
   }
 
   public async enableDisableBulkOffline(contents: ICourseContent[]) {
-   
+
     const anyOffline = contents.some((content) => {
       return content.isOffline === false;
     });
-    const toStatus = anyOffline ?'Enable' : 'Disable';
-
-    if(anyOffline) {
-      // contents.forEach(content => {
-      //   this.downloadContentToOffline(content);
-      // });
-      console.log("anyOffline: ", anyOffline);
-    // } else {
-    //   statusOffline = 'Disable';
-      console.log("No anyOffline: ", anyOffline);
-    }
+    const toStatus = anyOffline ? 'Enable' : 'Disable';
 
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
-      header: `${ toStatus } Offline Access`,
-      message: `Are you sure you want to ${ toStatus.toLowerCase() } offline access of all of your content?`,
+      header: `${toStatus} Offline Access`,
+      message: `Are you sure you want to ${toStatus.toLowerCase()} offline access of all of your content?`,
       buttons: [
         {
           text: 'Cancel',
@@ -254,24 +288,17 @@ export class CoursesPage implements OnInit {
         }, {
           text: 'Okay',
           handler: () => {
-           
+            if (anyOffline) {
+              this.bulkDownloadContentToOffline(contents);
+            } else {
+              this.disableOffline(contents);
+            }
           }
         }
       ]
     });
 
     await alert.present();
-    // const anyOffline = contents.some((content) => {
-    //   return content.isOffline === false;
-    // });
-    // if(anyOffline) {
-    //   contents.forEach(content => {
-    //     this.downloadContentToOffline(content);
-    //   });
-    //   console.log("anyOffline: ", anyOffline);
-    // } else {
-    //   console.log("No anyOffline: ", anyOffline);
-    // }
   }
 
   private async presentToast(msg, type) {
