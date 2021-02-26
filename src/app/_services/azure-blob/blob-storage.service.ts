@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@angular/core';
 import { TransferProgressEvent } from '@azure/core-http';
 import { PagedAsyncIterableIterator } from '@azure/core-paging';
 import { BlockBlobClient } from '@azure/storage-blob';
-import { from, Observable, Subscriber } from 'rxjs';
-import { distinctUntilChanged, scan, startWith } from 'rxjs/operators';
+import { forkJoin, from, Observable, Subscriber } from 'rxjs';
+import { distinctUntilChanged, map, scan, startWith, tap } from 'rxjs/operators';
 import {
   BlobContainerRequest,
   BlobFileRequest,
@@ -31,9 +31,17 @@ export class BlobStorageService {
     return this.asyncToObservable(containerClient.listBlobsFlat());
   }
 
-  downloadBlobItem(request: BlobFileRequest) {
+  downloadBlobItem(request: BlobFileRequest, callback?: any) {
     const blockBlobClient = this.getBlockBlobClient(request);
-    return from(blockBlobClient.download());
+    let contentLength =  0;
+    blockBlobClient.getProperties().then((p) => {
+      contentLength = p.contentLength;
+    })
+    return from(blockBlobClient.download(0, contentLength, {
+      onProgress: (progress) => {
+        callback({loaded: progress.loadedBytes, total: contentLength});
+      },
+    }));
   }
 
   deleteBlobItem(request: BlobFileRequest) {

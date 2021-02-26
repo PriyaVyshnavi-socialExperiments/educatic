@@ -15,6 +15,13 @@
     }
 }
 
+.justify-center {
+    height         : 100%;
+    flex-direction : column;
+    text-align     : center;
+    justify-content: center;
+}
+
 
 .ion-img-viewer {
     --ion-header {

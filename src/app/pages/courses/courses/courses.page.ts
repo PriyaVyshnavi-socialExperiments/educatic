@@ -13,7 +13,6 @@ import { ActionPopoverPage } from 'src/app/components/action-popover/action-popo
 import { ContentOfflineService } from 'src/app/_services/content-offline/content-offline.service';
 import * as blobUtil from 'blob-util';
 import { HttpEventType } from '@angular/common/http';
-import { SpinnerVisibilityService } from 'ng-http-loader';
 import { removeSpecialSymbolSpace } from 'src/app/_helpers';
 
 @Component({
@@ -27,11 +26,10 @@ export class CoursesPage implements OnInit {
   categoryWiseContent: ICategoryContentList[];
   levelWiseContent: ICategoryContentList[];
   categoryList: ICourseContentCategory[] = [];
-  courseContentDisplay = false;
   isStudent = false;
   title = '';
   contentKey: string = '';
-  displaySource: string = '';
+  displaySource: string = 'cloud';
 
   constructor(
     private modalController: ModalController,
@@ -43,31 +41,16 @@ export class CoursesPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private popoverController: PopoverController,
     public contentOfflineService: ContentOfflineService,
-    private spinner: SpinnerVisibilityService,
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ionViewDidEnter() {
     this.refreshContent();
   }
 
-
-  public ViewContent(content: ICourseContent[], key: string, isChange?: boolean) {
-    this.courseContent = [...content];
-    this.courseContentDisplay = true;
-    this.title = 'Course content - ' + content[0].courseCategory;
-    this.contentKey = key;
-    if(!isChange) {
-      const param = removeSpecialSymbolSpace(this.contentKey);
-      this.router.navigateByUrl(`courses/${param}`, { state: { contentKey: this.contentKey } });
-    }
-   
-  }
-
   public dismissModal() {
     this.courseContent = [];
-    this.courseContentDisplay = false; 
     this.router.navigateByUrl(`/courses`);
   }
 
@@ -79,14 +62,6 @@ export class CoursesPage implements OnInit {
         componentProps: { contentId }
       });
     await modal.present();
-  }
-
-  courseAdd() {
-    this.categoryList = this.categoryWiseContent.map((cat, index) => {
-      return { id: index.toString(), name: cat.key } as ICourseContentCategory;
-    })
-
-    this.router.navigateByUrl('/course/add', { state: this.categoryList });
   }
 
   ContentViewer(content: ICourseContent) {
@@ -101,17 +76,13 @@ export class CoursesPage implements OnInit {
           const blob = blobUtil.base64StringToBlob(data, content.type);
           this.openViewer(window.URL.createObjectURL(blob), content);
         })
-       
+
       } else {
         this.contentService.GetAzureContentURL(content.courseURL).subscribe((url) => {
           this.openViewer(url, content);
         })
       }
     }
-  }
-
-  TakeAssessment(content: ICourseContent) {
-    this.router.navigateByUrl(`assessment/${content.id}`, { state: content });
   }
 
   refreshContent() {
@@ -122,33 +93,25 @@ export class CoursesPage implements OnInit {
       if (user.role === Role.Student) {
         this.isStudent = true;
       }
-      this.courseContentDisplay = false;
       this.contentService.getOfflineCourseContents().subscribe((courseContent) => {
-        if ( courseContent) {
+        if (courseContent) {
           setTimeout(() => {
             this.contentService.GetCategoryWiseContent(courseContent).subscribe((groupResponse) => {
               let contents = Object.values(groupResponse.reverse());
-              this.courseContent = history.state;
-              this.contentKey = history.state?.contentKey;
-              this.displaySource = this.activatedRoute.snapshot.paramMap.get('device');
-              const content = contents.find((value)=> value.key === this.contentKey);
-              if(this.contentKey && this.displaySource === 'device') {
+              this.contentKey = this.activatedRoute.snapshot.paramMap.get('key');
+              const content = contents.find((value) => value.key === this.contentKey);
+              if (this.contentKey && this.displaySource === 'device') {
                 const contentData = content.content.filter((item) => item.isOffline)
-                this.courseContentDisplay = true;
-                this.ViewContent(contentData, this.contentKey, true);
-              } else if(this.contentKey) {
-                this.courseContentDisplay = true;
-                this.ViewContent(content.content, this.contentKey);
-              } else {
-                this.categoryWiseContent = [...contents];
+                this.courseContent = [...contentData];
+              } else if (this.contentKey) {
+                this.displaySource = 'cloud';
+                this.courseContent = [...content.content];
               }
             });
-          }, 10);
+          }, 1);
         }
       })
     });
-
-
   }
 
   public async actionPopover(ev: any, content) {
@@ -217,7 +180,6 @@ export class CoursesPage implements OnInit {
               this.presentToast('Course content delete successfully.', 'success');
               await this.contentService.UpdateCourseContentOfflineList(undefined, course.id).then(() => {
                 this.refreshContent();
-                this.courseContentDisplay = false;
               });
             });
           }
@@ -227,37 +189,89 @@ export class CoursesPage implements OnInit {
 
     await alert.present();
   }
+   public downloadContentToOffline(content: ICourseContent) {
+    content.saveProgress = 1;
+    const onProgress = (event) => {
+      console.log(`You have download bytes: `, event);
+      content.saveProgress = Math.round((100 * event.loaded) / event.total);
+      if(content.saveProgress === 100) {
+        content.isOffline = true;
+        content.saveProgress = 0;
+      }
+    };
 
-  public downloadContentToOffline(content) {
-    this.contentOfflineService.downloadContent(content, 'coursecontent').subscribe(
+    this.contentOfflineService.downloadContent(content, 'coursecontent', onProgress).subscribe(
       (event) => {
-        console.log("Event: ", event);
-        if (event.type === HttpEventType.DownloadProgress) {
-          this.spinner.show();
-        }
         if (event.type === HttpEventType.Response) {
-          this.spinner.hide();
           const blob = event.body;
           blobUtil.blobToBase64String(blob).then(streamData => {
-            content.isOffline = true;
-            content.type = blob.type;
             return streamData;
           }).then((streamData) => {
-              this.contentService.UpdateCourseContentOfflineList(content, content.id, streamData).then(() => {
-                this.refreshContent();
-              });
-            })
+            content.type = blob.type;
+            this.contentService.UpdateCourseContentOfflineList(content, content.id, streamData).then(() => {
+              //this.refreshContent();
+            });
+          })
         }
       });
   }
 
   public contentDisplayChanged(ev: any) {
-    const param = removeSpecialSymbolSpace(this.contentKey);
-    if(ev.detail.value === 'cloud') {
-      this.router.navigateByUrl(`courses/${param}`, { state: { contentKey: this.contentKey } });
+    if (ev.detail.value === 'cloud') {
+      this.displaySource = 'cloud';
     } else {
-      this.router.navigateByUrl(`courses/${param}/device`, { state: { contentKey: this.contentKey } });
+      this.displaySource = 'device';
     }
+    this.refreshContent();
+  }
+
+  public async enableDisableBulkOffline(contents: ICourseContent[]) {
+   
+    const anyOffline = contents.some((content) => {
+      return content.isOffline === false;
+    });
+    const toStatus = anyOffline ?'Enable' : 'Disable';
+
+    if(anyOffline) {
+      // contents.forEach(content => {
+      //   this.downloadContentToOffline(content);
+      // });
+      console.log("anyOffline: ", anyOffline);
+    // } else {
+    //   statusOffline = 'Disable';
+      console.log("No anyOffline: ", anyOffline);
+    }
+
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: `${ toStatus } Offline Access`,
+      message: `Are you sure you want to ${ toStatus.toLowerCase() } offline access of all of your content?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+        }, {
+          text: 'Okay',
+          handler: () => {
+           
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+    // const anyOffline = contents.some((content) => {
+    //   return content.isOffline === false;
+    // });
+    // if(anyOffline) {
+    //   contents.forEach(content => {
+    //     this.downloadContentToOffline(content);
+    //   });
+    //   console.log("anyOffline: ", anyOffline);
+    // } else {
+    //   console.log("No anyOffline: ", anyOffline);
+    // }
   }
 
   private async presentToast(msg, type) {
