@@ -24,6 +24,8 @@ export class AssessmentPage implements OnInit {
   isNext = false;
   currentUser: IUser;
   isSortAllow = true;
+  ansAttempts = 1;
+
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -61,7 +63,7 @@ export class AssessmentPage implements OnInit {
 
   validateAnswerColor(selectedOption, option, question: IQuestion) {
     selectedOption = selectedOption?.value?.option;
-    return selectedOption === option && selectedOption === question.optionAnswer? 'success' : '';
+    return selectedOption === option && selectedOption === question.optionAnswer ? 'success' : '';
   }
 
   shortAnswerText(shortAnswer: any, questionId: string) {
@@ -112,23 +114,24 @@ export class AssessmentPage implements OnInit {
 
   onRenderItems(event: CustomEvent<ItemReorderEventDetail>, question) {
     const matchColumns = question.matchColumns;
-    // matchColumns["Right"] = event.detail.complete(matchColumns["Right"]);
     let draggedItem = matchColumns["Right"].splice(event.detail.from, 1)[0];
     matchColumns["Right"].splice(event.detail.to, 0, draggedItem)
-    // matchColumns["Right"] = this.reorderItems(matchColumns["Right"], event.detail.from, event.detail.to);
     event.detail.complete();
     let allMatched = true;
     matchColumns["Right"].forEach((item, index) => {
-      if(item.id === matchColumns["Left"][index].id) {
+      if (item.id === matchColumns["Left"][index].id) {
         item.validCSS = "validCSS";
       } else {
         item.validCSS = "inValidCSS";
         allMatched = false;
       }
     });
-    if(allMatched) {
-      this.UpdateAnswer(question.id, 0, 'allMatched');
+    if (allMatched) {
+      this.UpdateAnswer(question.id, 0, 'allMatched', this.ansAttempts);
       this.isNext = allMatched;
+      this.ansAttempts = 1;
+    } else {
+      this.ansAttempts = this.ansAttempts + 1;
     }
     this.isSortAllow = false;
   }
@@ -155,11 +158,11 @@ export class AssessmentPage implements OnInit {
     toast.present();
   }
 
-  private UpdateAnswer(questionId: string, optionAnswer?: number, shortAnswer?: string) {
+  private UpdateAnswer(questionId: string, optionAnswer?: number, shortAnswer?: string, ansAttempts = 1) {
     const answer = {
       optionAnswer,
       questionId,
-      attempts: 1,
+      attempts: ansAttempts,
       shortAnswer,
     } as IAnswer;
     const index = this.assessmentAnswers.findIndex((f: IAnswer) => answer.questionId === f.questionId);

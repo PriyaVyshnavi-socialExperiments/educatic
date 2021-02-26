@@ -11,6 +11,7 @@ import { QuestionType } from 'src/app/_models/question-type';
 import { AuthenticationService } from 'src/app/_services';
 import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
 import { dateFormat } from 'src/app/_helpers';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-assessment-question-add',
@@ -360,7 +361,9 @@ export class AssessmentQuestionAddPage implements OnInit {
       this.imageUploadFor = "LeftOption";
       this.fileInput.nativeElement.click();
     } else {
-      this.addCol(this.f.leftColValue, this.listLeftItems);
+      if(this.f.leftColValue.value) {
+        this.addCol(this.f.leftColValue, this.listLeftItems);
+      }
     }
   }
 
@@ -369,7 +372,9 @@ export class AssessmentQuestionAddPage implements OnInit {
       this.imageUploadFor = "RightOption";
       this.fileInput.nativeElement.click();
     } else {
-      this.addCol(this.f.rightColValue, this.listRightItems);
+      if(this.f.rightColValue.value) {
+        this.addCol(this.f.rightColValue, this.listRightItems);
+      }
     }
   }
 
