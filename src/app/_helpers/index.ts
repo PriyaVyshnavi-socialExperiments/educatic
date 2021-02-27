@@ -19,3 +19,8 @@ export const dateFormat = (date) => {
     const randomNumber = Math.floor(Math.random()*90) + 100;;
     return `${randomNumber}_${day}-${month}-${year}`;
 }
+
+export const removeSpecialSymbolSpace = (inputString: string) => {
+    return inputString.replace(/[^A-Z0-9]/ig, "");
+}
+

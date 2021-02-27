@@ -16,6 +16,7 @@ import { CourseContentService } from '../../../_services/course-content/course-c
 import { CourseCategoryPage } from '../course-category/course-category.page';
 import { dateFormat } from 'src/app/_helpers';
 import { SpinnerVisibilityService } from 'ng-http-loader';
+import { Guid } from 'guid-typescript';
 
 const { Camera } = Plugins;
 
@@ -92,12 +93,12 @@ export class CourseAddPage implements OnInit {
               return { id: (++index).toString(), name: item.courseLevel } as ICourseContentCategory;
             });
             courseLevels = [...courseLevels, ...levels];
-            });
-            courseLevels = [...new Map(courseLevels.map(item => [item.name, item])).values()];
+          });
+          courseLevels = [...new Map(courseLevels.map(item => [item.name, item])).values()];
 
-            this.courseLevel = courseLevels.filter(function (el) {
-              return el.name !== null && el.name !== '';
-            });
+          this.courseLevel = courseLevels.filter(function (el) {
+            return el.name !== null && el.name !== '';
+          });
         });
       }
     });
@@ -131,13 +132,13 @@ export class CourseAddPage implements OnInit {
 
     // Only allow file selection inside a browser
     //if (!this.plt.is('hybrid')) {
-      buttons.push({
-        text: 'Choose a File',
-        icon: 'attach',
-        handler: () => {
-          this.fileInput.nativeElement.click();
-        }
-      });
+    buttons.push({
+      text: 'Choose a File',
+      icon: 'attach',
+      handler: () => {
+        this.fileInput.nativeElement.click();
+      }
+    });
     //}
 
     const actionSheet = await this.actionSheetCtrl.create({
@@ -185,6 +186,10 @@ export class CourseAddPage implements OnInit {
       schoolId: this.currentUser.defaultSchool.id,
     } as ICourseContent;
 
+    if (!courseContent.id) {
+      courseContent.id = Guid.create().toString();
+    }
+
     let blobDataURL = `${courseContent.courseCategory.split(' ').join('')}`;
     const level = courseContent.courseLevel?.length ? courseContent.courseLevel.split(' ').join('') : '';
     if (level?.length) {
@@ -197,14 +202,22 @@ export class CourseAddPage implements OnInit {
       blobDataURL = `${blobDataURL}_${dateFormat(new Date())}.${cameraImage.format}`;
       file = ContentHelper.blobToFile(blobData, blobDataURL);
       courseContent.courseURL = blobDataURL;
-      this.contentService.SubmitCourseContent(courseContent, file).subscribe((res) => {
-        if (res['message']) {
-          this.presentToast(res['message'], 'success');
-          this.router.navigateByUrl(`courses`);
-        } else {
-          this.progress = res['progress'];
-        }
-      });
+      this.contentService.SubmitCourseContent(courseContent, file).subscribe(
+        (res) => {
+          if (res['message']) {
+            this.presentToast(res['message'], 'success');
+            this.router.navigateByUrl(`courses`);
+          } else {
+            this.progress = res['progress'];
+          }
+        },
+        (err) => {
+          courseContent.isOffline = true;
+          this.updateOffline(courseContent, blobData);
+        },
+        () => {
+          this.updateOffline(courseContent);
+        });
     } else {
       const fileExt = file.type.split('/').pop();
       blobDataURL = `${blobDataURL}_${dateFormat(new Date())}.${fileExt}`;
@@ -220,7 +233,14 @@ export class CourseAddPage implements OnInit {
           } else {
             this.progress = res['progress'];
           }
-        });
+        },
+          (err) => {
+            courseContent.isOffline = true;
+            this.updateOffline(courseContent, blobData);
+          },
+          () => {
+            this.updateOffline(courseContent);
+          });
       });
     }
 
@@ -232,6 +252,16 @@ export class CourseAddPage implements OnInit {
 
   get f() {
     return this.courseForm.controls
+  }
+
+  updateOffline(courseContent: ICourseContent, blobData?: any) {
+    if (courseContent.isOffline && blobData) {
+      blobUtil.blobToBase64String(blobData).then((streamData) => {
+        this.contentService.UpdateCourseContentOfflineList(courseContent, courseContent.id, streamData);
+      })
+    } else {
+      this.contentService.UpdateCourseContentOfflineList(courseContent);
+    }
   }
 
   public async AddNewCategory() {
@@ -277,24 +307,6 @@ export class CourseAddPage implements OnInit {
       });
     await modal.present();
   }
-
-  // SubmitCourse() {
-  //   if (this.courseForm.invalid && !this.fileName) {
-  //     return;
-  //   }
-
-  //   const courseContent = {
-  //     courseCategory: this.f.courseCategory.value,
-  //     courseLevel: this.f.courseLevel.value,
-  //     courseName: this.f.courseName.value,
-  //     courseDescription: this.f.courseDescription.value,
-  //     courseURL: this.filepicker.blobFileName + '/' + this.fileName,
-  //     schoolId: this.currentUser.defaultSchool.id,
-  //   } as ICourseContent;
-  //   this.contentService.SubmitCourseContent(courseContent).subscribe((res) => {
-  //   });
-
-  // }
 
   onChangeCategory(category) {
     this.filepicker.blobFileName = category.value;
