@@ -28,7 +28,8 @@ import { SasGeneratorService } from './sas-generator.service';
 })
 export class BlobSharedViewStateService {
   private selectedContainerInner$ = new BehaviorSubject<string>(undefined);
-  private sasToken$ = new Subject<BlobStorageRequest>();
+  // CHANGED THIS FROM SUBJECT TO BEHVAVIORSUBJECT 
+  private sasToken$ = new BehaviorSubject<BlobStorageRequest>(undefined);
 
   containers$ = this.getStorageOptions().pipe(
     switchMap(options => this.blobStorage.getContainers(options))
@@ -59,6 +60,19 @@ export class BlobSharedViewStateService {
   set resetSasToken$(isReset: boolean) {
     if (isReset) {
       this.sasGenerator.getSasToken(this.selectedContainerInner$.value).subscribe((token) => {
+        this.sasToken$.next(token);
+      })
+    } else {
+      this.sasToken$.next(undefined);
+    }
+  }
+
+  /*
+    Specific for offline websites
+  */
+  set resetOfflineWebsitesSasToken$(isReset: boolean) {
+    if (isReset) {
+      this.sasGenerator.getOfflineWebsitesSASToken().subscribe((token) => {
         this.sasToken$.next(token);
       })
     } else {

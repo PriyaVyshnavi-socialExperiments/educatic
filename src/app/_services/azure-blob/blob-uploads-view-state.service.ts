@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, OperatorFunction, Subject } from 'rxjs';
+import { from, OperatorFunction, BehaviorSubject } from 'rxjs';
 import { map, mergeMap, startWith, switchMap, tap, take } from 'rxjs/operators';
 import { BlobContainerRequest, BlobItemUpload } from './azure-storage';
 import { BlobSharedViewStateService } from './blob-shared-view-state.service';
@@ -20,7 +20,8 @@ export class BlobUploadsViewStateService {
     private blobStorage: BlobStorageService,
     private blobState: BlobSharedViewStateService
   ) {}
-  private uploadQueueInner$ = new Subject<FileList>();
+  // CHANGED TO BEHAVIOR SUBJECT
+  private uploadQueueInner$ = new BehaviorSubject<FileList>(undefined);
 
   uploadedItems$ = this.uploadQueue$.pipe(
     mergeMap(file => this.uploadFile(file)),
@@ -30,6 +31,13 @@ export class BlobUploadsViewStateService {
   uploadItems(files: FileList): void {
     this.uploadQueueInner$.next(files);
   }
+
+
+  // For uploading offline website director and preserving directory structure 
+  uploadedOfflineWebsite$ = this.uploadQueue$.pipe(
+    mergeMap(file => this.uploadFile(file, (file as any).webkitRelativePath)),
+    this.blobState.scanEntries()
+  );
 
   public uploadFile = (file: File, fileName?: string) =>
     this.blobState.getStorageOptionsWithContainer().pipe(

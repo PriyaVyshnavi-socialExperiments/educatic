@@ -8,7 +8,7 @@ export const environment = {
   // apiBaseUrl : 'http://localhost:7071/api',
   apiBaseUrl : 'https://goofflinee.azurewebsites.net/api',
   blobURL: 'https://goofflinee.blob.core.windows.net',
-  offlineWebsiteURL: 'https://goofflinee.azureedge.net',
+  offlineWebsiteURL: 'https://gooffline.azureedge.net',
   appInsightsKey: '3e02a970-cb6e-4b40-85f7-657a6171d65a',
   bingMapsKey: 'ApayHvJCBIGX2ZEs_Nf4CHxcIebub7SLR8loVBR286OXyIqdSAExGKR1YOrS2P2U',
   sqlLiteDBName: 'goOfflineE',

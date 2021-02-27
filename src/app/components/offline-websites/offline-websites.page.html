@@ -10,6 +10,7 @@
 <ion-content>
   <ion-grid class="grid">
     <ion-row class="ion-justify-content-center">
+      <input type="file" #fileInput (change)="UploadOffLineWebsiteFile($event)" webkitdirectory/>
   <ion-card class="item-card" (click)="openWebContent(website.url)" *ngFor="let website of offlineWebsites">
     <img src="{{website.img}}" alt="assets/images/educate.jpg">
     <ion-card-header>
