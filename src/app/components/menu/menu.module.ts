@@ -125,7 +125,7 @@ const routes: Routes = [
       },
       {
         path: 'courses',
-        loadChildren: () => import('../../pages/courses/courses/courses.module').then(m => m.CoursesPageModule),
+        loadChildren: () => import('../../pages/courses/categories/categories.module').then( m => m.CategoriesPageModule),
         data: { roles: [Role.SuperAdmin, Role.SchoolSuperAdmin, Role.Teacher, Role.Student] }
       },
       {

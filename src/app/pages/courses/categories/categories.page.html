@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar>
+      <ion-title>
+          Course subjects
+      </ion-title>
+      <ion-buttons slot="start">
+          <ion-menu-button autoHide="true"></ion-menu-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+          <ion-button *ngIf="!isStudent" ion-button="ion-button" block="block" (click)="courseAdd()">Add Course
+          </ion-button>
+        
+      </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-grid style="height: 100%" *ngIf="!categoryWiseContent?.length">
+        <ion-row justify-content-center="justify-content-center" align-items-center="align-items-center" class="justify-center">
+            <div text-center="text-center">
+                <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+                <h4>No course content available!</h4>
+                <!-- <p>Looks like there are no classes available at this moment.
+                            </p> -->
+            </div>
+        </ion-row>
+    </ion-grid>
+
+  <ion-grid class="grid" *ngIf="categoryWiseContent?.length">
+      <ion-row class="ion-justify-content-center">
+          <ion-card class="item-card" *ngFor="let category of categoryWiseContent" (click)="ViewContent(category.content, category.key)">
+              <ion-card-header>
+                  <ion-card-subtitle>Subject</ion-card-subtitle>
+                  <ion-card-title>{{category.key | titlecase}}</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                  {{category.length}}
+                  Courses
+              </ion-card-content>
+              <ion-footer>
+                  <ion-button class="float-right" expand="block" fill="clear" (click)="ViewContent(category.content, category.key)">
+                      Take a look >>
+                  </ion-button>
+              </ion-footer>
+          </ion-card>
+      </ion-row>
+  </ion-grid>
+</ion-content>

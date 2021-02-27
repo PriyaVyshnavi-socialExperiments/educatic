@@ -14,7 +14,7 @@ import { ICourseContentCategory } from '../../../_models/course-content-category
 import { FilePicker } from '../../../_services/azure-blob/file-picker.service';
 import { CourseContentService } from '../../../_services/course-content/course-content.service';
 import { CourseCategoryPage } from '../course-category/course-category.page';
-import { dateFormat } from 'src/app/_helpers';
+import { dateFormat, removeSpecialSymbolSpace } from 'src/app/_helpers';
 import { SpinnerVisibilityService } from 'ng-http-loader';
 import { Guid } from 'guid-typescript';
 
@@ -178,7 +178,8 @@ export class CourseAddPage implements OnInit {
     }
     this.spinner.show();
     const courseContent = {
-      courseCategory: this.f.courseCategory.value,
+      courseCategory: removeSpecialSymbolSpace(this.f.courseCategory.value),
+      categoryName: this.f.courseCategory.value,
       courseLevel: this.f.courseLevel.value,
       courseName: this.f.courseName.value,
       courseDescription: this.f.courseDescription.value,

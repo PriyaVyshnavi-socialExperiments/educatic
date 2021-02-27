@@ -8,6 +8,7 @@ export interface ICourseContent {
     courseURL: string;
     thumbnailURL: string;
     courseCategory: string;
+    categoryName: string;
     courseLevel: string;
     courseAssessment: string;
     isTokenRequired: boolean;
@@ -16,6 +17,7 @@ export interface ICourseContent {
     isBlobUrl: boolean;
     isOffline: boolean;
     type: string;
+    saveProgress: number;
     contentRequest?: IStoredContentRequest;
 }
 
@@ -28,4 +30,5 @@ export interface ICategoryContentList {
     content: ICourseContent[];
     length: number,
     level: boolean,
+    isOffline?: boolean
 }

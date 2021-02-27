@@ -1,0 +1,24 @@
+
+.grid {
+    .grid-items {
+        margin-bottom: 20px;
+    }
+
+    .item-card {
+        cursor: pointer;
+        height: 100%;
+        width: 300px;
+    }
+
+    .level {
+        width: 100% !important;
+    }
+}
+
+
+.justify-center {
+    height         : 100%;
+    flex-direction : column;
+    text-align     : center;
+    justify-content: center;
+}

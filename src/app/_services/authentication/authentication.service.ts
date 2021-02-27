@@ -1,6 +1,6 @@
 ﻿import { Injectable, Injector } from '@angular/core';
 import { BehaviorSubject, forkJoin, from, Observable, ReplaySubject } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 
 import { IUser, LoginRequest, StudentLoginRequest, ISchool, OfflineSync, Role, INotificationToken } from '../../_models';
 import { ApplicationInsightsService } from '../../_helpers/application-insights';
@@ -9,7 +9,9 @@ import { HttpService } from '../http-client/http.client';
 import { IResetPassword } from 'src/app/_models/reset-password';
 import { CountryStateCityService } from '../country-state-city/country-state-city.service';
 import { NavMenuService } from '../nav-menu/nav-menu.service';
+import { removeSpecialSymbolSpace } from 'src/app/_helpers';
 @Injectable({ providedIn: 'root' })
+
 export class AuthenticationService extends OfflineService {
 
     /**
@@ -138,7 +140,15 @@ export class AuthenticationService extends OfflineService {
     }
 
     private async CourseContentOfflineSave(courseContentList) {
-        await this.SetOfflineData('CourseContent', 'course-content', courseContentList);
+        if (courseContentList.length) {
+            const courseContents = [];
+            courseContentList.filter((content) => {
+                content.categoryName = content.courseCategory;
+                content.courseCategory = removeSpecialSymbolSpace(content.courseCategory);
+                courseContents.unshift(content);
+            })
+            await this.SetOfflineData('CourseContent', 'course-content', courseContents);
+        }
     }
 
     private SyncOfflineData() {
