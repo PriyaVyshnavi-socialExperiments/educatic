@@ -96,67 +96,18 @@ export class OfflineWebsitesAddPage implements OnInit {
     toast.present();
   }
 
-  UploadWebsiteContent( file: File = null) {
-    if (this.websiteForm.invalid) {
-      return;
-    }
-    this.spinner.show();
-
-    // do we need this?
-     /* const courseContent = {
-      courseCategory: this.f.courseCategory.value,
-      courseLevel: this.f.courseLevel.value,
-      courseName: this.f.courseName.value,
-      courseDescription: this.f.courseDescription.value,
-      courseAssessment: this.f.courseAssessment.value,
-      schoolId: this.currentUser.defaultSchool.id,
-    } as ICourseContent; */
-
-    /*let blobDataURL = `${courseContent.courseCategory.split(' ').join('')}`;
-    const level = courseContent.courseLevel?.length ? courseContent.courseLevel.split(' ').join('') : '';
-    if (level?.length) {
-      blobDataURL = `${blobDataURL}/${level}`;
-    }
-    blobDataURL = blobDataURL + `/${courseContent.courseName}`;
-*/
-    if (file) {
-     // const fileExt = file.type.split('/').pop();
-     // blobDataURL = `${blobDataURL}_${dateFormat(new Date())}.${fileExt}`;
-     // courseContent.courseURL = blobDataURL;
-      file.arrayBuffer().then((buffer) => {
-        const blobData = blobUtil.arrayBufferToBlob(buffer);
-        const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
-        courseContent.courseURL = blobDataURL;
-
-        this.contentService.SubmitCourseContent(courseContent, fileData).subscribe((res) => {
-          if (res['message']) {
-            this.presentToast(res['message'], 'success');
-            this.router.navigateByUrl(`courses`);
-          } else {
-            this.progress = res['progress'];
-          }
-        });
-      });
-    }
-
-  }
-  get f() {
-    return this.websiteForm.controls
-  }
 }
-
-
-export interface IWebsiteContent {
-  id: string;
-  schoolId: string;
-  websiteName: string;
-  websiteDescription: string;
-  websiteURL: string;
-  thumbnailURL: string;
-  uploadedBy: string;
-  active: boolean;
-  isBlobUrl: boolean; //? not sure
-}
+// export interface IWebsiteContent {
+//   id: string;
+//   schoolId: string;
+//   websiteName: string;
+//   websiteDescription: string;
+//   websiteURL: string;
+//   thumbnailURL: string;
+//   uploadedBy: string;
+//   active: boolean;
+//   isBlobUrl: boolean; //? not sure
+// }
 
 
 
