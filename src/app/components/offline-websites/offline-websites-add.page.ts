@@ -4,7 +4,6 @@ import { FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } f
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActionSheetController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { FilePickerComponent, ValidationError } from 'ngx-awesome-uploader';
-import { Plugins, CameraResultType, CameraSource, CameraPhoto } from '@capacitor/core';
 import * as blobUtil from 'blob-util';
 
 import { ContentHelper } from 'src/app/_helpers/content-helper';
@@ -15,12 +14,10 @@ import { AuthenticationService } from 'src/app/_services/authentication/authenti
 //import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
 //import { ICourseContentCategory } from '../../../_models/course-content-category';
 import { FilePicker } from '../../_services/azure-blob/file-picker.service';
-//import { CourseContentService } from '../../_services/course-content/course-content.service';
+import { OfflineWebsiteService } from '../../_services/offline-websites/offline-websites.service';
 //import { CourseCategoryPage } from '../course-category/course-category.page'; 
 import { dateFormat } from 'src/app/_helpers';
 import { SpinnerVisibilityService } from 'ng-http-loader';
-
-const { Camera } = Plugins;
 
 @Component({
   selector: 'app-offline-websites-add',
@@ -49,7 +46,7 @@ export class OfflineWebsitesAddPage implements OnInit {
     public filepicker: FilePicker,
     private formBuilder: FormBuilder,
     private modalController: ModalController,
-    //private contentService: CourseContentService,
+    private offlineService: OfflineWebsiteService,
     private authService: AuthenticationService,
     private toastController: ToastController,
     private spinner: SpinnerVisibilityService,
@@ -71,7 +68,24 @@ export class OfflineWebsitesAddPage implements OnInit {
     });
     this.contentHelper = ContentHelper;
   }
+  UploadOffLineWebsiteFile(event: EventTarget) {
+    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
+    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
+    const files: FileList = target.files;
+    console.log(files);
+    this.spinner.show();
+    this.offlineService.SubmitCourseContent(files).subscribe((res) => {
+      this.presentToast("Finished Uploading","green" ); 
+    });
+    // let blobDataURL = file.name;
+    // file.arrayBuffer().then((buffer) => {
+    //   const blobData = blobUtil.arrayBufferToBlob(buffer);
+    //   const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
+    //   console.log(fileData);
+    //   this.offflineWebsiteUpload.SubmitCourseContent(fileData);
+    // });
 
+  }
  // Used for browser direct file upload
  UploadWebsiteContentFile(event: EventTarget) {
 
@@ -96,7 +110,7 @@ export class OfflineWebsitesAddPage implements OnInit {
     toast.present();
   }
 
-  UploadWebsiteContent( file: File = null) {
+  /*UploadWebsiteContent( file: File = null) {
     if (this.websiteForm.invalid) {
       return;
     }
@@ -119,11 +133,11 @@ export class OfflineWebsitesAddPage implements OnInit {
     }
     blobDataURL = blobDataURL + `/${courseContent.courseName}`;
 */
-    if (file) {
+   // if (file) {
      // const fileExt = file.type.split('/').pop();
      // blobDataURL = `${blobDataURL}_${dateFormat(new Date())}.${fileExt}`;
      // courseContent.courseURL = blobDataURL;
-      file.arrayBuffer().then((buffer) => {
+      /*file.arrayBuffer().then((buffer) => {
         const blobData = blobUtil.arrayBufferToBlob(buffer);
         const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
         courseContent.courseURL = blobDataURL;
@@ -143,20 +157,6 @@ export class OfflineWebsitesAddPage implements OnInit {
   get f() {
     return this.websiteForm.controls
   }
+}*/
+
 }
-
-
-export interface IWebsiteContent {
-  id: string;
-  schoolId: string;
-  websiteName: string;
-  websiteDescription: string;
-  websiteURL: string;
-  thumbnailURL: string;
-  uploadedBy: string;
-  active: boolean;
-  isBlobUrl: boolean; //? not sure
-}
-
-
-
