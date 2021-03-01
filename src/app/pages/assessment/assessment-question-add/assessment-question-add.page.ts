@@ -11,7 +11,6 @@ import { QuestionType } from 'src/app/_models/question-type';
 import { AuthenticationService } from 'src/app/_services';
 import { AssessmentService } from 'src/app/_services/assessment/assessment.service';
 import { dateFormat } from 'src/app/_helpers';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-assessment-question-add',
@@ -68,6 +67,7 @@ export class AssessmentQuestionAddPage implements OnInit {
     this.listRightItems.splice(event.detail.to, 0, draggedItem)
     //this.listRightItems = reorderArray(this.listItems, event.detail.from, event.detail.to);
     event.detail.complete();
+    event.preventDefault();
   }
 
   ngOnInit() {
@@ -361,7 +361,7 @@ export class AssessmentQuestionAddPage implements OnInit {
       this.imageUploadFor = "LeftOption";
       this.fileInput.nativeElement.click();
     } else {
-      if(this.f.leftColValue.value) {
+     if(this.f.leftColValue.value) {
         this.addCol(this.f.leftColValue, this.listLeftItems);
       }
     }
@@ -374,7 +374,7 @@ export class AssessmentQuestionAddPage implements OnInit {
     } else {
       if(this.f.rightColValue.value) {
         this.addCol(this.f.rightColValue, this.listRightItems);
-      }
+     }
     }
   }
 
@@ -387,7 +387,7 @@ export class AssessmentQuestionAddPage implements OnInit {
         const option = {
           text: colValue,
           imagePath: '',
-          id: 0,
+          id: listItems.length,
         }
         listItems.unshift(option)
         formControl.setValue("");

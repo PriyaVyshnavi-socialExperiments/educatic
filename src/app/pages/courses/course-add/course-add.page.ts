@@ -205,8 +205,9 @@ export class CourseAddPage implements OnInit {
       courseContent.courseURL = blobDataURL;
       this.contentService.SubmitCourseContent(courseContent, file).subscribe(
         (res) => {
-          if (res['message']) {
-            this.presentToast(res['message'], 'success');
+          const response = res[1];
+          if (response['message']) {
+            this.presentToast(response['message'], 'success');
             this.router.navigateByUrl(`courses`);
           } else {
             this.progress = res['progress'];
@@ -228,8 +229,9 @@ export class CourseAddPage implements OnInit {
         const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
         courseContent.courseURL = blobDataURL;
         this.contentService.SubmitCourseContent(courseContent, fileData).subscribe((res) => {
-          if (res['message']) {
-            this.presentToast(res['message'], 'success');
+          const response = res[1];
+          if (response['message']) {
+            this.presentToast(response['message'], 'success');
             this.router.navigateByUrl(`courses`);
           } else {
             this.progress = res['progress'];
