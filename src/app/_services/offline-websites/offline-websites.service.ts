@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { concat, from, of } from 'rxjs';
-import { catchError, finalize, groupBy, map, mergeMap, reduce, tap, toArray } from 'rxjs/operators';
+import {  pipe } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { ICourseContentDistribution } from '../../_models/course-content-distribution';
 import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
 import { AuthenticationService } from '../authentication/authentication.service';
@@ -57,6 +57,12 @@ export class OfflineWebsiteService extends OfflineService {
     this.blobUpload.uploadItems(offLineContent);
     this.blobShared.resetOfflineWebsitesSasToken$ = true;
     return this.blobUpload.uploadedOfflineWebsite$;
+  }
+
+  public getWebsiteNames() {
+    this.blobShared.setContainer$ = '$web';
+    this.blobShared.resetOfflineWebsitesSasToken$ = true;
+    return this.blobShared.rootItemsInContainer$; 
   }
 
   // public GetCourseContents() {

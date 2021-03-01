@@ -22,7 +22,7 @@ export class AuthenticationService extends OfflineService {
     public ready: ReplaySubject<IUser> = new ReplaySubject(1);
     private currentUserSubject: BehaviorSubject<IUser> = new BehaviorSubject<IUser>(undefined);
     public currentUser: Observable<IUser>;
-
+ 
     constructor(
         private http: HttpService,
         private appInsightsService: ApplicationInsightsService,

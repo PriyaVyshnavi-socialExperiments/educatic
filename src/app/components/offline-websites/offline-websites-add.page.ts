@@ -84,7 +84,6 @@ export class OfflineWebsitesAddPage implements OnInit {
     //   console.log(fileData);
     //   this.offflineWebsiteUpload.SubmitCourseContent(fileData);
     // });
-
   }
  // Used for browser direct file upload
  UploadWebsiteContentFile(event: EventTarget) {

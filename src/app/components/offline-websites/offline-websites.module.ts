@@ -6,7 +6,6 @@ import { IonicModule } from '@ionic/angular';
 
 import { OfflineWebsitesPageRoutingModule } from './offline-websites-routing.module';
 import { OfflineWebsitesPage } from './offline-websites.page';
-import { OfflineWebsitesAddPage } from './offline-websites-add.page';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { DocumentViewer } from '@ionic-native/document-viewer/ngx';
 
@@ -20,6 +19,6 @@ import { DocumentViewer } from '@ionic-native/document-viewer/ngx';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [InAppBrowser, DocumentViewer],
-  declarations: [OfflineWebsitesPage, OfflineWebsitesAddPage]
+  declarations: [OfflineWebsitesPage]
 })
 export class OfflineWebsitesPageModule {}

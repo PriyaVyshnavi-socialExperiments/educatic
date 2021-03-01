@@ -49,6 +49,21 @@ export class BlobSharedViewStateService {
     )
   );
 
+  // List the root blobs (For offline website service)
+  rootItemsInContainer$ = this.selectedContainer$.pipe(
+    filter(containerName => !!containerName),
+    switchMap(containerName =>
+      this.getStorageOptions().pipe(
+        switchMap(options =>
+          this.blobStorage.listRootBlobsInContainer({
+            ...options,
+            containerName
+          })
+        )
+      )
+    )
+  );
+
   get selectedContainer$() {
     return this.selectedContainerInner$.asObservable();
   }

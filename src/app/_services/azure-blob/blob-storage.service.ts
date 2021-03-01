@@ -31,6 +31,11 @@ export class BlobStorageService {
     return this.asyncToObservable(containerClient.listBlobsFlat());
   }
 
+  listRootBlobsInContainer(request: BlobContainerRequest) {
+    const containerClient = this.getContainerClient(request);
+    return this.asyncToObservable(containerClient.listBlobsByHierarchy("/"));
+  }
+
   downloadBlobItem(request: BlobFileRequest, callback?: any) {
     const blockBlobClient = this.getBlockBlobClient(request);
     let contentLength =  0;
