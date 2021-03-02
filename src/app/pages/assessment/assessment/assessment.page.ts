@@ -25,6 +25,7 @@ export class AssessmentPage implements OnInit {
   currentUser: IUser;
   isSortAllow = true;
   ansAttempts = 1;
+  allMatched: boolean;
 
   constructor(
     private router: Router,
@@ -117,23 +118,24 @@ export class AssessmentPage implements OnInit {
     let draggedItem = matchColumns["Right"].splice(event.detail.from, 1)[0];
     matchColumns["Right"].splice(event.detail.to, 0, draggedItem)
     event.detail.complete();
-    let allMatched = true;
+     this.allMatched = true;
     matchColumns["Right"].forEach((item, index) => {
       if (item.id === matchColumns["Left"][index].id) {
         item.validCSS = "validCSS";
       } else {
         item.validCSS = "inValidCSS";
-        allMatched = false;
+        this.allMatched = false;
       }
     });
-    if (allMatched) {
-      this.UpdateAnswer(question.id, 0, 'allMatched', this.ansAttempts);
-      this.isNext = allMatched;
-      this.ansAttempts = 1;
-    } else {
-      this.ansAttempts = this.ansAttempts + 1;
-    }
     this.isSortAllow = false;
+  }
+
+  matchColumn(question) {
+    if (this.allMatched) {
+      this.UpdateAnswer(question.id, 0, 'allMatched', this.ansAttempts);
+      this.isNext = this.allMatched;
+    } 
+    this.ansAttempts = this.ansAttempts + 1;
   }
 
   reorderItems(items, from, to) {
