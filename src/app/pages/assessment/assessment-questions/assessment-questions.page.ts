@@ -111,7 +111,11 @@ export class AssessmentQuestionsPage implements OnInit {
           assessmentId: this.assessment.id
         } as IAssessmentShare
         this.assessmentService.AssessmentShare(assessmentShare).subscribe((res) => {
-          this.presentToast('Assessment share successfully.', 'success');
+          if(res.message.includes("Already")) {
+            this.presentToast('Already shared assessment. Not allow to share multiple times.', 'warning');
+          } else {
+            this.presentToast('Assessment share successfully.', 'success');
+          }
         })
       });
     await modal.present();
