@@ -27,6 +27,8 @@ export class AttendancePage implements OnInit, AfterViewInit {
   classRoomId: string;
   classRoomName: string;
   school: ISchool;
+  isAttendanceProcessed: boolean;
+  
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -59,10 +61,12 @@ export class AttendancePage implements OnInit, AfterViewInit {
     await this.classSelectRef.open();
   }
 
-  setClassRoom(selectedValue) {
-    //this.classRoomId = selectedValue.detail.value;
+  setClassRoom() {
     const classRoom = this.currentUser.defaultSchool.classRooms.find((c) => c.classId === this.classRoomId);
     this.classRoomName = `${classRoom.classRoomName} - ${classRoom.classDivision}`;
+    this.attendanceService.VerifyIsAttendanceProcessed(this.school.id,  this.classRoomId).subscribe((res) => {
+      this.isAttendanceProcessed = res;
+    })
   }
 
   async ProcessAttendance() {

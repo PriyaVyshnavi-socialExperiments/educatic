@@ -24,9 +24,13 @@ export class AttendanceService extends OfflineService {
         this.blobShared.setContainer$ = 'attendance';
         this.blobShared.resetSasToken$ = true;
         return this.blobUpload.uploadFile(attendancePhoto);
-      }
+    }
 
-      public QueueBlobMessage(queueData: IQueueMessage) {
+    public QueueBlobMessage(queueData: IQueueMessage) {
         return this.http.Post<any>('/cognitive/process/attendance', queueData);
-      }
+    }
+
+    public VerifyIsAttendanceProcessed(schoolId: string, classId: string) {
+        return this.http.Get<any>(`/verify/${schoolId}/${classId}/attendance`);
+    }
 }

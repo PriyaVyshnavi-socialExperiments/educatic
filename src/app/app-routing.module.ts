@@ -24,8 +24,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/train-cognitive-service/train-cognitive-service.module')
     .then( m => m.TrainCognitiveServicePageModule)
   },
-
-
 ];
 
 @NgModule({

@@ -32,7 +32,7 @@ export class BlobDownloadsViewStateService {
     this.downloadQueueInner$.next(filename);
   }
 
-  public downloadFile = (filename: string) =>
+  public downloadFile = (filename: string, progress?: any) =>
     this.blobState.getStorageOptionsWithContainer().pipe(
       take(1),
       switchMap(options =>
@@ -40,7 +40,7 @@ export class BlobDownloadsViewStateService {
           .downloadBlobItem({
             ...options,
             filename
-          })
+          }, progress)
           .pipe(
             this.getDownloadUrlFromResponse(),
             this.mapDownloadResponse(filename, options)

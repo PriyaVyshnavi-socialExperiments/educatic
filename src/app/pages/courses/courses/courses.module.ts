@@ -9,6 +9,7 @@ import { CoursesPageRoutingModule } from './courses-routing.module';
 import { CoursesPage } from './courses.page';
 import { MatSelectModule } from '@angular/material/select';
 import { CategoryFilterPipe } from '../category-filter.pipe';
+import { OfflineStatusPipe } from 'src/app/_pipes/offline-status/offline-status.pipe';
 
 @NgModule({
   imports: [
@@ -19,6 +20,6 @@ import { CategoryFilterPipe } from '../category-filter.pipe';
     MatSelectModule ,
     NgxIonicImageViewerModule
   ],
-  declarations: [CoursesPage, CategoryFilterPipe]
+  declarations: [CoursesPage, CategoryFilterPipe, OfflineStatusPipe]
 })
 export class CoursesPageModule {}

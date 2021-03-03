@@ -1,61 +1,50 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            Course
+            Course contents
         </ion-title>
         <ion-buttons slot="start">
             <ion-menu-button autoHide="true"></ion-menu-button>
         </ion-buttons>
         <ion-buttons slot="end">
-            <ion-button *ngIf="!courseContentDisplay && !isStudent" ion-button="ion-button" block="block" (click)="courseAdd()">Add Course
-            </ion-button>
-            <ion-button *ngIf="courseContentDisplay" ion-button="ion-button" block="block" (click)="dismissModal()">
+            <ion-button ion-button="ion-button" block="block" (click)="dismissModal()">
                 Switch Category</ion-button>
         </ion-buttons>
     </ion-toolbar>
-</ion-header>
-
-<ion-content *ngIf="!courseContentDisplay">
-    <ion-grid class="grid">
-        <ion-row class="ion-justify-content-center">
-            <ion-card class="item-card" *ngFor="let category of categoryWiseContent" (click)="ViewContent(category.content, category.key)">
-                <ion-card-header>
-                    <ion-card-subtitle>Subject</ion-card-subtitle>
-                    <ion-card-title>{{category.key | titlecase}}</ion-card-title>
-                </ion-card-header>
-                <ion-card-content>
-                    {{category.length}}
-                    Courses
-                </ion-card-content>
-                <ion-footer>
-                    <ion-button class="float-right" expand="block" fill="clear" (click)="ViewContent(category.content, category.key)">
-                        Take a look >>
-                    </ion-button>
-                </ion-footer>
-            </ion-card>
-        </ion-row>
-    </ion-grid>
-</ion-content>
-
-<ion-content *ngIf="courseContentDisplay">
-
-    <ion-segment (ionChange)="contentDisplayChanged($event)">
-        <ion-segment-button color="warning" value="cloud" style="max-width: unset;" checked>
+    <ion-segment (ionChange)="contentDisplayChanged($event)" [(ngModel)]="displaySource">
+        <ion-segment-button color="warning" value="cloud" style="max-width: unset;">
             <ion-label>Cloud</ion-label>
         </ion-segment-button>
         <ion-segment-button color="warning" value="device" style="max-width: unset;">
             <ion-label>Device</ion-label>
         </ion-segment-button>
     </ion-segment>
-    <ion-grid class="grid">
-        <ion-row class="ion-justify-content-center">
+</ion-header>
 
+<ion-content>
+    <ion-grid style="height: 100%" *ngIf="!courseContent?.length">
+        <ion-row justify-content-center="justify-content-center" align-items-center="align-items-center" class="justify-center">
+            <div text-center="text-center">
+                <ion-icon name="images" style="zoom:5.0;" color="medium"></ion-icon>
+                <h4>No course content available!</h4>
+                <!-- <p>Looks like there are no classes available at this moment.
+                            </p> -->
+            </div>
+        </ion-row>
+    </ion-grid>
+    <ion-grid class="grid" *ngIf="courseContent?.length">
+        <ion-row class="ion-justify-content-center">
             <ion-card class="item-card level" *ngFor="let item of courseContent | categoryFilter | async">
-                <ion-item color="medium">
-                    <ion-label (click)="item.level = !item.level">
+                <ion-item color="dark">
+                    <ion-label>
                         <b>{{ item.key?.length ? item.key : 'Courses' }}</b>
                         <ion-badge mode="ios" color="warning" slot="end">{{item.length}}</ion-badge>
                     </ion-label>
+
+                    <ion-button slot="end" color="success" shape="round" fill="outline" (click)="enableDisableBulkOffline(item.content)">
+                        <ion-icon [name]="item.content | offlineStatus"></ion-icon>
+                    </ion-button>
+
                     <ion-button slot="end" color="secondary" shape="round" fill="outline" (click)="item.level = !item.level">
                         <ion-icon *ngIf="!item.level" name="eye"></ion-icon>
                         <ion-icon *ngIf="item.level" name="eye-off"></ion-icon>
@@ -64,32 +53,15 @@
                 <div *ngIf="item.level">
                     <ion-footer *ngFor="let course of item.content">
                         <ion-list>
-                            <!-- <ion-item lines="none" class="show-lg-only">
-                                                            <ion-label style="min-width: 70%;" (click)="ContentViewer(course)">
-                                                                <h2>{{course.courseName | titlecase}}</h2>
-                                                                <p>{{course.courseDescription}}</p>
-                                                            </ion-label>
-                            
-                                                            <ion-button *ngIf="!isStudent" color="secondary" shape="round" fill="outline" (click)="ShareCourse(course.id)">
-                                                                <ion-icon name="share-social-sharp"></ion-icon>
-                                                            </ion-button>
-                                                            <ion-button color="primary" shape="round" fill="outline">
-                                                                <ion-icon *ngIf="!course.isOffline" (click)="downloadContentToOffline(course)" name="cloud-download"></ion-icon>
-                                                                <ion-icon *ngIf="course.isOffline" name="cloud-done"></ion-icon>
-                                                            </ion-button>
-                                                            <ion-button *ngIf="!isStudent" color="danger" shape="round" fill="outline" (click)="confirmCourseDelete(course)">
-                                                                <ion-icon name="trash"></ion-icon>
-                                                            </ion-button>
-                                                        </ion-item> -->
-
                             <ion-item lines="none">
-                                <!-- <div tabindex="0" role="button" class="corner-ribbon-list">
-                                    <ion-icon aria-hidden="true" [name]="contentOfflineService.getOfflineStatusIcon(course.isOffline)" ></ion-icon>
-                                </div> -->
                                 <ion-label style="min-width: 70%;" (click)="ContentViewer(course)">
                                     <h2>{{course.courseName | titlecase}}
-                                        <ion-badge mode="ios" color="success" slot="end" *ngIf="course.isOffline">
-                                            <ion-icon aria-hidden="true" [name]="contentOfflineService.getOfflineStatusIcon(course.isOffline)" ></ion-icon>
+                                        <ion-badge mode="ios" color="warning" slot="end" *ngIf="course.saveProgress>0">
+                                            in progress
+                                        </ion-badge>
+
+                                        <ion-badge mode="ios" color="success" slot="end" *ngIf="course.isOffline && course.saveProgress===0">
+                                            <ion-icon aria-hidden="true" [name]="contentOfflineService.getOfflineStatusIcon(course.isOffline)"></ion-icon>
                                         </ion-badge>
                                     </h2>
                                     <p>{{course.courseDescription}}</p>
@@ -99,7 +71,6 @@
                         </ion-list>
                     </ion-footer>
                 </div>
-
             </ion-card>
         </ion-row>
     </ion-grid>

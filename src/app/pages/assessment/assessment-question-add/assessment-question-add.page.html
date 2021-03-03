@@ -40,145 +40,147 @@
                 </mat-error>
               </mat-form-field>
             </div>
-            <div *ngIf="selectedType.value && selectedType.value!=='MatchColumn'" class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+            <div *ngIf="selectedType.value && selectedType.value!=='MatchColumn'"
+              class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
               <ion-item slot="start" lines="none" color="none">
                 <ion-label>Select image</ion-label>
-                <ion-toggle color="warning"  (ionChange)="imageSelectToggle()"></ion-toggle>
+                <ion-toggle color="warning" (ionChange)="imageSelectToggle()"></ion-toggle>
               </ion-item>
             </div>
           </div>
           <div class="row">
             <div class="col-sm-12" [ngClass]="{'col-md-6 col-xl-6 col-lg-6': questionImagePath}">
-            <mat-form-field class="example-full-width" appearance="outline">
-              <mat-label>Question</mat-label>
-              <textarea matInput placeholder="Question" value="" formControlName="question" required autocomplete="off"
-                rows="4"></textarea>
-              <mat-icon matSuffix>
-              </mat-icon>
-              <mat-error *ngIf="questionForm.get('question').hasError('required')">
-                A question is required to proceed.
-              </mat-error>
-            </mat-form-field>
-          </div>
-          <div class="col-md-6 col-xl-6 col-lg-6 col-sm-12" *ngIf="questionImagePath">
-            <ion-card class="item-card">
-              <ion-card-content>
-                <div class="contact-grid" (click)="editImage()">
-              <ion-icon class="header-dropdown m-r--5" (click)="editImage()" name="camera" slot="end">
-              </ion-icon>
-              <img [decode]="isImageSelect" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
-               [lazyLoad]="questionImagePath" />
-              </div>
-            </ion-card-content>
-            </ion-card>
-          </div>
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Question</mat-label>
+                <textarea matInput placeholder="Question" value="" formControlName="question" required
+                  autocomplete="off" rows="4"></textarea>
+                <mat-icon matSuffix>
+                </mat-icon>
+                <mat-error *ngIf="questionForm.get('question').hasError('required')">
+                  A question is required to proceed.
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6 col-xl-6 col-lg-6 col-sm-12" *ngIf="questionImagePath">
+              <ion-card class="item-card">
+                <ion-card-content>
+                  <div class="contact-grid" (click)="editImage()">
+                    <ion-icon class="header-dropdown m-r--5" (click)="editImage()" name="camera" slot="end">
+                    </ion-icon>
+                    <img [decode]="isImageSelect" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
+                      [lazyLoad]="questionImagePath" />
+                  </div>
+                </ion-card-content>
+              </ion-card>
+            </div>
           </div>
           <div class="row">
-          <div *ngIf="selectedType.value==='ShortAnswer'" class="col-md-12 col-sm-12">
-            <mat-form-field class="example-full-width" appearance="outline">
-              <mat-label>Short answer</mat-label>
-              <textarea matInput placeholder="Short answer" value="" formControlName="shortAnswer" autocomplete="off"
-                rows="4"></textarea>
-              <mat-icon matSuffix>
-              </mat-icon>
-            </mat-form-field>
-          </div>
+            <div *ngIf="selectedType.value==='ShortAnswer'" class="col-md-12 col-sm-12">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Short answer</mat-label>
+                <textarea matInput placeholder="Short answer" value="" formControlName="shortAnswer" autocomplete="off"
+                  rows="4"></textarea>
+                <mat-icon matSuffix>
+                </mat-icon>
+              </mat-form-field>
+            </div>
           </div>
           <div class="row" *ngIf="selectedType.value==='MatchColumn'">
-            <ion-row>
-              <ion-col size="6">
-                <ion-list>
-                  <ion-item lines="none" color="none">
-                    <ion-toggle color="warning" #isImageSelectLeft (ionChange)="isLeftOptionWithImage=!isLeftOptionWithImage"></ion-toggle>
-                    <ion-label>Option with image</ion-label>
-                  </ion-item>
-                  <ion-item lines="full">
-                    <mat-form-field class="example-full-width" appearance="outline">
-                      <mat-label> Left Column</mat-label>
-                      <input formControlName="leftColValue" matInput autocomplete="off">
-                      <mat-icon matSuffix>
-                        <ion-icon style="cursor:pointer;" (click) ="addLeftCol()" color="primary" name="add-circle"></ion-icon>
-                      </mat-icon>
-                    </mat-form-field>
-                  </ion-item>
-                    <ion-item *ngFor="let item of listLeftItems;  let i = index" lines="full">
-                        <ion-card *ngIf="item.imagePath" class="item-card column-card-image">
-                        <ion-card-content style="padding: 0px !important;">
-                          <ion-item lines="none">
-                            {{ i + 1}}.{{item.text}}
-                              <ion-icon slot="end" style="cursor:pointer;" color="danger" (click)="deleteLeftCol(i)" name="trash" class="mr-3"></ion-icon>
-                          </ion-item>
-                          <div class="contact-grid" style="padding: 5px !important;">
-                        <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
-                         [lazyLoad]="item.imagePath" />
-                        </div>
-                      </ion-card-content>
-                      </ion-card> 
-                    </ion-item>
-                </ion-list>
-              </ion-col>
-              <ion-col size="6">
+            <ion-grid>
+              <ion-row>
+                <ion-col size="6">
                   <ion-list>
                     <ion-item lines="none" color="none">
-                      <ion-toggle #isImageSelectRight color="warning"  (ionChange)="isRightOptionWithImage=!isRightOptionWithImage"></ion-toggle>
+                      <ion-toggle color="warning" #isImageSelectLeft
+                        (ionChange)="isLeftOptionWithImage=!isLeftOptionWithImage"></ion-toggle>
                       <ion-label>Option with image</ion-label>
                     </ion-item>
-                      <ion-item lines="full">
-                        <mat-form-field class="example-full-width" appearance="outline">
-                          <mat-label> Right Column </mat-label>
-                          <input matInput formControlName="rightColValue" autocomplete="off">
-                          <mat-icon matSuffix>
-                            <ion-icon style="cursor:pointer;" (click) ="addRightCol()" color="primary" name="add-circle"></ion-icon>
-                          </mat-icon>
-                        </mat-form-field>
-                      </ion-item>
-                      <ion-reorder-group (ionItemReorder)="onRenderItems($event)" disabled="false">
-                        <ion-item *ngFor="let item of listRightItems;  let i = index" lines="full">
-                          <ion-reorder>
-                            <ion-card class="item-card column-card-image">
-                            <ion-card-content style="padding: 0px !important;">
-                              <ion-item lines="none">
-                                {{ i + 1}}.{{item.text}}
-                                  <ion-icon slot="end" style="cursor:pointer;" color="danger" (click)="deleteRightCol(i)" name="trash" class="mr-3"></ion-icon>
-                              </ion-item>
-                              <div class="contact-grid" *ngIf="item.imagePath" style="padding: 5px !important;">
-                            <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif" errorImage="assessment"
-                             [lazyLoad]="item.imagePath" />
-                            </div>
-                          </ion-card-content>
-                          </ion-card> 
-                        </ion-reorder>
+                    <ion-item lines="full">
+                      <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label> Left Column</mat-label>
+                        <input formControlName="leftColValue" matInput autocomplete="off">
+                        <mat-icon matSuffix>
+                          <ion-icon style="cursor:pointer;" (click)="addLeftCol()" color="primary" name="add-circle">
+                          </ion-icon>
+                        </mat-icon>
+                      </mat-form-field>
+                    </ion-item>
+                    <!-- <ion-item *ngFor="let item of listLeftItems;  let i = index" lines="full"> -->
+                    <ion-card *ngFor="let item of listLeftItems;  let i = index" class="item-card column-card-image">
+                      <ion-card-content style="padding: 0px !important;">
+                        <ion-icon class="trash-icon" style="cursor:pointer;" color="danger" (click)="deleteLeftCol(i)"
+                          name="trash"></ion-icon>
+                        <ion-item lines="none">
+                          {{ i + 1}}.{{item.text}}
                         </ion-item>
+                        <div class="contact-grid" *ngIf="item.imagePath" style="padding: 5px !important;">
+                          <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif"
+                            errorImage="assessment" [lazyLoad]="item.imagePath" />
+                        </div>
+                      </ion-card-content>
+                    </ion-card>
+                    <!-- </ion-item> -->
+                  </ion-list>
+                </ion-col>
+                <ion-col size="6">
+                  <ion-list>
+                    <ion-item lines="none" color="none">
+                      <ion-toggle #isImageSelectRight color="warning"
+                        (ionChange)="isRightOptionWithImage=!isRightOptionWithImage"></ion-toggle>
+                      <ion-label>Option with image</ion-label>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <mat-form-field class="example-full-width" appearance="outline">
+                        <mat-label> Right Column </mat-label>
+                        <input matInput formControlName="rightColValue" autocomplete="off">
+                        <mat-icon matSuffix>
+                          <ion-icon style="cursor:pointer;" (click)="addRightCol()" color="primary" name="add-circle">
+                          </ion-icon>
+                        </mat-icon>
+                      </mat-form-field>
+                    </ion-item>
+                    <ion-reorder-group (ionItemReorder)="onRenderItems($event)" disabled="false">
+                      <ion-card *ngFor="let item of listRightItems;  let i = index" class="item-card column-card-image">
+                        <ion-icon class="trash-icon" style="cursor:pointer;" color="danger" (click)="deleteRightCol(i)"
+                          name="trash"></ion-icon>
+                        <ion-reorder>
+                          <ion-item lines="none">
+                            {{ i + 1}}.{{item.text}}
+                          </ion-item>
+                          <div class="contact-grid" *ngIf="item.imagePath" style="padding: 5px !important;">
+                            <img [decode]="!item.isAzurePath" defaultImage="assets/images/image-wait.gif"
+                              errorImage="assessment" [lazyLoad]="item.imagePath" />
+                          </div>
+                        </ion-reorder>
+                      </ion-card>
                     </ion-reorder-group>
                   </ion-list>
-              </ion-col>
-            </ion-row>
-            </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
           <ion-radio-group *ngIf="selectedType.value!=='ShortAnswer'" [value]="question?.optionAnswer"
             (ionChange)="selectedAnswerOption($event)">
             <div class="row">
-            <div [formGroup]="option" class="col-xl-6 col-lg-6 col-md-12 col-sm-12"
-              *ngFor="let option of t.controls;  let i = index">
-              <mat-form-field class="example-full-width" appearance="outline">
-                <mat-label> Answer option {{ i + 1 }}</mat-label>
-                <input matInput placeholder="Answer" formControlName="option" autocomplete="off">
-                <ion-radio class="item" matSuffix [value]="i+1" [name]="i+1"></ion-radio>
-              </mat-form-field>
-            </div>
+              <div [formGroup]="option" class="col-xl-6 col-lg-6 col-md-12 col-sm-12"
+                *ngFor="let option of t.controls;  let i = index">
+                <mat-form-field class="example-full-width" appearance="outline">
+                  <mat-label> Answer option {{ i + 1 }}</mat-label>
+                  <input matInput placeholder="Answer" formControlName="option" autocomplete="off">
+                  <ion-radio class="item" matSuffix [value]="i+1" [name]="i+1"></ion-radio>
+                </mat-form-field>
+              </div>
             </div>
           </ion-radio-group>
-        
-          <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12" style="text-align: center;">
-            <button mat-flat-button type="button" color="secondary"
-              class="login100-form-btn container-login100-form-btn" [routerLink]="backURL">
+          <ion-item lines="none" color="none">
+            <ion-button class="action-button" color="secondary" slot="end" [routerLink]="backURL" shape="round">
               Cancel
-            </button>
-            <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn"
-              [disabled]="!questionForm.valid" type="submit" style="margin-left: 5px;">
-              Save
-            </button>
-          </div>
-         
+            </ion-button>
+            <ion-button class="action-button" [disabled]="!questionForm.valid" color="primary" slot="end" shape="round"
+              type="submit">
+              Submit
+            </ion-button>
+          </ion-item>
         </form>
       </div>
     </div>

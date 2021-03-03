@@ -20,11 +20,16 @@
 }
 
 .login100-form-btn {
-    width: 46% !important;
+    width: 30% !important;
 }
 
 .mat-input-element:disabled {
     color: inherit;
+}
+
+.action-button{
+    height: 32px;
+    width: 85px;
 }
 
 .item-card {
@@ -35,10 +40,16 @@
     //     width: 100% !important;
     //     max-height: 200px !important;
     // }
+
+    .trash-icon {
+        float: right;
+        padding: 5px;
+        font-size: 20px;
+    }
 }
 
 .column-card-image {
-    width: 150px !important;
+    width: 170px !important;
     height: 150px !important;
 }
 
