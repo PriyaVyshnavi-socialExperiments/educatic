@@ -128,14 +128,18 @@ export class AssessmentPage implements OnInit {
       }
     });
     this.isSortAllow = false;
+    this.isNext = false;
   }
 
   matchColumn(question) {
     if (this.allMatched) {
       this.UpdateAnswer(question.id, 0, 'allMatched', this.ansAttempts);
       this.isNext = this.allMatched;
-    } 
-    this.ansAttempts = this.ansAttempts + 1;
+    } else {
+      this.ansAttempts = this.ansAttempts + 1;
+      this.presentToast("Columns were not match, Please try again", "warning")
+    }
+   
   }
 
   reorderItems(items, from, to) {
