@@ -147,14 +147,14 @@
      {
       "name": "Assessments",
       "path": "/assessments",
-      "icon": "reader-outline",
+      "icon": "document-text-outline",
       "roles": ["SuperAdmin", "SchoolSuperAdmin", "Teacher"],
       "active": true
     },
     {
       "name": "My Assessments",
       "path": "/assessments",
-      "icon": "reader-outline",
+      "icon": "document-text-outline",
       "roles": ["Student"],
       "active": true
     },
