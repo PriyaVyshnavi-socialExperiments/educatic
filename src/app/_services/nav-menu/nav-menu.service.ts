@@ -77,7 +77,7 @@ export class NavMenuService extends OfflineService {
   }
 
   private GetOfflineAllMenus() {
-    return from(this.GetOfflineData('nav-menu', 'nav-menu')).pipe(
+    /* return from(this.GetOfflineData('nav-menu', 'nav-menu')).pipe(
       tap(menuData => {
         if (menuData && menuData.length > 0) {
           return menuData as IMenuItems[];
@@ -86,5 +86,7 @@ export class NavMenuService extends OfflineService {
         }
       })
     );
-  }
+  } */
+  return this.SyncMenus();
+}
 }

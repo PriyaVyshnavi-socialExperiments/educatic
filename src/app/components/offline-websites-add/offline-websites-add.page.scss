@@ -1,0 +1,31 @@
+.grid {
+    .grid-items {
+        margin-bottom: 20px;
+    }
+  
+    .item-card {
+        cursor: pointer;
+        height: 100%;
+        width: 300px;
+        img{
+          width: 100% !important;
+          height: 200px;
+      }
+    }
+  }
+  
+  
+  
+    .date-circle {
+      --padding-top: 10px;
+      --padding-end: 4px;
+      --padding-bottom: 4px;
+      --padding-start: 4px;
+      border-radius: 40px;
+      height: 50px;
+      width: 50px;
+      white-space: pre-wrap;
+      line-height: 30px;
+      font-weight: bold;
+      font-size: 20px;
+  }
