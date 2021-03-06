@@ -160,9 +160,23 @@
     },
     {
       "name": "Offline Websites",
-      "path": "/offline-websites",
       "icon": "book-outline",
       "roles": ["SuperAdmin", "SchoolSuperAdmin", "Teacher", "Student"],
-      "active": true
+      "active": true,
+      "children": [{
+        "name": "Offline Websites",
+        "path": "/offline-websites",
+        "icon": "book-outline",
+        "roles": ["SuperAdmin", "SchoolSuperAdmin", "Teacher", "Student"],
+        "active": true},
+        {
+          "name": "Offline Websites Add",
+          "path": "/offline-websites/add",
+          "icon": "list",
+          "roles": ["SuperAdmin", "SchoolSuperAdmin", "Teacher"],
+          "active": true
+        } 
+      
+      ]
     }
   ]
