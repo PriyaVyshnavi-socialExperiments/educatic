@@ -21,8 +21,8 @@ import { SpinnerVisibilityService } from 'ng-http-loader';
 
 @Component({
   selector: 'app-offline-websites-add',
-  templateUrl: './offline-websites-add.page.html',
-  styleUrls: ['./offline-websites.page.scss'],
+  templateUrl: './offline-website-add.page.html',
+  styleUrls: ['./offline-websites-add.page.scss'],
 })
 export class OfflineWebsitesAddPage implements OnInit {
   @ViewChild('fileInput', { static: false }) fileInput: ElementRef;

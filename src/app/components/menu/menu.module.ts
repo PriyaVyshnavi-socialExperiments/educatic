@@ -33,6 +33,10 @@ const routes: Routes = [
         loadChildren: () => import('../../components/offline-websites/offline-websites.module').then(m => m.OfflineWebsitesPageModule)
       },
       {
+        path: 'offline-websites/add',
+        loadChildren: () => import('../../components/offline-websites-add/offline-websites-add.module').then(m => m.OfflineWebsitesAddPageModule)
+      },
+      {
         path: 'school/add',
         loadChildren: () => import('../../pages/school-add/school-add.module').then(m => m.SchoolAddPageModule)
       },
