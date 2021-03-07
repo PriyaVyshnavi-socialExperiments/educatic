@@ -9,12 +9,15 @@ import * as blobUtil from 'blob-util';
 import { ContentHelper } from 'src/app/_helpers/content-helper';
 import { IUser } from 'src/app/_models';
 import { AuthenticationService } from 'src/app/_services/authentication/authentication.service';
+import { OfflineWebsiteService } from '../../_services/offline-websites/offline-websites.service';
+import { finalize, takeWhile } from 'rxjs/operators';
+
+
 
 //understand what this is
 //import { ICategoryContentList, ICourseContent } from '../../_models/course-content';
 //import { ICourseContentCategory } from '../../../_models/course-content-category';
 import { FilePicker } from '../../_services/azure-blob/file-picker.service';
-import { OfflineWebsiteService } from '../../_services/offline-websites/offline-websites.service';
 //import { CourseCategoryPage } from '../course-category/course-category.page'; 
 import { dateFormat } from 'src/app/_helpers';
 import { SpinnerVisibilityService } from 'ng-http-loader';
@@ -54,7 +57,7 @@ export class OfflineWebsitesAddPage implements OnInit {
 
   ngOnInit() {
     this.websiteForm = this.formBuilder.group({
-      WebsiteName: new FormControl('', [
+      websiteName: new FormControl('', [
         Validators.required,
         Validators.maxLength(100),
       ]),
@@ -62,37 +65,36 @@ export class OfflineWebsitesAddPage implements OnInit {
         Validators.required,
         Validators.maxLength(1000),
       ]),
-      websiteCategory: new FormControl('', [
-        Validators.required,
-      ])
     });
     this.contentHelper = ContentHelper;
   }
+
+
   UploadOffLineWebsiteFile(event: EventTarget) {
+    this.spinner.show();
     const eventObj: MSInputMethodContext = event as MSInputMethodContext;
     const target: HTMLInputElement = eventObj.target as HTMLInputElement;
     const files: FileList = target.files;
-    console.log(files);
-    this.spinner.show();
-    this.offlineService.SubmitCourseContent(files).subscribe((res) => {
-      this.presentToast("Finished Uploading","green" ); 
-    });
-    // let blobDataURL = file.name;
-    // file.arrayBuffer().then((buffer) => {
-    //   const blobData = blobUtil.arrayBufferToBlob(buffer);
-    //   const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
-    //   console.log(fileData);
-    //   this.offflineWebsiteUpload.SubmitCourseContent(fileData);
-    // });
+    if (files.length <= 0) {
+      this.spinner.hide();
+      return; 
+    }
+    this.offlineService.SubmitCourseContent(files).pipe(
+      takeWhile((res) => { 
+        return res[res.length - 1]["progress"] != 100;
+      }),
+      finalize(()=> {
+        this.spinner.hide();
+        this.presentToast("Finished Uploading", 'success');
+        this.fileInput.nativeElement.value = '';
+      })
+    )
+    .subscribe(
+      (res) =>  {  },
+      (err) =>  { this.presentToast("Upload Failed", "warning") },
+    );
   }
  // Used for browser direct file upload
- UploadWebsiteContentFile(event: EventTarget) {
-
-    const eventObj: MSInputMethodContext = event as MSInputMethodContext;
-    const target: HTMLInputElement = eventObj.target as HTMLInputElement;
-    const file: FileList = target.files;
-
-  }
   private async presentToast(msg, type) {
     this.spinner.hide();
     const toast = await this.toastController.create({
@@ -108,54 +110,4 @@ export class OfflineWebsitesAddPage implements OnInit {
     });
     toast.present();
   }
-
-  /*UploadWebsiteContent( file: File = null) {
-    if (this.websiteForm.invalid) {
-      return;
-    }
-    this.spinner.show();
-
-    // do we need this?
-     /* const courseContent = {
-      courseCategory: this.f.courseCategory.value,
-      courseLevel: this.f.courseLevel.value,
-      courseName: this.f.courseName.value,
-      courseDescription: this.f.courseDescription.value,
-      courseAssessment: this.f.courseAssessment.value,
-      schoolId: this.currentUser.defaultSchool.id,
-    } as ICourseContent; */
-
-    /*let blobDataURL = `${courseContent.courseCategory.split(' ').join('')}`;
-    const level = courseContent.courseLevel?.length ? courseContent.courseLevel.split(' ').join('') : '';
-    if (level?.length) {
-      blobDataURL = `${blobDataURL}/${level}`;
-    }
-    blobDataURL = blobDataURL + `/${courseContent.courseName}`;
-*/
-   // if (file) {
-     // const fileExt = file.type.split('/').pop();
-     // blobDataURL = `${blobDataURL}_${dateFormat(new Date())}.${fileExt}`;
-     // courseContent.courseURL = blobDataURL;
-      /*file.arrayBuffer().then((buffer) => {
-        const blobData = blobUtil.arrayBufferToBlob(buffer);
-        const fileData = ContentHelper.blobToFile(blobData, blobDataURL);
-        courseContent.courseURL = blobDataURL;
-
-        this.contentService.SubmitCourseContent(courseContent, fileData).subscribe((res) => {
-          if (res['message']) {
-            this.presentToast(res['message'], 'success');
-            this.router.navigateByUrl(`courses`);
-          } else {
-            this.progress = res['progress'];
-          }
-        });
-      });
-    }
-
-  }
-  get f() {
-    return this.websiteForm.controls
-  }
-}*/
-
 }

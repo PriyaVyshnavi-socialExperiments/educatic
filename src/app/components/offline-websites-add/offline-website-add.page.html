@@ -16,17 +16,16 @@
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100">
-        <form class="login100-form validate-form" [formGroup]="WebsiteForm" (ngSubmit)="UploadWebsiteContent()"
+        <form class="login100-form validate-form" [formGroup]="websiteForm" (ngSubmit)="UploadOffLineWebsiteFile()"
         #documentEditForm="ngForm">
           <div class="row">
-
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
               <mat-form-field class="example-full-width" appearance="outline">
                 <mat-label> Directory Name</mat-label>
-                <input matInput formControlName="courseName" required autocomplete="off">
+                <input matInput formControlName="websiteName" required autocomplete="off">
                 <mat-icon matSuffix>
                 </mat-icon>
-                <mat-error *ngIf="courseForm.get('courseName').hasError('required')">
+                <mat-error *ngIf="websiteForm.get('websiteName').hasError('required')">
                   A name is required to proceed.
                 </mat-error>
               </mat-form-field>
@@ -41,29 +40,19 @@
                 <textarea matInput formControlName="websiteDescription" required autocomplete="off" rows="4"></textarea>
                 <mat-icon matSuffix>
                 </mat-icon>
-                <mat-error *ngIf="courseForm.get('courseDescription').hasError('required')">
+                <mat-error *ngIf="websiteForm.get('websiteDescription').hasError('required')">
                   A description is required to proceed.
                 </mat-error>
               </mat-form-field>
             </div>
-
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-              <mat-form-field class="example-full-width" appearance="outline">
-                <mat-label> Input Image</mat-label>
-                <input type="file" #fileInput (change)="UploadCourseContentFile($event)" hidden="true"
-                accept="image" />
-                <mat-icon matSuffix>
-                </mat-icon>
-              </mat-form-field>
-            </div>
-          
+        
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" style="text-align: center;">
               <button mat-flat-button type="button" color="secondary"
-                class="login100-form-btn container-login100-form-btn" [routerLink]="['/courses']">
+                class="login100-form-btn container-login100-form-btn" [routerLink]="['/offline-websites']">
                 Cancel
               </button>
               <button mat-flat-button color="primary" class="login100-form-btn container-login100-form-btn"
-                [disabled]="!courseForm.valid" type="submit" style="margin-left: 5px;">
+                [disabled]="!websiteForm.valid" type="submit" style="margin-left: 5px;">
                 Select
               </button>
             </div>
@@ -71,6 +60,6 @@
         </form>
       </div>
     </div>
-      
+  </div>
   <input type="file" #fileInput (change)="UploadCourseContentFile($event)" hidden="true" webkitdirectory/>    
 </ion-content>
