@@ -69,6 +69,49 @@ export class OfflineWebsitesAddPage implements OnInit {
     this.contentHelper = ContentHelper;
   }
 
+  async SelectCourseContentSource() {
+    const buttons = [
+      {
+        text: 'Take Photo',
+        icon: 'camera',
+        handler: () => {
+        }
+      },
+      // {
+      //   text: 'Choose From Photos Photo',
+      //   icon: 'image',
+      //   handler: () => {
+      //     this.addImage(CameraSource.Photos);
+      //   }
+      // },
+      {
+        text: 'Cancel',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+          //this.NavigateToAssignmentList();
+        }
+      }
+    ];
+
+    // Only allow file selection inside a browser
+    //if (!this.plt.is('hybrid')) {
+    buttons.push({
+      text: 'Choose a File',
+      icon: 'attach',
+      handler: () => {
+        this.fileInput.nativeElement.click();
+      }
+    });
+
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Select Website Source',
+      backdropDismiss: false,
+      buttons
+    });
+    await actionSheet.present();
+  }
+
 
   UploadOffLineWebsiteFile(event: EventTarget) {
     this.spinner.show();

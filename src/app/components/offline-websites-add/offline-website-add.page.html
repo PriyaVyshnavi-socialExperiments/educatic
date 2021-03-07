@@ -1,4 +1,3 @@
-
 <ion-header>
   <ion-toolbar>
     <ion-title> Add Website</ion-title>
@@ -16,7 +15,7 @@
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100">
-        <form class="login100-form validate-form" [formGroup]="websiteForm" (ngSubmit)="UploadOffLineWebsiteFile()"
+        <form class="login100-form validate-form" [formGroup]="websiteForm" (ngSubmit)="SelectCourseContentSource()"
         #documentEditForm="ngForm">
           <div class="row">
             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
@@ -61,5 +60,5 @@
       </div>
     </div>
   </div>
-  <input type="file" #fileInput (change)="UploadCourseContentFile($event)" hidden="true" webkitdirectory/>    
+  <input type="file" #fileInput (change)="UploadOffLineWebsiteFile($event)" hidden="true" webkitdirectory/>    
 </ion-content>
