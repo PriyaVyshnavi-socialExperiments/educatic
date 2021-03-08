@@ -66,6 +66,10 @@ export class SchoolAddPage implements OnInit {
         Validators.required,
         Validators.maxLength(10),
       ]),
+      imageURL: new FormControl('', [
+        Validators.maxLength(200),
+      ]),
+      
     });
 
     if (this.isEditSchool) {
@@ -90,7 +94,8 @@ export class SchoolAddPage implements OnInit {
             country: this.school.country,
             state: this.school.state,
             city: this.school.city,
-            zip: this.school.zip
+            zip: this.school.zip,
+            imageURL: this.school.imageURL? this.school.imageURL : '',
           });
         }
       });
@@ -116,6 +121,7 @@ export class SchoolAddPage implements OnInit {
         state: this.f.state.value,
         city: this.f.city.value,
         zip: this.f.zip.value,
+        imageURL: this.f.imageURL.value,
         syncDateTime: new Date()
       } as ISchool;
       this.schoolService.SubmitSchool(schoolInfo).subscribe(() => {

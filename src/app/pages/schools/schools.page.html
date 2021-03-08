@@ -18,7 +18,7 @@
       <ion-card *ngFor="let school of schools" class="item-card">
         <ion-item>
           <ion-avatar slot="start">
-            <img src="../../../assets/images/school-image.jpg">
+            <img src="{{ school.imageURL || '../../../assets/images/school-image.jpg' }} ">
           </ion-avatar>
           <ion-label>
             <h3>{{school.name}}</h3>
@@ -27,7 +27,7 @@
           <ion-icon name="ellipsis-vertical-outline" (click)="actionPopover($event, school.id)" slot="end"></ion-icon>
         </ion-item>
 
-        <img src="../../../assets/images/school-image.jpg" alt="ion">
+        <img src="{{ school.imageURL || '../../../assets/images/school-image.jpg' }} ">
         <ion-card-header>
           <ion-card-title>{{school.name}}</ion-card-title>
         </ion-card-header>

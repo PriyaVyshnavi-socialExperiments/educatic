@@ -105,16 +105,26 @@
                 </mat-error>
               </mat-form-field>
             </div>
-            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 mt-3 text-center">
-              <ion-button class="mr-5" [disabled]="!schoolForm.valid" color="primary" slot="end" shape="round"
-                type="submit" fill="outline">
-                Submit
-              </ion-button>
-              <ion-button color="secondary" slot="end" [routerLink]="['/schools']" shape="round" fill="outline">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2">
+              <mat-form-field class="example-full-width" appearance="outline">
+                <mat-label>Image URL </mat-label>
+                <input matInput formControlName="imageURL" autocomplete="off">
+                <mat-icon matSuffix>
+                </mat-icon>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2"></div>
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-2 mt-3 text-right">
+              <ion-button  class="mr-5" color="secondary" slot="end" [routerLink]="['/schools']" shape="round">
                 Cancel
               </ion-button>
+              <ion-button [disabled]="!schoolForm.valid" color="primary" slot="end" shape="round"
+                type="submit">
+                Submit
+              </ion-button>
             </div>
-
           </div>
         </form>
       </div>
