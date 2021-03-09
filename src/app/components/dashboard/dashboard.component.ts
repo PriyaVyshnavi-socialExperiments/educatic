@@ -171,15 +171,15 @@ export class DashboardComponent implements AfterViewInit {
    */
   async changeCities() {
     try {
-      this.allSchools = [];
       let schoolIds: string[] = [];
       this.schools.forEach((school) => schoolIds.push(school.id));
       this.schools = [];
+      this.allSchools = [];
       if (this.cities) {
         this.cities.forEach((city) => {
           city.averageAttendance = this.dashboardService.getAverageCityAttendance(city, this.start, this.end);
           this.allSchools = this.allSchools.concat(city.schools);
-        });
+        });   
         // Calculate average attendance
         for (let i = 0; i < this.allSchools.length; i++) {
           this.allSchools[i].averageAttendance = this.dashboardService.getAverageSchoolAttendance(this.allSchools[i], this.start, this.end);
@@ -187,10 +187,9 @@ export class DashboardComponent implements AfterViewInit {
             this.schools.push(this.allSchools[i]); 
           }
         }
-        // Sorts schools based on average attendance 
-        this.schools.sort((s1: IDashboardSchool, s2: IDashboardSchool) => {
-          return s1.averageAttendance > s2.averageAttendance ? -1 : 1;
-        })
+        // Sort schools based on attendance 
+        this.sortByAttendance(this.schools);
+        this.sortByAttendance(this.allSchools);
       }
       // Updates schools to reflect newly selected cities and the city attendance chart 
       this.changeSchools();
@@ -203,16 +202,16 @@ export class DashboardComponent implements AfterViewInit {
   /**
    * Changes the schools when the selection changes. This then trickles down so that now all classes 
    * within the selected schools are selected. It also recalculates the average attendance of each class 
-   * and sortes classes based on this attendance.  
+   * and sort classes based on this attendance.  
    * 
    * Changes selected classes to include all classes in the newly selected schools. 
    */
   async changeSchools() {
     try {
-      this.allClasses = [];
       let classIds: string[] = [];
       this.classes.forEach((classRoom) => classIds.push(classRoom.id));
       this.classes = [];
+      this.allClasses = [];
       this.teachers = [];
       if (this.schools) {
         this.schools.forEach((school) => {
@@ -227,9 +226,8 @@ export class DashboardComponent implements AfterViewInit {
           }
         }
         // Sort classes based on attendance 
-        this.classes.sort((c1: IDashboardClassRoom, c2: IDashboardClassRoom) => {
-          return c1.averageAttendance > c2.averageAttendance ? -1 : 1;
-        });
+        this.sortByAttendance(this.classes);
+        this.sortByAttendance(this.allClasses);
 
         // Updates active schools and active teachers 
         this.activeSchools = this.dashboardService.getActiveSchools(this.schools, this.start, this.end);
@@ -434,5 +432,11 @@ export class DashboardComponent implements AfterViewInit {
     this.classes = this.selectClasses ? []: this.allClasses;
     this.selectClasses = !this.selectClasses;
     this.changeClasses();
+  }
+
+  sortByAttendance(list: IDashboardSchool[] | IDashboardClassRoom[]) {
+    list.sort((c1: IDashboardClassRoom | IDashboardSchool, c2: IDashboardClassRoom | IDashboardSchool) => {
+      return c1.averageAttendance > c2.averageAttendance ? -1 : 1;
+    });
   }
 }
