@@ -81,6 +81,7 @@
                         </ion-item-group>
                         <ion-item-group *ngSwitchCase="'MatchColumn'">
                           <div class="row match-column">
+                            <ion-grid>
                             <ion-row>
                               <ion-col size="6">
                                 <ion-list>
@@ -137,24 +138,24 @@
                                 </ion-list>
                               </ion-col>
                             </ion-row>
+                            </ion-grid>
                           </div>
                         </ion-item-group>
                       </div>
-                      <ion-footer style="padding: 10px;">
+                      <ion-item lines="none" color="none">
                         <ion-button class="action-button" color="tertiary" slot="end" shape="round"
-                          *ngIf="question.questionType==='MatchColumn'" (click)="matchColumn(question)">
+                          *ngIf="!isNext && question.questionType==='MatchColumn'" (click)="matchColumn(question)">
                           Match
                         </ion-button>
-                        <ion-button size="small" color="secondary" *ngIf="isNext && i!==questionCount"
+                        <ion-button size="small" color="secondary" slot="end" *ngIf="isNext && i!==questionCount"
                           (click)="moveNextQuestion()" class="float-right" shape="round">
                           Next Question
                         </ion-button>
-
-                        <ion-button size="small" color="primary" (click)="SubmitAssessment()"
+                        <ion-button size="small" color="primary" slot="end" (click)="SubmitAssessment()"
                           *ngIf="isNext && i===questionCount" class="float-right" shape="round">
                           Submit
                         </ion-button>
-                      </ion-footer>
+                      </ion-item>
                     </ion-list>
                   </ion-card-content>
                 </div>

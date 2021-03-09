@@ -14,5 +14,6 @@ export interface ISchool {
     syncDateTime?: Date;
     createdBy: string;
     classRooms: IClassRoom[];
-    teachers: ITeacher[]
+    teachers: ITeacher[],
+    imageURL?: string
 }
